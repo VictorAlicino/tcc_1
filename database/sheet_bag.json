@@ -1,0 +1,24 @@
+[
+    {
+        "device_name": "device1",
+        "hw_id": "hw_id1",
+        "mac_address": "mac_address1",
+        "vendor": "vendor1",
+        "model": "model1",
+        "abilities": [
+            {
+                "name": "ability1",
+                "type": "on_off",
+                "description": "ability_description1"
+            },
+            {
+                "name": "ability2",
+                "type": "ability_type2",
+                "description": "ability_description2"
+            }
+        ]
+    }
+]
+
+
+
