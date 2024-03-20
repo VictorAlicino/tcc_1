@@ -9,29 +9,42 @@
         "driver": "Tasmota",
         "abilities": [
             {
-                "name": "IRHVAC",
-                "type": "ac_control",
-                "description": "Send HVAC IR remote control code as JSON payload",
-                "capabilities": {
-                    "Vendor" : "Carrier",
-                    "Power" : [true, false],
-                    "Mode" : ["off", "auto", "cool", "heat", "dry", "fan"],
-                    "FanSpeed" : ["auto", "min", "low", "med", "high", "max"],
-                    "Temp" : "float",
-                    "SwingV" : ["auto", "off", "min", "low", "mid", "high", "highest"],
-                    "SwingH" : ["auto", "off", "left_max", "left", "mid", "right", "right_max", "wide"],
-                    "Celsius" : [true, false],
-                    "Quiet" : [true, false],
-                    "Turbo" : [true, false],
-                    "Econo" : [true, false],
-                    "Light" : [true, false],
-                    "Filter" : [true, false],
-                    "Clean" : [true, false],
-                    "Beep" : [true, false],
-                    "Sleep" : "int",
-                    "StateMode" : ["send_only", "store_only", "send_store"]
-                }
+                "name": "HVAC Unit Control",
+                "type": "tasmota_irhvac"
+            },
+            {
+                "name": "IR Send",
+                "type": "tasmota_irsend"}
+        ],
+        "values": [
+            {
+                "temperature": 25.5,
+                "humidity": 50,
+                "power": true,
+                "mode": "cool",
+                "fan_speed": "auto",
+                "temp": 25.5,
+                "swing_v": "auto",
+                "swing_h": "auto",
+                "celsius": true,
+                "quiet": false,
+                "turbo": false,
+                "econo": false,
+                "light": false,
+                "filter": false,
+                "clean": false,
+                "beep": false,
+                "sleep": 0,
+                "state_mode": "send_store"
+            },
+            {
+                "protocol": "NEC",
+                "bits": 32,
+                "data": "0x20DF10EF",
+                "data_lsb": "0x20DF10EF",
+                "repeat": 0,
+                "ch": "ch1"
             }
-        ]
+        ]   
     }
 ]
