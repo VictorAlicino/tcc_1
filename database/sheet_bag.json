@@ -1,24 +1,37 @@
 [
     {
-        "device_name": "device1",
-        "hw_id": "hw_id1",
-        "mac_address": "mac_address1",
-        "vendor": "vendor1",
-        "model": "model1",
+        "id": "13980c09-70fb-4dbd-b0a4-672bc5776fb1",
+        "room_id": "c5b5bf5c-1898-4ffb-9106-d26b1641300e",
+        "device_name": "AC Sala 4",
+        "mac_address": "73:50:7d:7e:ea:46",
+        "vendor": "Espressif",
+        "model": "ESP8266",
+        "driver": "Tasmota",
         "abilities": [
             {
-                "name": "ability1",
-                "type": "on_off",
-                "description": "ability_description1"
-            },
-            {
-                "name": "ability2",
-                "type": "ability_type2",
-                "description": "ability_description2"
+                "name": "IRHVAC",
+                "type": "ac_control",
+                "description": "Send HVAC IR remote control code as JSON payload",
+                "capabilities": {
+                    "Vendor" : "Carrier",
+                    "Power" : [true, false],
+                    "Mode" : ["off", "auto", "cool", "heat", "dry", "fan"],
+                    "FanSpeed" : ["auto", "min", "low", "med", "high", "max"],
+                    "Temp" : "float",
+                    "SwingV" : ["auto", "off", "min", "low", "mid", "high", "highest"],
+                    "SwingH" : ["auto", "off", "left_max", "left", "mid", "right", "right_max", "wide"],
+                    "Celsius" : [true, false],
+                    "Quiet" : [true, false],
+                    "Turbo" : [true, false],
+                    "Econo" : [true, false],
+                    "Light" : [true, false],
+                    "Filter" : [true, false],
+                    "Clean" : [true, false],
+                    "Beep" : [true, false],
+                    "Sleep" : "int",
+                    "StateMode" : ["send_only", "store_only", "send_store"]
+                }
             }
         ]
     }
 ]
-
-
-
