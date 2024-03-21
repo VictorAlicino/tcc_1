@@ -1,0 +1,232 @@
+[
+    {
+        "id": "76449445-ecca-49c3-bf24-e588358c46b1",
+        "type": "tasmota",
+        "abilities": {
+            "irhvac": {
+                "description": "Send an IR remote control code as a decimal or hexadecimal string in a JSON payload.",
+                "Protocol":[
+                    "RC5",
+                    "RC6",
+                    "NEC",
+                    "SONY",
+                    "PANASONIC",
+                    "JVC",
+                    "SAMSUNG",
+                    "WHYNTER",
+                    "AIWA_RC_T501",
+                    "MITSUBISHI",
+                    "DISH",
+                    "SHARP",
+                    "DENON",
+                    "SHERWOOD",
+                    "RCMM",
+                    "SANYO_LC7461",
+                    "RC5X",
+                    "NEC_LIKE",
+                    "NIKAI",
+                    "MAGIQUEST",
+                    "LASERTAG",
+                    "CARRIER_AC",
+                    "MITSUBISHI2",
+                    "HITACHI_AC2",
+                    "GICABLE",
+                    "LUTRON",
+                    "PIONEER",
+                    "SAMSUNG36",
+                    "LEGOPF",
+                    "INAX",
+                    "SONY_38K",
+                    "EPSON",
+                    "SYMPHONY",
+                    "HITACHI_AC3",
+                    "DOSHISHA",
+                    "MULTIBRACKETS",
+                    "CARRIER_AC40",
+                    "MIDEA24",
+                    "ZEPEAL",
+                    "METZ",
+                    "ELITESCREENS",
+                    "MILESTAG2",
+                    "XMP",
+                    "BOSE",
+                    "ARRIS",
+                    "COOLIX48",
+                    "KELON168",
+                    "DAIKIN200",
+                    "CARRIER_AC128",
+                    "TOTO",
+                    "CLIMABUTLER",
+                    "TCL96AC",
+                    "SANYO_AC152",
+                    "DAIKIN312",
+                    "GORENJE",
+                    "WOWWEE",
+                    "CARRIER_AC84"
+                ],
+                "Bits": "(1...64)",
+                "Data":"(0x1...0xFFFFFFFFFFFFFFFF)",
+                "DataLSB":"(0x1...0xFFFFFFFFFFFFFFFF)",
+                "Repeat":"int",
+                "Channel":"int"
+            },
+            "irsend": {
+                "description": "Send HVAC IR remote control code as JSON payload",
+                "Vendor":[
+                    "LG",
+                    "COOLIX",
+                    "DAIKIN",
+                    "KELVINATOR",
+                    "MITSUBISHI_AC",
+                    "GREE",
+                    "ARGO",
+                    "TROTEC",
+                    "TOSHIBA_AC",
+                    "FUJITSU_AC",
+                    "MIDEA",
+                    "HAIER_AC",
+                    "HITACHI_AC",
+                    "HITACHI_AC1",
+                    "HAIER_AC_YRW02",
+                    "WHIRLPOOL_AC",
+                    "SAMSUNG_AC",
+                    "ELECTRA_AC",
+                    "PANASONIC_AC",
+                    "LG2",
+                    "DAIKIN2",
+                    "VESTEL_AC",
+                    "TECO",
+                    "TCL112AC",
+                    "MITSUBISHI_HEAVY_88",
+                    "MITSUBISHI_HEAVY_152",
+                    "DAIKIN216",
+                    "SHARP_AC",
+                    "GOODWEATHER",
+                    "DAIKIN160",
+                    "NEOCLIMA",
+                    "DAIKIN176",
+                    "DAIKIN128",
+                    "AMCOR",
+                    "DAIKIN152",
+                    "MITSUBISHI136",
+                    "MITSUBISHI112",
+                    "HITACHI_AC424",
+                    "DAIKIN64",
+                    "AIRWELL",
+                    "DELONGHI_AC",
+                    "CARRIER_AC64",
+                    "HITACHI_AC344",
+                    "CORONA_AC",
+                    "SANYO_AC",
+                    "VOLTAS",
+                    "TRANSCOLD",
+                    "TECHNIBEL_AC",
+                    "MIRAGE",
+                    "PANASONIC_AC32",
+                    "ECOCLIM",
+                    "TRUMA",
+                    "HAIER_AC176",
+                    "TEKNOPOINT",
+                    "KELON",
+                    "TROTEC_3550",
+                    "SANYO_AC88",
+                    "RHOSS",
+                    "AIRTON",
+                    "HITACHI_AC264",
+                    "HITACHI_AC296",
+                    "HAIER_AC160",
+                    "BOSCH144",
+                    "YORK"
+                ],
+                "Model": "https://github.com/crankyoldgit/IRremoteESP8266/blob/master/SupportedProtocols.md",
+                "Power":[
+                    true,
+                    false
+                ],
+                "Mode":[
+                    "Off",
+                    "Auto",
+                    "Cool",
+                    "Heat",
+                    "Dry",
+                    "Fan"
+                ],
+                "FanSpeed":[
+                    "Auto",
+                    "Min",
+                    "Low",
+                    "Med",
+                    "High",
+                    "Max"
+                ],
+                "SwingV":[
+                    "Auto",
+                    "Off",
+                    "Min",
+                    "Low",
+                    "Mid",
+                    "High",
+                    "Max"
+                ],
+                "SwingH":[
+                    "Auto",
+                    "Off",
+                    "LeftMax",
+                    "Left",
+                    "Mid",
+                    "Right",
+                    "RightMax",
+                    "Wide"
+                ],
+                "Celsius":[
+                    "On",
+                    "Off"
+                ],
+                "Temp":"(16.0...30.0)",
+                "Quiet": [
+                    "On",
+                    "Off"
+                ],
+                "Turbo": [
+                    "On",
+                    "Off"
+                ],
+                "Econo": [
+                    "On",
+                    "Off"
+                ],
+                "Light": [
+                    "On",
+                    "Off"
+                ],
+                "Filter": [
+                    "On",
+                    "Off"
+                ],
+                "Clean": [
+                    "On",
+                    "Off"
+                ],
+                "Beep": [
+                    "On",
+                    "Off"
+                ],
+                "Sleep": "int",
+                "StateMode":[
+                    "SendOnly",
+                    "StoreOnly",
+                    "SendStore"
+                ]
+            }
+        }
+    },
+    {
+        "id": "bf728b4d-dc07-42b6-a661-d40e65a4c40d",
+        "type": "sonoff",
+        "abilities": {
+            "onoff-status": {
+                "":""
+            }
+        }
+    }
+]

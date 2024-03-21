@@ -3,10 +3,16 @@
         "id": "13980c09-70fb-4dbd-b0a4-672bc5776fb1",
         "room_id": "c5b5bf5c-1898-4ffb-9106-d26b1641300e",
         "device_name": "IR Sala 04",
-        "mac_address": "73:50:7d:7e:ea:46",
+        "network": {
+            "ssid": "network_ssid",
+            "bssid": "73:50:7d:7e:ea:46"
+        },
         "vendor": "Espressif",
         "model": "ESP8266",
-        "driver": "Tasmota",
+        "driver": {
+            "id": "76449445-ecca-49c3-bf24-e588358c46b1",
+            "type": "tasmota"
+        },
         "abilities": [
             {
                 "name": "HVAC Unit Control",
@@ -52,12 +58,35 @@
         "id": "a0cda61f-c742-4a82-87d6-5a75aa798f2a",
         "room_id": "c5b5bf5c-1898-4ffb-9106-d26b1641300e",
         "device_name": "Interruptor Sala 04",
-        "mac_address": "16:e7:99:a6:92:63",
-        "vendor": "Espressif",
-        "model": "ESP8266",
-        "driver": "Tasmota",
+        "network": {
+            "ssid": "network_ssid",
+            "bssid": "16:e7:99:a6:92:63"
+        },
+        "vendor": "Sonoff",
+        "model": "MINIR2",
+        "driver": {
+            "id": "bf728b4d-dc07-42b6-a661-d40e65a4c40d",
+            "type": "sonoff",
+            "device_id": "1000a4c7e3"
+        },
         "abilities": [
-
+            {
+                "name": "Light Switch",
+                "type": "sonoff:onoff-status"
+            },
+            {
+                "name": "Timer",
+                "type": "sonoff:inching"
+            }
+        ],
+        "values": [
+            {
+                "switch": true
+            },
+            {
+                "pulse": false,
+                "pulseWidth": 500
+            }
         ]
     }
 ]
