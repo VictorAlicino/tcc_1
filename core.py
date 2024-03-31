@@ -62,7 +62,7 @@ def main() -> int:
     check_configurations()
     # TODO: Check files integrity
 
-    # TODO: Load plugins
+    # TODO: Load drivers
     # TODO: Connect to database
     # TODO: Start entity manager
     # TODO: Start event manager
@@ -72,4 +72,4 @@ def main() -> int:
 
 
 if __name__ == '__main__':
-    exit(main())
+    sys.exit(main())
