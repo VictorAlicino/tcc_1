@@ -5,7 +5,7 @@ app = FastAPI()
 @app.get("/")
 async def root():
     """Root endpoint"""
-    raise HTTPException(status_code=200, detail="Item not found")
+    return {"payload": "Hello World"}
 
 
 @app.get("hello/{name}")
