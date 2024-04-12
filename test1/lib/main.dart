@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,21 +17,25 @@ class MyApp extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Image.asset("assets/images/opus_logo.png", height: 150),
-                  Container(
-                    margin: const EdgeInsets.only(top: 150),
+                  Spacer(),
+                  SvgPicture.asset("assets/images/opus_logo.svg"),
+                  Spacer(),
+                  ButtonTheme(
+                    minWidth: 30,
+                    height: 250,
                     child: ElevatedButton(
                         onPressed: () => null,
-                        child: const Text("Login",
+                        child: const Text("Login with Google",
                             style: TextStyle(fontSize: 20))),
                   ),
                   Container(
                     margin: const EdgeInsets.only(top: 25),
                     child: ElevatedButton(
                         onPressed: () => null,
-                        child: const Text("Register",
+                        child: const Text("Login with Microsoft",
                             style: TextStyle(fontSize: 20))),
-                  )
+                  ),
+                  Spacer()
                 ])));
   }
 }
