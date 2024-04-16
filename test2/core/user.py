@@ -1,6 +1,6 @@
 """User abstraction module."""
 
-from lib.roles import Role
+from core.roles import Role
 
 class User:
     """User class."""
