@@ -1,6 +1,7 @@
 """SONOFF Connection Driver"""
 
 from enum import Enum
+from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
 import requests
 
 class SONOFFDeviceType(Enum):
@@ -12,19 +13,15 @@ class SONOFFDeviceType(Enum):
 
 type sonoff_device_type_t = SONOFFDeviceType
 
-class SONOFFdriver:
+class SONOFFDriver:
     """Driver to talk to Sonoff Devices with the DIY API enabled"""
     def __init__(self):
-        self.ip_address: list[
-            bytes,
-            bytes,
-            bytes,
-            bytes
-            ]
+        self.ip_address: list[int, int, int, int]
         self.hostname: str
         self.service_type: str
         self.device_type: sonoff_device_type_t
 
+sonoff_discovered_devices: list[]
 
 def discover_devices():
-    ...
+    
