@@ -1,14 +1,11 @@
 """Sonoff API Light Implementation"""
 
 import sys
-import asyncio
 import json
-from ipaddress import ip_address
 # Non-Standard Libraries
 sys.path.append('../../') # pylint: disable=wrong-import-position
 import aiohttp
-import sonoff # pylint: disable=import-error
-from sonoff import SonoffDevice # pylint: disable=import-error
+from sonoff_device import SonoffDevice # pylint: disable=import-error
 from core.devices.light import OpusLight
 
 class SonoffLight(OpusLight):
@@ -29,59 +26,69 @@ class SonoffLight(OpusLight):
                         "data": { "switch": "on"}
                         })
                     ) as resp:
-                print(resp)
+                #print(await resp.text())
+                ...
 
     async def off(self) -> None:
         async with aiohttp.ClientSession() as session:
-            async with session.post(
-                    f'http://{self.sonoff_link.ip_address}:{self.sonoff_link.port}'
-                    f'/zeroconf/switch',
-                    # "{"deviceid": "10016d3258", "data": { "switch": "off" }}"
-                    data= json.dumps({
-                        "deviceid": self.sonoff_link.device_id,
-                        "data": { "switch": "off"}
-                        })
-                    ) as resp:
-                print(resp)
+            try:
+                async with session.post(
+                        f'http://{self.sonoff_link.ip_address}:{self.sonoff_link.port}'
+                        f'/zeroconf/switch',
+                        # "{"deviceid": "10016d3258", "data": { "switch": "off" }}"
+                        data= json.dumps({
+                            "deviceid": self.sonoff_link.device_id,
+                            "data": { "switch": "off"}
+                            })
+                        ) as resp:
+                    #print(await resp.text())
+                    ...
+            except ConnectionError as e:
+                print(f"Error: {e}")
 
-    async def get_wifi_strength(self) -> int:
-        """Get WiFi Strength from device"""
+    async def update_status(self) -> None:
+        """Update the Status of the Light"""
         async with aiohttp.ClientSession() as session:
+            try:
+                async with session.post(
+                        f'http://{self.sonoff_link.ip_address}:{self.sonoff_link.port}'
+                        f'/zeroconf/info',
+                        # "{"deviceid": "10016d3258", "data": {}}"
+                        data= json.dumps({
+                            "deviceid": self.sonoff_link.device_id,
+                            "data": {}
+                            })
+                        ) as resp:
+                    print(await resp.text())
+            except ConnectionError as e:
+                print(f"Error: {e}")
+
+    def __str__(self):
+        return (f"Sonoff Light {self.sonoff_link.device_id}@"
+                f"{self.sonoff_link.ip_address}|{self.sonoff_link.bssid} ")
+
+async def create_sonoff_light(name: str, link: SonoffDevice) -> SonoffLight:
+    """Create a new Sonoff Light"""
+    print(f"Registering new Sonoff Light: {name}")
+    new_light = SonoffLight(name)
+    new_light.sonoff_link = link
+    device_payload: json = {}
+    async with aiohttp.ClientSession() as session:
+        try:
             async with session.post(
-                    f'http://{self.sonoff_link.ip_address}:{self.sonoff_link.port}'
-                    f'/zeroconf/signal_strength',
-                    # "{"deviceid": "10016d3258", "data": {}}"
+                    f'http://{new_light.sonoff_link.ip_address}:{new_light.sonoff_link.port}'
+                    f'/zeroconf/info',
                     data= json.dumps({
-                        "deviceid": self.sonoff_link.device_id,
+                        "deviceid": new_light.sonoff_link.device_id,
                         "data": {}
                         })
                     ) as resp:
-                print(resp)
-
-async def debug() -> None:
-    """Main for Debug porpuses"""
-    luz1 = SonoffLight("ablublé")
-    luz1.sonoff_link = SonoffDevice(ip_address("192.168.15.2"))
-    luz1.sonoff_link.device_id = "10016d3258"
-    luz1.sonoff_link.hostname = "eWeLink_10016d3258._ewelink._tcp.local."
-
-    devices = await sonoff.search_devices(5)
-    for device in devices:
-        print(device)
-    while True:
-        try:
-            await luz1.on()
-            await asyncio.sleep(2)
-            await luz1.off()
-            await asyncio.sleep(2)
-            await luz1.get_wifi_strength()
+                device_payload = await resp.json()
         except Exception as e:
             print(f"Error: {e}")
-            raise e
 
-if __name__ == "__main__":
-    try:
-        asyncio.run(debug())
-    except KeyboardInterrupt:
-        print("Interrupted by User, closing")
-        sys.exit(127)
+    new_light.power_state = device_payload['data']['switch']
+    new_light.sonoff_link.device_id = device_payload['data']['deviceid']
+    new_light.sonoff_link.bssid = device_payload['data']['bssid']
+
+    return new_light

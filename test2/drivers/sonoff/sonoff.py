@@ -1,44 +1,15 @@
 """SONOFF Connection Driver"""
 
 import asyncio
-from enum import Enum
+import sys
 from ipaddress import ip_address
 # Non-Standard Libraries
 from zeroconf import ServiceBrowser, Zeroconf
+from sonoff_device import SonoffDevice
+from sonoff_light import create_sonoff_light, SonoffLight
 
-class SonoffDeviceType(Enum):
-    """Enumerate for Sonoff Device Types"""
-    DIY_PLUG = 0    # BASICR3 | RFR3 | MINI | MINIR2 | MINIR3
-    DIYLIGHT = 1    # D1
-    DIY_METER = 2   # SPM-Main
-    DIY_LIGHT = 3   # B02-BL-A60 | B05-BL-A19 | B05-BL-A60
-
-    # Not DIY mode (Encrypted)
-    STRIP = 4
-    PLUG = 5
-
-type sonoff_device_type_t = SonoffDeviceType
-
-class SonoffDevice:
-    """Driver to talk to Sonoff Devices with the DIY API enabled"""
-    def __init__(self, ip: ip_address):
-        self.ip_address: ip_address = ip
-        self.hostname: str
-        self.port: int = 8081
-        self.bssid: bytearray | None
-        self.device_type: sonoff_device_type_t | str
-        self.service_instace_name: str
-        self.device_id: str
-
-    def __str__(self) -> str:
-        return (f"Sonoff Device {self.hostname} at {self.ip_address}\n"
-                f" DeviceID              -> {self.device_id}\n"
-                f" Type                  -> {self.device_type}\n"
-                f" Port                  -> {self.port}\n"
-                f" BSSID                 -> {self.bssid}\n"
-                f" Service instance name -> {self.service_instace_name}\n")
-
-known_devices: list = []
+known_devices: list[SonoffDevice] = []
+registered_devices: list = []
 
 def _found_new_device(name, info) -> None:
     ip = info.addresses[0]
@@ -49,11 +20,17 @@ def _found_new_device(name, info) -> None:
     new_device.device_type = bytes(info.properties[('type').encode('utf-8')]).decode()
     new_device.service_instace_name = info.type
     new_device.device_id = bytes(info.properties[('id').encode('utf-8')]).decode()
-    #print(f"\n[mDNS] Found new {new_device.device_type} -> "
-    #      f"{new_device.hostname} @ {new_device.ip_address}"
-    #      f" | id: {new_device.device_id}")
-    #print(properties)
+    new_device.startup_info_dump = info.properties
+
     known_devices.append(new_device)
+
+async def register_device(device: SonoffDevice) -> None:
+    """Register a new Device"""
+    match device.device_type:
+        case "diy_plug":
+            print("Found a DIY Plug")
+            registered_devices.append(await create_sonoff_light("ablublé", device))
+
 
 
 class MDNSListener:
@@ -63,19 +40,57 @@ class MDNSListener:
         """"Remove Service"""
         # do nothing
 
+    def update_service(self, zeroconf, type, name): # pylint: disable=redefined-builtin, unused-argument
+        """Update Service"""
+        #print(f'Update Service {name} {type}')
+        info = zeroconf.get_service_info(type, name)
+        if info:
+            if (info.properties.get(b'id').decode() in
+            [device.device_id for device in known_devices]):
+                print(f"Device {info.properties.get(b'id').decode()} state changed")
+
     def add_service(self, zeroconf, type, name): # pylint: disable=redefined-builtin
         """Add a Device to the known devices list"""
         info = zeroconf.get_service_info(type, name)
-        if info:
+        if info and info.properties.get(b'encrypt') is None:
             _found_new_device(name, info)
 
 
-async def search_devices(timer: int) -> list[SonoffDevice]:
+async def start_sonoff_finder() -> list[SonoffDevice]:
     """Search for Sonoff Devices in the network"""
     zeroconf = Zeroconf()
     listener = MDNSListener()
     ServiceBrowser(zeroconf, "_ewelink._tcp.local.", listener)
 
-    await asyncio.sleep(timer)
-    zeroconf.close()
     return known_devices
+
+async def start() -> None:
+    """Main Function"""
+    await start_sonoff_finder()
+
+
+async def main_debug() -> None:
+    """Main for Debug porpuses"""
+    luz1 = SonoffLight("ablublé")
+    luz1.sonoff_link = SonoffDevice(ip_address("192.168.15.2"))
+    luz1.sonoff_link.device_id = "10016d3258"
+    luz1.sonoff_link.hostname = "eWeLink_10016d3258._ewelink._tcp.local."
+
+    await start_sonoff_finder()
+    await asyncio.sleep(1)
+    for device in known_devices:
+        await register_device(device)
+    print(registered_devices)
+    while True:
+        for device in registered_devices:
+            try:
+                await device.on()
+                await asyncio.sleep(2)
+                await device.off()
+                await asyncio.sleep(2)
+            except Exception as e:
+                print(f"Error: {e}")
+                raise e
+
+if __name__ == "__main__":
+    asyncio.run(main_debug())
