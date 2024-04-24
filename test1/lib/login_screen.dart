@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:test1/main.dart';
 //import 'package:flutter_svg/flutter_svg.dart';
 
+var corBotao = const Color(0xFFD9AC25);
+
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
@@ -9,14 +11,14 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
-            backgroundColor: const Color.fromARGB(255, 219, 219, 219),
+            backgroundColor: const Color.fromARGB(255, 26, 24, 36),
             body: Center(
               child: Container(
                 padding: const EdgeInsets.all(15),
                 child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SizedBox(height: MediaQuery.of(context).size.height * 0.20),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.25),
                       //SvgPicture.asset("assets/images/opus_logo.svg"),
                       SizedBox(
                         width: MediaQuery.of(context).size.height * 0.3,
@@ -38,7 +40,7 @@ class LoginScreen extends StatelessWidget {
                           textAlign: TextAlign.left,
                           ),
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF587368)),
+                            backgroundColor: MaterialStateProperty.all<Color>(corBotao),
                             padding: MaterialStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.fromLTRB(20, 20, 20, 20)),
                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                               RoundedRectangleBorder(
@@ -63,7 +65,7 @@ class LoginScreen extends StatelessWidget {
                           textAlign: TextAlign.left,
                           ),
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF587368)),
+                            backgroundColor: MaterialStateProperty.all<Color>(corBotao),
                             padding: MaterialStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.fromLTRB(20, 20, 20, 20)),
                             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                               RoundedRectangleBorder(
