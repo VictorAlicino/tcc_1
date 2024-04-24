@@ -68,7 +68,6 @@ async def start() -> None:
     """Main Function"""
     await start_sonoff_finder()
 
-
 async def main_debug() -> None:
     """Main for Debug porpuses"""
     luz1 = SonoffLight("ablublé")

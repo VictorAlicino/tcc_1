@@ -4,6 +4,7 @@ import sys
 import os
 import asyncio
 import importlib
+from types import ModuleType
 from typing import Final
 import yaml
 
@@ -15,6 +16,9 @@ SUPPORTED_OS: Final = ["linux", "darwin", "win32"]
 
 # Global Configuration
 CONFIG: dict = {}
+
+# Drivers objects
+DRIVERS: dict[ModuleType] = {}
 
 
 def check_configurations() -> None:
@@ -89,16 +93,23 @@ def load_drivers() -> None:
         for file in os.listdir(f'./{drivers_folder}/{driver_name}'):
             if file == "__init__.py":
                 # Importing Driver (a.k.a Python Module)
+                global DRIVERS # pylint: disable=global-variable-not-assigned
                 print('Found')
                 print(f"Importing <<{driver_name}>> driver")
-                globals()["sonoff"] = importlib.import_module(f"{drivers_folder}.{driver_name}")
-                print(sys.modules.keys())
+                a = importlib.import_module(
+                    f"{drivers_folder}.{driver_name}"
+                    )
+                DRIVERS[driver_name] = a
 
 
 async def main() -> None:
     """The main function."""
     while True:
-        ...
+        try:
+            ...
+        except KeyboardInterrupt as exp1:
+            print(f"{exp1} Interrupted by user")
+
 
 if __name__ == "__main__":
     exit_code: int = 0
@@ -107,10 +118,21 @@ if __name__ == "__main__":
     check_os()
     load_configurations()
     load_drivers()
+    print(sys.modules.keys())
+    for driver in DRIVERS.items():
+        print(driver)
+
+    #import drivers.sonoff
+    #drivers.sonoff.sonoff.start()
+
+    DRIVERS['sonoff'].start()
     # TODO: Connect to database
     # TODO: Start entity manager
     # TODO: Start event manager
     # TODO: Start task manager
 
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt as e:
+        print(e)
     sys.exit(exit_code)
