@@ -1,18 +1,12 @@
 """SONOFF Connection Driver"""
 
-<<<<<<< HEAD
-from enum import Enum
-from zeroconf import ServiceBrowser, ServiceStateChange, Zeroconf
-import requests
-=======
 import asyncio
 import sys
 from ipaddress import ip_address
 # Non-Standard Libraries
 from zeroconf import ServiceBrowser, Zeroconf
-from sonoff_device import SonoffDevice
-from sonoff_light import create_sonoff_light, SonoffLight
->>>>>>> ded3e04997ad3c1136c9b34aac6a2003183d879f
+from .sonoff_device import SonoffDevice
+from .sonoff_light import create_sonoff_light, SonoffLight
 
 known_devices: list[SonoffDevice] = []
 registered_devices: list = []
@@ -28,15 +22,6 @@ def _found_new_device(name, info) -> None:
     new_device.device_id = bytes(info.properties[('id').encode('utf-8')]).decode()
     new_device.startup_info_dump = info.properties
 
-<<<<<<< HEAD
-class SONOFFDriver:
-    """Driver to talk to Sonoff Devices with the DIY API enabled"""
-    def __init__(self):
-        self.ip_address: list[int, int, int, int]
-        self.hostname: str
-        self.service_type: str
-        self.device_type: sonoff_device_type_t
-=======
     known_devices.append(new_device)
 
 async def register_device(device: SonoffDevice) -> None:
@@ -45,14 +30,8 @@ async def register_device(device: SonoffDevice) -> None:
         case "diy_plug":
             print("Found a DIY Plug")
             registered_devices.append(await create_sonoff_light("ablublé", device))
->>>>>>> ded3e04997ad3c1136c9b34aac6a2003183d879f
 
-sonoff_discovered_devices: list[]
-
-<<<<<<< HEAD
-def discover_devices():
-    
-=======
+sonoff_discovered_devices: list = []
 
 class MDNSListener:
     """Listener for Sonoff mDNS Service"""
@@ -114,4 +93,3 @@ async def main_debug() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main_debug())
->>>>>>> ded3e04997ad3c1136c9b34aac6a2003183d879f

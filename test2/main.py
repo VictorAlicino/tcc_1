@@ -7,6 +7,7 @@ import importlib
 from types import ModuleType
 from typing import Final
 import yaml
+import core
 
 # Python Version
 REQUIRED_PYTHON_VER: Final = (3, 12, 0)
@@ -95,15 +96,15 @@ def load_drivers() -> None:
                 # Importing Driver (a.k.a Python Module)
                 global DRIVERS # pylint: disable=global-variable-not-assigned
                 print('Found')
-                print(f"Importing <<{driver_name}>> driver")
-                a = importlib.import_module(
-                    f"{drivers_folder}.{driver_name}"
+                DRIVERS[driver_name] = importlib.import_module(
+                    f"{drivers_folder}.{driver_name}.{driver_name}"
                     )
-                DRIVERS[driver_name] = a
+                print(f"Importing <<{driver_name}>> driver")
 
 
 async def main() -> None:
     """The main function."""
+    await DRIVERS['sonoff'].start()
     while True:
         try:
             ...
@@ -118,14 +119,7 @@ if __name__ == "__main__":
     check_os()
     load_configurations()
     load_drivers()
-    print(sys.modules.keys())
-    for driver in DRIVERS.items():
-        print(driver)
 
-    #import drivers.sonoff
-    #drivers.sonoff.sonoff.start()
-
-    DRIVERS['sonoff'].start()
     # TODO: Connect to database
     # TODO: Start entity manager
     # TODO: Start event manager

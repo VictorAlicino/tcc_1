@@ -3,10 +3,9 @@
 import sys
 import json
 # Non-Standard Libraries
-sys.path.append('../../') # pylint: disable=wrong-import-position
 import aiohttp
 from core.devices.light import OpusLight
-from sonoff_device import SonoffDevice # pylint: disable=import-error
+from .sonoff_device import SonoffDevice # pylint: disable=import-error
 
 class SonoffLight(OpusLight):
     """Sonoff API Light Implementation"""
