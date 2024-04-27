@@ -7,7 +7,6 @@ import importlib
 from types import ModuleType
 from typing import Final
 import yaml
-import core
 
 # Python Version
 REQUIRED_PYTHON_VER: Final = (3, 12, 0)
@@ -105,11 +104,14 @@ def load_drivers() -> None:
 async def main() -> None:
     """The main function."""
     await DRIVERS['sonoff'].start()
+    await asyncio.sleep(2)
+    print(DRIVERS['sonoff'].get_registered_devices())
     while True:
         try:
             ...
         except KeyboardInterrupt as exp1:
             print(f"{exp1} Interrupted by user")
+            break
 
 
 if __name__ == "__main__":
@@ -119,9 +121,9 @@ if __name__ == "__main__":
     check_os()
     load_configurations()
     load_drivers()
+    # TODO: Start devices manager
 
     # TODO: Connect to database
-    # TODO: Start entity manager
     # TODO: Start event manager
     # TODO: Start task manager
 
