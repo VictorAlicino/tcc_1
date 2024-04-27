@@ -11,6 +11,14 @@ from .sonoff_light import create_sonoff_light, SonoffLight
 known_devices: list[SonoffDevice] = []
 registered_devices: list = []
 
+def get_known_devices() -> list[SonoffDevice]:
+    """Get the known devices"""
+    return known_devices
+
+def get_registered_devices() -> list:
+    """Get the registered devices"""
+    return registered_devices
+
 def _found_new_device(name, info) -> None:
     ip = info.addresses[0]
     new_device = SonoffDevice(ip_address(f'{ip[0]}.{ip[1]}.{ip[2]}.{ip[3]}'))
