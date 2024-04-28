@@ -106,9 +106,16 @@ async def main() -> None:
     await DRIVERS['sonoff'].start()
     await asyncio.sleep(2)
     print(DRIVERS['sonoff'].get_registered_devices())
+    luz1 = await DRIVERS['sonoff'].create_sonoff_light(
+        "Luz1",
+        DRIVERS['sonoff'].get_known_devices()[0]
+        )
     while True:
         try:
-            ...
+            await luz1.on()
+            await asyncio.sleep(1)
+            await luz1.off()
+            await asyncio.sleep(1)
         except KeyboardInterrupt as exp1:
             print(f"{exp1} Interrupted by user")
             break
