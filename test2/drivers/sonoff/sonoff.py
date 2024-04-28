@@ -1,7 +1,6 @@
 """SONOFF Connection Driver"""
 
 import asyncio
-import sys
 from ipaddress import ip_address
 # Non-Standard Libraries
 from zeroconf import ServiceBrowser, Zeroconf
@@ -9,7 +8,7 @@ from .sonoff_device import SonoffDevice
 from .sonoff_light import create_sonoff_light, SonoffLight
 
 known_devices: list[SonoffDevice] = []
-registered_devices: list = []
+registered_devices: list[any] = []
 
 def get_known_devices() -> list[SonoffDevice]:
     """Get the known devices"""

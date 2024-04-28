@@ -98,7 +98,7 @@ def load_drivers() -> None:
                 DRIVERS[driver_name] = importlib.import_module(
                     f"{drivers_folder}.{driver_name}.{driver_name}"
                     )
-                print(f"Importing <<{driver_name}>> driver")
+                print(f"Imported <<{driver_name}>> driver")
 
 
 async def main() -> None:
@@ -133,6 +133,7 @@ if __name__ == "__main__":
     # TODO: Connect to database
     # TODO: Start event manager
     # TODO: Start task manager
+
 
     try:
         asyncio.run(main())
