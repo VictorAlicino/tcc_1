@@ -14,6 +14,15 @@ REQUIRED_PYTHON_VER: Final = (3, 12, 0)
 # OS Supported
 SUPPORTED_OS: Final = ["linux", "darwin", "win32"]
 
+# Directories Path
+DIRS: dict = {
+    "CORE": "core",
+    "CONFIG": "config",
+    "DRIVERS": "drivers",
+    "DATABASES": "db",
+    "SERVER": "server",
+}
+
 # Global Configuration
 CONFIG: dict = {}
 
@@ -24,17 +33,10 @@ DRIVERS: dict[ModuleType] = {}
 def check_configurations() -> None:
     """Check if the configurations are valid."""
     print("Checking configurations...")
-    config_folder = "./configurations"
-
-    # Check if the configurations folder exists
-    if not os.path.exists(config_folder) and not os.path.isdir(config_folder):
-        print("ERROR: Configurations folder does not exist.")
-        sys.exit(1)
-    print(f"Configurations Folder found at {config_folder}")
 
     # Check the YAML files
     print("Checking YAML files...")
-    for file in os.listdir(config_folder):
+    for file in os.listdir(DIRS["CONFIG"]):
         if file.endswith(".yaml"):
             print(f"Found: {file}")
 
@@ -65,13 +67,19 @@ def check_python() -> None:
               f"or higher is required.")
         sys.exit(1)
 
+def check_directories() -> None:
+    """Check if all the required directories exist."""
+    print("Checking directories...")
+    for directory in DIRS.items():
+        print(f"Checking for {directory[0]}...", end=" ")
+        if not os.path.exists(f"./{directory[1]}") and not os.path.isdir(f"./{directory[1]}"):
+            print(f"ERROR: {directory[1]} directory does not exist.")
+            sys.exit(1)
+        print(f"Found at ./{directory[1]}")
 
 def load_configurations() -> None:
     """Load the config file into the CONFIG global variable."""
     print("Loading configurations...")
-    if not os.path.exists("./config") and not os.path.isdir("./config"):
-        print("ERROR: Configurations folder does not exist.")
-        sys.exit(1)
     global CONFIG # pylint: disable=global-statement
     with open("./config/config.yaml", "r", encoding='utf-8') as file:
         CONFIG = yaml.load(file, Loader=yaml.FullLoader)
@@ -81,22 +89,17 @@ def load_configurations() -> None:
 def load_drivers() -> None:
     """This function uses the importlib module to load the drivers."""
     print("Loading drivers...")
-    drivers_folder = "drivers"
-    if not os.path.exists(f'./{drivers_folder}') and not os.path.isdir(f'./{drivers_folder}'):
-        print("ERROR: Drivers folder does not exist.")
-        sys.exit(1)
-    print(f"Drivers found at ./{drivers_folder}")
     drivers_list: list = CONFIG["drivers"]
 
     for driver_name in drivers_list:
         print(f"Looking for {driver_name} driver...", end=" ")
-        for file in os.listdir(f'./{drivers_folder}/{driver_name}'):
+        for file in os.listdir(f'./{DIRS["DRIVERS"]}/{driver_name}'):
             if file == "__init__.py":
                 # Importing Driver (a.k.a Python Module)
                 global DRIVERS # pylint: disable=global-variable-not-assigned
                 print('Found')
                 DRIVERS[driver_name] = importlib.import_module(
-                    f"{drivers_folder}.{driver_name}.{driver_name}"
+                    f"{DIRS["DRIVERS"]}.{driver_name}.{driver_name}"
                     )
                 print(f"Imported <<{driver_name}>> driver")
 
@@ -111,14 +114,15 @@ async def main() -> None:
         DRIVERS['sonoff'].get_known_devices()[0]
         )
     while True:
-        try:
-            await luz1.on()
-            await asyncio.sleep(1)
-            await luz1.off()
-            await asyncio.sleep(1)
-        except KeyboardInterrupt as exp1:
-            print(f"{exp1} Interrupted by user")
-            break
+    #    try:
+    #        await luz1.on()
+    #        await asyncio.sleep(1)
+    #        await luz1.off()
+    #        await asyncio.sleep(1)
+    #    except KeyboardInterrupt as exp1:
+    #        print(f"{exp1} Interrupted by user")
+    #        break
+        ...
 
 
 if __name__ == "__main__":
@@ -126,6 +130,7 @@ if __name__ == "__main__":
 
     check_python()
     check_os()
+    check_directories()
     load_configurations()
     load_drivers()
     # TODO: Start devices manager
@@ -135,8 +140,8 @@ if __name__ == "__main__":
     # TODO: Start task manager
 
 
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt as e:
-        print(e)
+    #try:
+    #    asyncio.run(main())
+    #except KeyboardInterrupt as e:
+    #    print(e)
     sys.exit(exit_code)

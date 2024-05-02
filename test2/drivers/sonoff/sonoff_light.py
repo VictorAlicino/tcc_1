@@ -12,16 +12,16 @@ class SonoffLight(OpusLight):
     def __init__(self, device_name: str):
         super().__init__()
         self.name = device_name
-        self.sonoff_link: SonoffDevice
+        self.link: SonoffDevice
 
     async def on(self) -> None:
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                    f'http://{self.sonoff_link.ip_address}:{self.sonoff_link.port}'
+                    f'http://{self.link.ip_address}:{self.link.port}'
                     f'/zeroconf/switch',
                     # "{"deviceid": "10016d3258", "data": { "switch": "on" }}"
                     data= json.dumps({
-                        "deviceid": self.sonoff_link.device_id,
+                        "deviceid": self.link.device_id,
                         "data": { "switch": "on"}
                         })
                     ) as resp:
@@ -32,12 +32,30 @@ class SonoffLight(OpusLight):
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.post(
-                        f'http://{self.sonoff_link.ip_address}:{self.sonoff_link.port}'
+                        f'http://{self.link.ip_address}:{self.link.port}'
                         f'/zeroconf/switch',
                         # "{"deviceid": "10016d3258", "data": { "switch": "off" }}"
                         data= json.dumps({
-                            "deviceid": self.sonoff_link.device_id,
+                            "deviceid": self.link.device_id,
                             "data": { "switch": "off"}
+                            })
+                        ) as resp:
+                    #print(await resp.text())
+                    ...
+            except ConnectionError as e:
+                print(f"Error: {e}")
+
+    async def toggle(self) -> None:
+        """Toggle the Light On/Off"""
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.post(
+                        f'http://{self.link.ip_address}:{self.link.port}'
+                        f'/zeroconf/switch',
+                        # "{"deviceid": "10016d3258", "data": { "switch": "toggle" }}"
+                        data= json.dumps({
+                            "deviceid": self.link.device_id,
+                            "data": { "switch": f"{not self.power_state}"}
                             })
                         ) as resp:
                     #print(await resp.text())
@@ -50,11 +68,11 @@ class SonoffLight(OpusLight):
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.post(
-                        f'http://{self.sonoff_link.ip_address}:{self.sonoff_link.port}'
+                        f'http://{self.link.ip_address}:{self.link.port}'
                         f'/zeroconf/info',
                         # "{"deviceid": "10016d3258", "data": {}}"
                         data= json.dumps({
-                            "deviceid": self.sonoff_link.device_id,
+                            "deviceid": self.link.device_id,
                             "data": {}
                             })
                         ) as resp:
@@ -63,31 +81,32 @@ class SonoffLight(OpusLight):
                 print(f"Error: {e}")
 
     def __str__(self):
-        return (f"Sonoff Light {self.sonoff_link.device_id}@"
-                f"{self.sonoff_link.ip_address}|{self.sonoff_link.bssid} ")
+        return (f"Sonoff Light {self.link.device_id}@"
+                f"{self.link.ip_address}|{self.link.bssid} ")
 
 async def create_sonoff_light(name: str, link: SonoffDevice) -> SonoffLight:
     """Create a new Sonoff Light"""
     print(f"Registering new Sonoff Light: {name}")
     new_light = SonoffLight(name)
-    new_light.sonoff_link = link
+    new_light.link = link
     device_payload: json = {}
+    # Get the "device_id" which was not possible before
     async with aiohttp.ClientSession() as session:
         try:
             async with session.post(
-                    f'http://{new_light.sonoff_link.ip_address}:{new_light.sonoff_link.port}'
+                    f'http://{new_light.link.ip_address}:{new_light.link.port}'
                     f'/zeroconf/info',
                     data= json.dumps({
-                        "deviceid": new_light.sonoff_link.device_id,
+                        "deviceid": new_light.link.device_id,
                         "data": {}
                         })
                     ) as resp:
                 device_payload = await resp.json()
-        except Exception as e:
+        except Exception as e: #TODO: Change to a more specific exception
             print(f"Error: {e}")
 
     new_light.power_state = device_payload['data']['switch']
-    new_light.sonoff_link.device_id = device_payload['data']['deviceid']
-    new_light.sonoff_link.bssid = device_payload['data']['bssid']
+    new_light.link.device_id = device_payload['data']['deviceid']
+    new_light.link.bssid = device_payload['data']['bssid']
 
     return new_light

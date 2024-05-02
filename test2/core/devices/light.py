@@ -10,6 +10,7 @@ class OpusLight():
         self.room_id: UUID | None
         self.space_id: UUID | None
         self.building: UUID | None
+        self.driver: any
 
         self.power_state: bool  # Is the HVAC On or Off
 

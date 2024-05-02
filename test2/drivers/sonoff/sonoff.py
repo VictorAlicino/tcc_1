@@ -3,6 +3,7 @@
 import asyncio
 from ipaddress import ip_address
 # Non-Standard Libraries
+import json
 from zeroconf import ServiceBrowser, Zeroconf
 from .sonoff_device import SonoffDevice
 from .sonoff_light import create_sonoff_light, SonoffLight
@@ -54,7 +55,8 @@ class MDNSListener:
         if info:
             if (info.properties.get(b'id').decode() in
             [device.device_id for device in known_devices]):
-                print(f"Device {info.properties.get(b'id').decode()} state changed")
+                print(f"Device {info.properties.get(b'id').decode()} "
+                      f"state changed -> {json.loads(info.properties.get(b'data1'))['switch']}")
 
     def add_service(self, zeroconf, type, name): # pylint: disable=redefined-builtin
         """Add a Device to the known devices list"""
@@ -78,9 +80,9 @@ async def start() -> None:
 async def main_debug() -> None:
     """Main for Debug porpuses"""
     luz1 = SonoffLight("ablublé")
-    luz1.sonoff_link = SonoffDevice(ip_address("192.168.15.2"))
-    luz1.sonoff_link.device_id = "10016d3258"
-    luz1.sonoff_link.hostname = "eWeLink_10016d3258._ewelink._tcp.local."
+    luz1.link = SonoffDevice(ip_address("192.168.15.2"))
+    luz1.link.device_id = "10016d3258"
+    luz1.link.hostname = "eWeLink_10016d3258._ewelink._tcp.local."
 
     await start_sonoff_finder()
     await asyncio.sleep(1)
