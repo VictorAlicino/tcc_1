@@ -17,6 +17,7 @@ SUPPORTED_OS: Final = ["linux", "darwin", "win32"]
 # Directories Path
 DIRS: dict = {
     "CORE": "core",
+    "INTERFACES": "interfaces",
     "CONFIG": "config",
     "DRIVERS": "drivers",
     "DATABASES": "db",
@@ -28,6 +29,9 @@ CONFIG: dict = {}
 
 # Drivers objects
 DRIVERS: dict[ModuleType] = {}
+
+# Interfaces objects
+INTERFACES: dict[ModuleType] = {}
 
 
 def check_configurations() -> None:
@@ -85,6 +89,22 @@ def load_configurations() -> None:
         CONFIG = yaml.load(file, Loader=yaml.FullLoader)
     print("Configurations loaded.")
 
+def load_interfaces() -> None:
+    """This function uses the importlib module to load the interfaces."""
+    print("Loading interfaces...")
+    interfaces_list: list = CONFIG["interfaces"]
+
+    for interface_name in interfaces_list:
+        print(f"Looking for {interface_name} interface...")
+        #for file in os.listdir(f'./{DIRS["INTERFACES"]}/{interface_name}'):
+        #    if file == "__init__.py":
+        #        # Importing Interface (a.k.a Python Module)
+        #        global INTERFACES # pylint: disable=global-variable-not-assigned
+        #        print('Found')
+        #        INTERFACES[interface_name] = importlib.import_module(
+        #            f"{DIRS["INTERFACES"]}.{interface_name}.{interface_name}"
+        #            )
+        #        print(f"Imported <<{interface_name}>> interface")
 
 def load_drivers() -> None:
     """This function uses the importlib module to load the drivers."""
@@ -132,6 +152,7 @@ if __name__ == "__main__":
     check_os()
     check_directories()
     load_configurations()
+    load_interfaces()
     load_drivers()
     # TODO: Start devices manager
 
