@@ -18,17 +18,33 @@ class MQTTClient(metaclass=SingletonMeta):
     """Singleton MQTT Client"""
 
     def __init__(self):
-        self.client = mqtt.Client()
+        self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+        self.thread: Thread
+
+    def begin(self, config: dict):
+        """Begin the MQTT Client"""
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
 
-    def on_connect(self, client, userdata, flags, rc):
-        """On Connect Callback"""
-        print(f"Connected with result code {rc}")
+        print(f"Connecting to {config['host']}:{config['port']}")
+        self.client.connect(config['host'], config['port'])
 
-    def on_message(self, client, userdata, msg):
+    def start_thread(self):
+        """Start the MQTT Client Thread"""
+        self.thread = Thread(target=self.client.loop_forever)
+        self.thread.start()
+
+    def stop_thread(self):
+        """Stop the MQTT Client Thread"""
+        self.client.loop_stop()
+
+    def on_connect(self, client, userdata, flags, reason_code, properties): # pylint: disable=unused-argument
+        """On Connect Callback"""
+        print(f"Connected with result code {reason_code}")
+
+    def on_message(self, client, userdata, msg): # pylint: disable=unused-argument
         """On Message Callback"""
-        print(f"{msg.topic} {str(msg.payload)}")
+        print(msg.topic+" "+str(msg.payload))
 
     def connect(self, host: str, port: int = 1883):
         """Connect to MQTT Broker"""
@@ -41,3 +57,13 @@ class MQTTClient(metaclass=SingletonMeta):
     def subscribe(self, topic: str):
         """Subscribe to a topic"""
         self.client.subscribe(topic)
+
+def initialize() -> MQTTClient:
+    """Initialize the MQTT Interface"""
+    return MQTTClient()
+
+if __name__ == "__main__":
+    # DEBUG PURPOSES ONLY
+    client = initialize()
+    client.begin({"host": "192.168.15.120", "port": 1883})
+    client.start_thread()

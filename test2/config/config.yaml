@@ -1,10 +1,10 @@
 # Interfaces
-interfaces:
+interfaces: # Interfaces are expected to be configurable, so don't forget the colon at the end of the line
   - mqtt: 
-      host: "127.0.0.1"
+      host: "192.168.15.120"
       port: 1883
-      username: "mqtt"
-      password: "mqtt"
+      username: ""
+      password: ""
       client_id: "opus-server"
   
 # Drivers

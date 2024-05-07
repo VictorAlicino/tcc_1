@@ -1,5 +1,5 @@
+"""Tasmota Driver Main"""
 import asyncio
-import paho.mqtt.client as pubsubclient
 from .tasmota_device import TasmotaDevice
 from .tasmota_hvac import create_tasmota_hvac
 
@@ -20,7 +20,7 @@ async def register_device(device: TasmotaDevice) -> None:
 
 async def debug_main() -> None:
     """USE FOR DEBUG PURPOSES ONLY"""
-    ...
+
 
 if __name__ == "__main__":
     asyncio.run(debug_main())

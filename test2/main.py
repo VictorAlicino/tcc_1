@@ -43,6 +43,7 @@ def check_configurations() -> None:
     for file in os.listdir(DIRS["CONFIG"]):
         if file.endswith(".yaml"):
             print(f"Found: {file}")
+    print()
 
 
 def check_os() -> None:
@@ -58,6 +59,7 @@ def check_os() -> None:
     if is_supported is False:
         print(f"{sys.platform} is currentely not supported.")
         sys.exit(1)
+    print()
 
 
 def check_python() -> None:
@@ -70,6 +72,7 @@ def check_python() -> None:
               f"{REQUIRED_PYTHON_VER[2]} "
               f"or higher is required.")
         sys.exit(1)
+    print()
 
 def check_directories() -> None:
     """Check if all the required directories exist."""
@@ -80,6 +83,7 @@ def check_directories() -> None:
             print(f"ERROR: {directory[1]} directory does not exist.")
             sys.exit(1)
         print(f"Found at ./{directory[1]}")
+    print()
 
 def load_configurations() -> None:
     """Load the config file into the CONFIG global variable."""
@@ -88,23 +92,36 @@ def load_configurations() -> None:
     with open("./config/config.yaml", "r", encoding='utf-8') as file:
         CONFIG = yaml.load(file, Loader=yaml.FullLoader)
     print("Configurations loaded.")
+    print()
 
 def load_interfaces() -> None:
     """This function uses the importlib module to load the interfaces."""
     print("Loading interfaces...")
-    interfaces_list: list = CONFIG["interfaces"]
 
-    for interface_name in interfaces_list:
-        print(f"Looking for {interface_name} interface...")
-        #for file in os.listdir(f'./{DIRS["INTERFACES"]}/{interface_name}'):
-        #    if file == "__init__.py":
-        #        # Importing Interface (a.k.a Python Module)
-        #        global INTERFACES # pylint: disable=global-variable-not-assigned
-        #        print('Found')
-        #        INTERFACES[interface_name] = importlib.import_module(
-        #            f"{DIRS["INTERFACES"]}.{interface_name}.{interface_name}"
-        #            )
-        #        print(f"Imported <<{interface_name}>> interface")
+    # To each interface found in the interfaces directory
+    for file in os.listdir(f'./{DIRS["INTERFACES"]}'):
+        if file == "__init__.py":
+            continue
+        # Compare against the expected interfaces in the config file
+        for interface in CONFIG["interfaces"]:
+            try:
+                # For each interface NAME in the config file
+                for interface_name in interface.keys():
+                    # If the interface file is found
+                    if file == f"{interface_name}.py":
+                        # Import the interface module
+                        interface_module = importlib.import_module(
+                            f"{DIRS['INTERFACES']}.{interface_name}"
+                            )
+                        # and load the interface class
+                        INTERFACES[interface_name] = interface_module.initialize()
+                        # Initialize the interface with the config
+                        INTERFACES[interface_name].begin(interface[interface_name])
+                        print(f"Added {interface_name.upper()} interface")
+            except AttributeError:
+                print("ERROR -> YAML file is not properly formatted")
+                sys.exit(1)
+    print()
 
 def load_drivers() -> None:
     """This function uses the importlib module to load the drivers."""
@@ -122,6 +139,7 @@ def load_drivers() -> None:
                     f"{DIRS["DRIVERS"]}.{driver_name}.{driver_name}"
                     )
                 print(f"Imported <<{driver_name}>> driver")
+    print()
 
 
 async def main() -> None:
@@ -133,6 +151,7 @@ async def main() -> None:
         "Luz1",
         DRIVERS['sonoff'].get_known_devices()[0]
         )
+    INTERFACES['mqtt'].start_thread()
     while True:
     #    try:
     #        await luz1.on()
@@ -161,8 +180,8 @@ if __name__ == "__main__":
     # TODO: Start task manager
 
 
-    #try:
-    #    asyncio.run(main())
-    #except KeyboardInterrupt as e:
-    #    print(e)
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt as e:
+        print(e)
     sys.exit(exit_code)
