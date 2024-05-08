@@ -1,11 +1,14 @@
 """Sonoff API Light Implementation"""
 
-import sys
 import json
+import logging
 # Non-Standard Libraries
 import aiohttp
 from core.devices.light import OpusLight
 from .sonoff_device import SonoffDevice # pylint: disable=import-error
+
+log = logging.getLogger(__name__)
+
 
 class SonoffLight(OpusLight):
     """Sonoff API Light Implementation"""
@@ -43,7 +46,7 @@ class SonoffLight(OpusLight):
                     #print(await resp.text())
                     ...
             except ConnectionError as e:
-                print(f"Error: {e}")
+                log.error("Error: %s", e)
 
     async def toggle(self) -> None:
         """Toggle the Light On/Off"""
@@ -76,7 +79,7 @@ class SonoffLight(OpusLight):
                             "data": {}
                             })
                         ) as resp:
-                    print(await resp.text())
+                    log.debug(await resp.text())
             except ConnectionError as e:
                 print(f"Error: {e}")
 
@@ -86,7 +89,7 @@ class SonoffLight(OpusLight):
 
 async def create_sonoff_light(name: str, link: SonoffDevice) -> SonoffLight:
     """Create a new Sonoff Light"""
-    print(f"Registering new Sonoff Light: {name}")
+    log.debug("Registering new Sonoff Light: %s", name)
     new_light = SonoffLight(name)
     new_light.link = link
     device_payload: json = {}
@@ -103,7 +106,7 @@ async def create_sonoff_light(name: str, link: SonoffDevice) -> SonoffLight:
                     ) as resp:
                 device_payload = await resp.json()
         except Exception as e: #TODO: Change to a more specific exception
-            print(f"Error: {e}")
+                log.error("Error: %s", e)           
 
     new_light.power_state = device_payload['data']['switch']
     new_light.link.device_id = device_payload['data']['deviceid']

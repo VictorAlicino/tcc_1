@@ -9,6 +9,7 @@ from types import ModuleType
 from typing import Final
 import yaml
 
+
 # Python Version
 REQUIRED_PYTHON_VER: Final = (3, 12, 0)
 
@@ -37,7 +38,7 @@ INTERFACES: dict[ModuleType] = {}
 def define_log() -> None:
     """Logging System"""
     logging.basicConfig(encoding='utf-8', level=logging.DEBUG,
-                            format='[%(name)s]-[%(asctime)s]: %(message)s',
+                            format='[%(asctime)s|%(name)s]: %(message)s',
                             handlers=[
                                 #logging.FileHandler("debug.log"),
                                 logging.StreamHandler()
@@ -152,25 +153,28 @@ def load_drivers() -> None:
 
 
 async def main() -> None:
-    """The main function."""
+    """The main function."""    
     await DRIVERS['sonoff'].start()
     await asyncio.sleep(2)
-    print(DRIVERS['sonoff'].get_registered_devices())
+    print(DRIVERS['sonoff'].get_known_devices())
     luz1 = await DRIVERS['sonoff'].create_sonoff_light(
         "Luz1",
         DRIVERS['sonoff'].get_known_devices()[0]
         )
-    INTERFACES['mqtt'].start_thread()
-    while True:
+    #INTERFACES['mqtt'].start_thread()
+    a = 0
+    while a < 2:
         await asyncio.sleep(0.001)
-    #    #try:
-    #    #    await luz1.on()
-    #    #    await asyncio.sleep(1)
-    #    #    await luz1.off()
-    #    #    await asyncio.sleep(1)
-    #    #except KeyboardInterrupt as exp1:
-    #    #    print(f"{exp1} Interrupted by user")
-    #    #    break
+        try:
+            await luz1.on()
+            await asyncio.sleep(1)
+            await luz1.off()
+            await asyncio.sleep(1)
+            a = a+ 1
+        except KeyboardInterrupt as exp1:
+            print(f"{exp1} Interrupted by user")
+            break
+
 
 
 if __name__ == "__main__":
@@ -190,8 +194,17 @@ if __name__ == "__main__":
     # TODO: Start task manager
 
 
+
+    from guppy import hpy
+    from pympler import summary, muppy
+    h=hpy()
     try:
         asyncio.run(main())
     except KeyboardInterrupt as e:
         print(e)
+    all_objects = muppy.get_objects(remove_dups=True, include_frames=True)
+    len(all_objects)
+    all = summary.summarize(all_objects)
+    summary.print_(all)
+    print(h.heap())
     sys.exit(exit_code)

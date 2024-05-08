@@ -1,12 +1,15 @@
 """SONOFF Connection Driver"""
 
 import asyncio
+import logging
 from ipaddress import ip_address
 # Non-Standard Libraries
 import json
 from zeroconf import ServiceBrowser, Zeroconf
 from .sonoff_device import SonoffDevice
 from .sonoff_light import create_sonoff_light, SonoffLight
+
+log = logging.getLogger(__name__)
 
 known_devices: list[SonoffDevice] = []
 registered_devices: list[any] = []
@@ -36,7 +39,7 @@ async def register_device(device: SonoffDevice) -> None:
     """Register a new Device"""
     match device.device_type:
         case "diy_plug":
-            print("Found a DIY Plug")
+            log.debug("Registering a new DIY Plug")
             registered_devices.append(await create_sonoff_light("ablublé", device))
 
 sonoff_discovered_devices: list = []
@@ -55,8 +58,9 @@ class MDNSListener:
         if info:
             if (info.properties.get(b'id').decode() in
             [device.device_id for device in known_devices]):
-                print(f"Device {info.properties.get(b'id').decode()} "
-                      f"state changed -> {json.loads(info.properties.get(b'data1'))['switch']}")
+                log.debug("Device %s state changed -> %s", 
+                          info.properties.get(b'id').decode(),
+                          json.loads(info.properties.get(b'data1'))['switch'])
 
     def add_service(self, zeroconf, type, name): # pylint: disable=redefined-builtin
         """Add a Device to the known devices list"""

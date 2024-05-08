@@ -44,11 +44,11 @@ class MQTTClient(metaclass=SingletonMeta):
 
     def on_connect(self, client, userdata, flags, reason_code, properties): # pylint: disable=unused-argument
         """On Connect Callback"""
-        print(f"Connected with result code {reason_code}")
+        log.debug("Connected with result code %s", reason_code)
 
     def on_message(self, client, userdata, msg): # pylint: disable=unused-argument
         """On Message Callback"""
-        print(msg.topic+" "+str(msg.payload))
+        log.debug("Message Received: %s %s", msg.topic, msg.payload)
 
     def connect(self, host: str, port: int = 1883):
         """Connect to MQTT Broker"""
