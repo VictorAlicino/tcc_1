@@ -1,6 +1,9 @@
 """MQTT Interface"""
 from threading import Lock, Thread
+import logging
 import paho.mqtt.client as mqtt
+
+log = logging.getLogger(__name__)
 
 class SingletonMeta(type):
     """Singleton Metaclass"""
@@ -20,13 +23,14 @@ class MQTTClient(metaclass=SingletonMeta):
     def __init__(self):
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         self.thread: Thread
+        log.debug("MQTT Initialized")
 
     def begin(self, config: dict):
         """Begin the MQTT Client"""
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
 
-        print(f"Connecting to {config['host']}:{config['port']}")
+        log.debug("Connecting to %s:%s", config['host'], config['port'])
         self.client.connect(config['host'], config['port'])
 
     def start_thread(self):

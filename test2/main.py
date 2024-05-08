@@ -4,6 +4,7 @@ import sys
 import os
 import asyncio
 import importlib
+import logging
 from types import ModuleType
 from typing import Final
 import yaml
@@ -33,23 +34,32 @@ DRIVERS: dict[ModuleType] = {}
 # Interfaces objects
 INTERFACES: dict[ModuleType] = {}
 
+def define_log() -> None:
+    """Logging System"""
+    logging.basicConfig(encoding='utf-8', level=logging.DEBUG,
+                            format='[%(name)s]-[%(asctime)s]: %(message)s',
+                            handlers=[
+                                #logging.FileHandler("debug.log"),
+                                logging.StreamHandler()
+                            ]
+                            )
 
 def check_configurations() -> None:
     """Check if the configurations are valid."""
-    print("Checking configurations...")
+    logging.debug("Checking configurations...")
 
     # Check the YAML files
-    print("Checking YAML files...")
+    logging.debug("Checking YAML files...")
     for file in os.listdir(DIRS["CONFIG"]):
         if file.endswith(".yaml"):
-            print(f"Found: {file}")
-    print()
+            logging.debug("Found: %(file)s")
+    
 
 
 def check_os() -> None:
     """Check if the right OS is running."""
-    print("Checking OS...")
-    print(f"OS: {sys.platform}")
+    logging.debug("Checking OS...")
+    logging.debug("OS: %s", sys.platform)
 
     is_supported: bool = False
     for os_name in SUPPORTED_OS:
@@ -57,46 +67,45 @@ def check_os() -> None:
             is_supported = True
             break
     if is_supported is False:
-        print(f"{sys.platform} is currentely not supported.")
+        logging.error("%s is currentely not supported.", sys.platform)
         sys.exit(1)
-    print()
+    
 
 
 def check_python() -> None:
     """Check if the right Python version is running."""
-    print("Checking Python version...")
-    print(f"Python version: {sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}")
+    logging.debug("Checking Python version...")
+    logging.debug("Python version: %d.%d.%d",
+                  sys.version_info[0],sys.version_info[1],sys.version_info[2])
     if sys.version_info < REQUIRED_PYTHON_VER:
-        print(f"ERROR: Python {REQUIRED_PYTHON_VER[0]}."
-              f"{REQUIRED_PYTHON_VER[1]}."
-              f"{REQUIRED_PYTHON_VER[2]} "
-              f"or higher is required.")
+        logging.error("Python %d.%d.%d or higher is required.", REQUIRED_PYTHON_VER[0],
+                      REQUIRED_PYTHON_VER[1], REQUIRED_PYTHON_VER[2])
         sys.exit(1)
-    print()
+    
 
 def check_directories() -> None:
     """Check if all the required directories exist."""
-    print("Checking directories...")
+    logging.debug("Checking directories...")
     for directory in DIRS.items():
-        print(f"Checking for {directory[0]}...", end=" ")
+        logging.debug("Checking for %s...", directory[0])
         if not os.path.exists(f"./{directory[1]}") and not os.path.isdir(f"./{directory[1]}"):
-            print(f"ERROR: {directory[1]} directory does not exist.")
+            logging.error("%s directory does not exist.", directory[1])
             sys.exit(1)
-        print(f"Found at ./{directory[1]}")
-    print()
+        logging.debug("Found at ./%s", directory[1])
+    
 
 def load_configurations() -> None:
     """Load the config file into the CONFIG global variable."""
-    print("Loading configurations...")
+    logging.debug("Loading configurations...")
     global CONFIG # pylint: disable=global-statement
     with open("./config/config.yaml", "r", encoding='utf-8') as file:
         CONFIG = yaml.load(file, Loader=yaml.FullLoader)
-    print("Configurations loaded.")
-    print()
+    logging.debug("Configurations loaded.")
+    
 
 def load_interfaces() -> None:
     """This function uses the importlib module to load the interfaces."""
-    print("Loading interfaces...")
+    logging.debug("Loading interfaces...")
 
     # To each interface found in the interfaces directory
     for file in os.listdir(f'./{DIRS["INTERFACES"]}'):
@@ -117,29 +126,29 @@ def load_interfaces() -> None:
                         INTERFACES[interface_name] = interface_module.initialize()
                         # Initialize the interface with the config
                         INTERFACES[interface_name].begin(interface[interface_name])
-                        print(f"Added {interface_name.upper()} interface")
+                        logging.debug("Added %s interface", interface_name.upper())
             except AttributeError:
-                print("ERROR -> YAML file is not properly formatted")
+                logging.error("YAML file is not properly formatted")
                 sys.exit(1)
-    print()
+    
 
 def load_drivers() -> None:
     """This function uses the importlib module to load the drivers."""
-    print("Loading drivers...")
+    logging.debug("Loading drivers...")
     drivers_list: list = CONFIG["drivers"]
 
     for driver_name in drivers_list:
-        print(f"Looking for {driver_name} driver...", end=" ")
+        logging.debug("Looking for %s driver...", driver_name)
         for file in os.listdir(f'./{DIRS["DRIVERS"]}/{driver_name}'):
             if file == "__init__.py":
                 # Importing Driver (a.k.a Python Module)
                 global DRIVERS # pylint: disable=global-variable-not-assigned
-                print('Found')
+                logging.debug("Importing %s driver...", driver_name)
                 DRIVERS[driver_name] = importlib.import_module(
                     f"{DIRS["DRIVERS"]}.{driver_name}.{driver_name}"
                     )
-                print(f"Imported <<{driver_name}>> driver")
-    print()
+                logging.info("Imported %s driver", driver_name)
+    
 
 
 async def main() -> None:
@@ -153,20 +162,21 @@ async def main() -> None:
         )
     INTERFACES['mqtt'].start_thread()
     while True:
-    #    try:
-    #        await luz1.on()
-    #        await asyncio.sleep(1)
-    #        await luz1.off()
-    #        await asyncio.sleep(1)
-    #    except KeyboardInterrupt as exp1:
-    #        print(f"{exp1} Interrupted by user")
-    #        break
-        ...
+        await asyncio.sleep(0.001)
+    #    #try:
+    #    #    await luz1.on()
+    #    #    await asyncio.sleep(1)
+    #    #    await luz1.off()
+    #    #    await asyncio.sleep(1)
+    #    #except KeyboardInterrupt as exp1:
+    #    #    print(f"{exp1} Interrupted by user")
+    #    #    break
 
 
 if __name__ == "__main__":
     exit_code: int = 0
 
+    define_log()
     check_python()
     check_os()
     check_directories()
