@@ -142,7 +142,7 @@ def load_drivers() -> None:
                 global DRIVERS # pylint: disable=global-variable-not-assigned
                 logging.debug("Importing %s driver...", driver_name)
                 DRIVERS[driver_name] = importlib.import_module(
-                    f"{DIRS["DRIVERS"]}.{driver_name}.{driver_name}"
+                    f"{DIRS['DRIVERS']}.{driver_name}.{driver_name}"
                     )
                 logging.info("Imported %s driver", driver_name)
 
