@@ -54,8 +54,6 @@ def check_configurations() -> None:
     for file in os.listdir(DIRS["CONFIG"]):
         if file.endswith(".yaml"):
             logging.debug("Found: %(file)s")
-    
-
 
 def check_os() -> None:
     """Check if the right OS is running."""
@@ -70,8 +68,6 @@ def check_os() -> None:
     if is_supported is False:
         logging.error("%s is currentely not supported.", sys.platform)
         sys.exit(1)
-    
-
 
 def check_python() -> None:
     """Check if the right Python version is running."""
@@ -82,7 +78,6 @@ def check_python() -> None:
         logging.error("Python %d.%d.%d or higher is required.", REQUIRED_PYTHON_VER[0],
                       REQUIRED_PYTHON_VER[1], REQUIRED_PYTHON_VER[2])
         sys.exit(1)
-    
 
 def check_directories() -> None:
     """Check if all the required directories exist."""
@@ -93,7 +88,6 @@ def check_directories() -> None:
             logging.error("%s directory does not exist.", directory[1])
             sys.exit(1)
         logging.debug("Found at ./%s", directory[1])
-    
 
 def load_configurations() -> None:
     """Load the config file into the CONFIG global variable."""
@@ -102,7 +96,6 @@ def load_configurations() -> None:
     with open("./config/config.yaml", "r", encoding='utf-8') as file:
         CONFIG = yaml.load(file, Loader=yaml.FullLoader)
     logging.debug("Configurations loaded.")
-    
 
 def load_interfaces() -> None:
     """This function uses the importlib module to load the interfaces."""
@@ -126,12 +119,15 @@ def load_interfaces() -> None:
                         # and load the interface class
                         INTERFACES[interface_name] = interface_module.initialize()
                         # Initialize the interface with the config
-                        INTERFACES[interface_name].begin(interface[interface_name])
+                        rs = INTERFACES[interface_name].begin(interface[interface_name])
+                        if rs is False:
+                            logging.error("Could not initialize %s interface", 
+                                          interface_name.upper())
+                            sys.exit(1)
                         logging.debug("Added %s interface", interface_name.upper())
             except AttributeError:
                 logging.error("YAML file is not properly formatted")
                 sys.exit(1)
-    
 
 def load_drivers() -> None:
     """This function uses the importlib module to load the drivers."""
@@ -149,8 +145,6 @@ def load_drivers() -> None:
                     f"{DIRS["DRIVERS"]}.{driver_name}.{driver_name}"
                     )
                 logging.info("Imported %s driver", driver_name)
-    
-
 
 async def main() -> None:
     """The main function."""    
@@ -175,8 +169,6 @@ async def main() -> None:
             print(f"{exp1} Interrupted by user")
             break
 
-
-
 if __name__ == "__main__":
     exit_code: int = 0
 
@@ -192,19 +184,8 @@ if __name__ == "__main__":
     # TODO: Connect to database
     # TODO: Start event manager
     # TODO: Start task manager
-
-
-
-    from guppy import hpy
-    from pympler import summary, muppy
-    h=hpy()
     try:
         asyncio.run(main())
     except KeyboardInterrupt as e:
         print(e)
-    all_objects = muppy.get_objects(remove_dups=True, include_frames=True)
-    len(all_objects)
-    all = summary.summarize(all_objects)
-    summary.print_(all)
-    print(h.heap())
     sys.exit(exit_code)

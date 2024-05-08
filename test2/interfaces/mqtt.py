@@ -25,13 +25,23 @@ class MQTTClient(metaclass=SingletonMeta):
         self.thread: Thread
         log.debug("MQTT Initialized")
 
-    def begin(self, config: dict):
+    def begin(self, config: dict) -> bool:
         """Begin the MQTT Client"""
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
 
         log.debug("Connecting to %s:%s", config['host'], config['port'])
-        self.client.connect(config['host'], config['port'])
+        try:
+            self.client.connect(config['host'], config['port'])
+            return True
+        except TimeoutError as exp:
+            log.error("Could not connect to %s:%s", config['host'], config['port'])
+            log.error(exp)
+            return False
+        except ConnectionRefusedError as exp:
+            log.error("Connection Refused to %s:%s", config['host'], config['port'])
+            log.error(exp)
+            return False
 
     def start_thread(self):
         """Start the MQTT Client Thread"""
