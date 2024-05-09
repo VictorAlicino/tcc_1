@@ -38,7 +38,7 @@ INTERFACES: dict[ModuleType] = {}
 def define_log() -> None:
     """Logging System"""
     logging.basicConfig(encoding='utf-8', level=logging.DEBUG,
-                            format='[%(asctime)s|%(name)s]: %(message)s',
+                            format='[%(levelname)s][%(filename)s:%(lineno)d][%(asctime)s|%(name)s] %(message)s', # pylint: disable=line-too-long
                             handlers=[
                                 #logging.FileHandler("debug.log"),
                                 logging.StreamHandler()
@@ -121,10 +121,10 @@ def load_interfaces() -> None:
                         # Initialize the interface with the config
                         rs = INTERFACES[interface_name].begin(interface[interface_name])
                         if rs is False:
-                            logging.error("Could not initialize %s interface", 
-                                          interface_name.upper())
+                            logging.error("Could not initialize %s interface",
+                                          interface_name)
                             sys.exit(1)
-                        logging.debug("Added %s interface", interface_name.upper())
+                        logging.debug("Added [%s] interface", interface_name)
             except AttributeError:
                 logging.error("YAML file is not properly formatted")
                 sys.exit(1)
@@ -135,22 +135,25 @@ def load_drivers() -> None:
     drivers_list: list = CONFIG["drivers"]
 
     for driver_name in drivers_list:
-        logging.debug("Looking for %s driver...", driver_name)
+        logging.debug("Looking for <<%s>> driver...", driver_name)
         for file in os.listdir(f'./{DIRS["DRIVERS"]}/{driver_name}'):
             if file == "__init__.py":
                 # Importing Driver (a.k.a Python Module)
                 global DRIVERS # pylint: disable=global-variable-not-assigned
-                logging.debug("Importing %s driver...", driver_name)
+                logging.debug("Importing <<%s>> driver...", driver_name)
                 DRIVERS[driver_name] = importlib.import_module(
                     f"{DIRS['DRIVERS']}.{driver_name}.{driver_name}"
                     )
                 for interface in DRIVERS[driver_name].interfaces:
                     if interface not in INTERFACES:
-                        logging.error("Interface %s is required for %s driver",
+                        logging.error("Interface [%s] is required for <<%s>> driver",
                                       interface, driver_name)
                         sys.exit(1)
-                    
-                logging.info("Imported %s driver", driver_name)
+                    else:
+                        DRIVERS[driver_name].interfaces[interface] = INTERFACES[interface]
+                        logging.info("Interface [%s] synced with <<%s>> driver", 
+                                     interface, driver_name)
+                logging.info("Imported <<%s>> driver", driver_name)
 
 async def main() -> None:
     """The main function."""    
@@ -178,7 +181,7 @@ if __name__ == "__main__":
     check_directories()
     load_configurations()
     load_interfaces()
-    print(INTERFACES)
+    #print(INTERFACES)
     load_drivers()
     # TODO: Start devices manager
 
