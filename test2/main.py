@@ -144,6 +144,12 @@ def load_drivers() -> None:
                 DRIVERS[driver_name] = importlib.import_module(
                     f"{DIRS['DRIVERS']}.{driver_name}.{driver_name}"
                     )
+                for interface in DRIVERS[driver_name].interfaces:
+                    if interface not in INTERFACES:
+                        logging.error("Interface %s is required for %s driver",
+                                      interface, driver_name)
+                        sys.exit(1)
+                    
                 logging.info("Imported %s driver", driver_name)
 
 async def main() -> None:
@@ -158,14 +164,10 @@ async def main() -> None:
     INTERFACES['mqtt'].start_thread()
     while True:
         await asyncio.sleep(0.001)
-        try:
-            await luz1.on()
-            await asyncio.sleep(1)
-            await luz1.off()
-            await asyncio.sleep(1)
-        except KeyboardInterrupt as exp1:
-            print(f"{exp1} Interrupted by user")
-            break
+        await luz1.on()
+        await asyncio.sleep(1)
+        await luz1.off()
+        await asyncio.sleep(1)
 
 if __name__ == "__main__":
     exit_code: int = 0
@@ -176,6 +178,7 @@ if __name__ == "__main__":
     check_directories()
     load_configurations()
     load_interfaces()
+    print(INTERFACES)
     load_drivers()
     # TODO: Start devices manager
 
@@ -185,5 +188,6 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt as e:
+        INTERFACES['mqtt'].stop_thread()
         print(e)
     sys.exit(exit_code)

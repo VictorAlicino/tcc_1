@@ -11,6 +11,7 @@ from .sonoff_light import create_sonoff_light, SonoffLight
 
 log = logging.getLogger(__name__)
 
+interfaces: dict[any, str] = {}
 known_devices: list[SonoffDevice] = []
 registered_devices: list[any] = []
 

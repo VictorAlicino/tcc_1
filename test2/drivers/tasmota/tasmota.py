@@ -3,7 +3,7 @@ import asyncio
 from .tasmota_device import TasmotaDevice
 from .tasmota_hvac import create_tasmota_hvac
 
-
+interfaces: dict[str, any] = {'mqtt': None}
 known_devices: list[TasmotaDevice] = []
 registered_devices: list[any] = []
 
