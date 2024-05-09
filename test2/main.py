@@ -155,16 +155,14 @@ async def main() -> None:
         "Luz1",
         DRIVERS['sonoff'].get_known_devices()[0]
         )
-    #INTERFACES['mqtt'].start_thread()
-    a = 0
-    while a < 2:
+    INTERFACES['mqtt'].start_thread()
+    while True:
         await asyncio.sleep(0.001)
         try:
             await luz1.on()
             await asyncio.sleep(1)
             await luz1.off()
             await asyncio.sleep(1)
-            a = a+ 1
         except KeyboardInterrupt as exp1:
             print(f"{exp1} Interrupted by user")
             break
