@@ -1,7 +1,7 @@
 # Interfaces
 interfaces: # Interfaces are expected to be configurable, so don't forget the colon at the end of the line
   - mqtt: 
-      host: "192.168.15.120"
+      host: "192.168.0.2"
       port: 1883
       username: ""
       password: ""
