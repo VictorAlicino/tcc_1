@@ -55,6 +55,7 @@ def check_configurations() -> None:
         if file.endswith(".yaml"):
             logging.debug("Found: %(file)s")
 
+
 def check_os() -> None:
     """Check if the right OS is running."""
     logging.debug("Checking OS...")
@@ -69,6 +70,7 @@ def check_os() -> None:
         logging.error("%s is currentely not supported.", sys.platform)
         sys.exit(1)
 
+
 def check_python() -> None:
     """Check if the right Python version is running."""
     logging.debug("Checking Python version...")
@@ -79,15 +81,18 @@ def check_python() -> None:
                       REQUIRED_PYTHON_VER[1], REQUIRED_PYTHON_VER[2])
         sys.exit(1)
 
+
+
 def check_directories() -> None:
     """Check if all the required directories exist."""
     logging.debug("Checking directories...")
     for directory in DIRS.items():
-        logging.debug("Checking for %s...", directory[0])
         if not os.path.exists(f"./{directory[1]}") and not os.path.isdir(f"./{directory[1]}"):
             logging.error("%s directory does not exist.", directory[1])
             sys.exit(1)
-        logging.debug("Found at ./%s", directory[1])
+        logging.debug("%s found at ./%s", directory[0], directory[1])
+
+
 
 def load_configurations() -> None:
     """Load the config file into the CONFIG global variable."""
@@ -96,6 +101,8 @@ def load_configurations() -> None:
     with open("./config/config.yaml", "r", encoding='utf-8') as file:
         CONFIG = yaml.load(file, Loader=yaml.FullLoader)
     logging.debug("Configurations loaded.")
+
+
 
 def load_interfaces() -> None:
     """This function uses the importlib module to load the interfaces."""
@@ -124,10 +131,12 @@ def load_interfaces() -> None:
                             logging.error("Could not initialize %s interface",
                                           interface_name)
                             sys.exit(1)
-                        logging.debug("Added [%s] interface", interface_name)
+                        logging.info("Added [%s] interface", interface_name)
             except AttributeError:
                 logging.error("YAML file is not properly formatted")
                 sys.exit(1)
+
+
 
 def load_drivers() -> None:
     """This function uses the importlib module to load the drivers."""
@@ -151,9 +160,11 @@ def load_drivers() -> None:
                         sys.exit(1)
                     else:
                         DRIVERS[driver_name].interfaces[interface] = INTERFACES[interface]
-                        logging.info("Interface [%s] synced with <<%s>> driver", 
+                        logging.info("Interface [%s] synced with <<%s>> driver",
                                      interface, driver_name)
                 logging.info("Imported <<%s>> driver", driver_name)
+
+
 
 async def main() -> None:
     """The main function."""    
