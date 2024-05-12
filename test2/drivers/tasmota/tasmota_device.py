@@ -7,6 +7,8 @@ class TasmotaDevice:
         self.ip_address: ip_address = ip
         self.bssid: bytearray | None
         self.device_type: str
+        self.mqtt = None
+        self.mqtt_topic_prefix: str
 
     def __str__(self) -> str:
         return (f"Tasmota Device at {self.ip_address}\n"

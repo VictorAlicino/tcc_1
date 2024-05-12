@@ -15,6 +15,7 @@ async def register_device(device: TasmotaDevice) -> None:
     match device.device_type:
         case "hvac":
             print("Found a HVAC Device")
+            device.mqtt = interfaces['mqtt']
             registered_devices.append(await create_tasmota_hvac("ablublé2", device))
 
 
