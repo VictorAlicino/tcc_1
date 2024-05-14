@@ -13,8 +13,6 @@ log = logging.getLogger(__name__)
 class SonoffLight(OpusLight):
     """Sonoff API Light Implementation"""
     def __init__(self, device_name: str):
-        super().__init__()
-        self.name = device_name
         self.link: SonoffDevice
 
     async def on(self) -> None:
@@ -84,8 +82,16 @@ class SonoffLight(OpusLight):
                 print(f"Error: {e}")
 
     def __str__(self):
-        return (f"Sonoff Light {self.link.device_id}@"
-                f"{self.link.ip_address}|{self.link.bssid} ")
+        return (f"{self.name} -> Sonoff Light\n"
+                f"Core Data:\n"
+                f"\tName: {super.name}\n"
+                f"\tID: {super.id}\n"
+                f"\tRoom ID: {super.room_id}\n"
+                f"\tSpace ID: {super.space_id}\n"
+                f"\tBuilding: {super.building}\n"
+                f"\tDriver: {super.driver}\n"
+                f"Driver Data:\n"
+                f"{self.link}")
 
 async def create_sonoff_light(name: str, link: SonoffDevice) -> SonoffLight:
     """Create a new Sonoff Light"""

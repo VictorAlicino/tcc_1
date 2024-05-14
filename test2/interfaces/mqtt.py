@@ -2,6 +2,7 @@
 from threading import Lock, Thread
 import logging
 import paho.mqtt.client as mqtt
+from getmac import get_mac_address as gma
 
 log = logging.getLogger(__name__)
 
@@ -21,7 +22,16 @@ class MQTTClient(metaclass=SingletonMeta):
     """Singleton MQTT Client"""
 
     def __init__(self):
-        self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+        self.client_id = f'opus-server-{gma()[-5:].replace(":", "")}'
+        self.client = mqtt.Client(
+            callback_api_version= mqtt.CallbackAPIVersion.VERSION2,
+            client_id=self.client_id,
+            userdata=None,
+            protocol=mqtt.MQTTv5,
+            transport='tcp',
+            reconnect_on_failure=True,
+            manual_ack=False
+        )
         self.thread: Thread
         log.debug("MQTT Initialized")
 
@@ -30,7 +40,7 @@ class MQTTClient(metaclass=SingletonMeta):
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
 
-        log.debug("Connecting to %s:%s", config['host'], config['port'])
+        log.debug("Connecting to %s:%s as %s", config['host'], config['port'], self.client_id)
         try:
             self.client.connect(config['host'], config['port'])
             return True

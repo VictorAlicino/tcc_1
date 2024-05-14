@@ -19,3 +19,12 @@ class OpusLight():
 
     async def off(self) -> None:
         """Turn the light off"""
+    
+    def __str__(self) -> str:
+        return (f"name: {self.name}\n"
+            f"id: {self.id}\n"
+            f"room_id: {self.room_id}\n"
+            f"space_id: {self.space_id}\n"
+            f"building: {self.building}\n"
+            f"driver: {self.driver}\n"
+            f"power_state: {self.power_state}")

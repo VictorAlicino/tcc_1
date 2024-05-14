@@ -35,15 +35,19 @@ DRIVERS: dict[ModuleType] = {}
 # Interfaces objects
 INTERFACES: dict[ModuleType] = {}
 
+
 def define_log() -> None:
     """Logging System"""
     logging.basicConfig(encoding='utf-8', level=logging.DEBUG,
-                            format='[%(levelname)s][%(filename)s:%(lineno)d][%(asctime)s|%(name)s] %(message)s', # pylint: disable=line-too-long
+                            format=
+                            #'[%(levelname)s][%(filename)s:%(lineno)d][%(name)s] %(message)s', # pylint: disable=line-too-long
+                            '%(filename)s -> %(message)s',
                             handlers=[
                                 #logging.FileHandler("debug.log"),
                                 logging.StreamHandler()
                             ]
                             )
+
 
 def check_configurations() -> None:
     """Check if the configurations are valid."""
@@ -82,7 +86,6 @@ def check_python() -> None:
         sys.exit(1)
 
 
-
 def check_directories() -> None:
     """Check if all the required directories exist."""
     logging.debug("Checking directories...")
@@ -93,7 +96,6 @@ def check_directories() -> None:
         logging.debug("%s found at ./%s", directory[0], directory[1])
 
 
-
 def load_configurations() -> None:
     """Load the config file into the CONFIG global variable."""
     logging.debug("Loading configurations...")
@@ -101,7 +103,6 @@ def load_configurations() -> None:
     with open("./config/config.yaml", "r", encoding='utf-8') as file:
         CONFIG = yaml.load(file, Loader=yaml.FullLoader)
     logging.debug("Configurations loaded.")
-
 
 
 def load_interfaces() -> None:
@@ -137,7 +138,6 @@ def load_interfaces() -> None:
                 sys.exit(1)
 
 
-
 def load_drivers() -> None:
     """This function uses the importlib module to load the drivers."""
     logging.debug("Loading drivers...")
@@ -165,7 +165,6 @@ def load_drivers() -> None:
                 logging.info("Imported <<%s>> driver", driver_name)
 
 
-
 async def main() -> None:
     """The main function."""    
     await DRIVERS['sonoff'].start()
@@ -175,6 +174,7 @@ async def main() -> None:
         "Luz1",
         DRIVERS['sonoff'].get_known_devices()[0]
         )
+    print(luz1)
     INTERFACES['mqtt'].start_thread()
     while True:
         await asyncio.sleep(0.001)

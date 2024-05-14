@@ -29,9 +29,11 @@ class SonoffDevice:
 
     def __str__(self) -> str:
         return (f"Sonoff Device {self.hostname} at {self.ip_address}\n"
-                f" DeviceID              -> {self.device_id}\n"
-                f" Type                  -> {self.device_type}\n"
-                f" Port                  -> {self.port}\n"
-                f" BSSID                 -> {self.bssid}\n"
-                f" Service instance name -> {self.service_instace_name}\n"
-                f' Startup Info Dump     -> \n{self.startup_info_dump}\n')
+                f"\tIP Address: {self.ip_address}\n"
+                f"\tHostname: {self.hostname}\n"
+                f"\tPort: {self.port}\n"
+                f"\tBSSID: {self.bssid}\n"
+                f"\tDevice Type: {self.device_type}\n"
+                f"\tService Instance Name: {self.service_instace_name}\n"
+                f"\tDevice ID: {self.device_id}\n"
+                f"\tStartup Info Dump below:\n{self.startup_info_dump}")
