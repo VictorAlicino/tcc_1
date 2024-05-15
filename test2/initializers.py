@@ -1,0 +1,138 @@
+"""Initializers Module"""
+import sys
+import os
+import importlib
+import logging
+from types import ModuleType
+import yaml
+
+
+def define_log() -> None:
+    """Logging System"""
+    logging.basicConfig(encoding='utf-8', level=logging.DEBUG,
+                            format=
+                            #'[%(levelname)s][%(filename)s:%(lineno)d][%(name)s] %(message)s', # pylint: disable=line-too-long
+                            '%(filename)s -> %(message)s',
+                            handlers=[
+                                #logging.FileHandler("debug.log"),
+                                logging.StreamHandler()
+                            ]
+                            )
+
+
+def check_configurations(dirs: dict) -> None:
+    """Check if the configurations are valid."""
+    logging.debug("Checking configurations...")
+
+    # Check the YAML files
+    logging.debug("Checking YAML files...")
+    for file in os.listdir(dirs["CONFIG"]):
+        if file.endswith(".yaml"):
+            logging.debug("Found: %(file)s")
+
+
+def check_os(supported_os: list) -> None:
+    """Check if the right OS is running."""
+    logging.debug("Checking OS...")
+    logging.debug("OS: %s", sys.platform)
+
+    is_supported: bool = False
+    for os_name in supported_os:
+        if sys.platform == os_name:
+            is_supported = True
+            break
+    if is_supported is False:
+        logging.error("%s is currentely not supported.", sys.platform)
+        sys.exit(1)
+
+
+def check_python(required_python_ver: tuple) -> None:
+    """Check if the right Python version is running."""
+    logging.debug("Checking Python version...")
+    logging.debug("Python version: %d.%d.%d",
+                  sys.version_info[0],sys.version_info[1],sys.version_info[2])
+    if sys.version_info < required_python_ver:
+        logging.error("Python %d.%d.%d or higher is required.", required_python_ver[0],
+                      required_python_ver[1], required_python_ver[2])
+        sys.exit(1)
+
+
+def check_directories(dirs: dict) -> None:
+    """Check if all the required directories exist."""
+    logging.debug("Checking directories...")
+    for directory in dirs.items():
+        if not os.path.exists(f"./{directory[1]}") and not os.path.isdir(f"./{directory[1]}"):
+            logging.error("%s directory does not exist.", directory[1])
+            sys.exit(1)
+        logging.debug("%s found at ./%s", directory[0], directory[1])
+
+
+def load_configurations() -> dict[str]:
+    """Load the config file into and returns the reading."""
+    logging.debug("Loading configurations...")
+    with open("./config/config.yaml", "r", encoding='utf-8') as file:
+        temp = yaml.load(file, Loader=yaml.FullLoader)
+    logging.debug("Configurations loaded.")
+    return temp
+
+
+def load_interfaces(config: dict[str], dirs: dict[str], interfaces: dict[ModuleType]) -> None:
+    """This function uses the importlib module to load the interfaces."""
+    logging.debug("Loading interfaces...")
+
+    # To each interface found in the interfaces directory
+    for file in os.listdir(f'./{dirs["INTERFACES"]}'):
+        if file == "__init__.py":
+            continue
+        # Compare against the expected interfaces in the config file
+        for interface in config["interfaces"]:
+            try:
+                # For each interface NAME in the config file
+                for interface_name in interface.keys():
+                    # If the interface file is found
+                    if file == f"{interface_name}.py":
+                        # Import the interface module
+                        interface_module = importlib.import_module(
+                            f"{dirs['INTERFACES']}.{interface_name}"
+                            )
+                        # and load the interface class
+                        interfaces[interface_name] = interface_module.initialize()
+                        # Initialize the interface with the config
+                        rs = interfaces[interface_name].begin(interface[interface_name])
+                        if rs is False:
+                            logging.error("Could not initialize %s interface",
+                                          interface_name)
+                            sys.exit(1)
+                        logging.info("Added [%s] interface", interface_name)
+            except AttributeError:
+                logging.error("YAML file is not properly formatted")
+                sys.exit(1)
+
+
+def load_drivers(config: dict[str],
+                dirs: dict[str],
+                interfaces: dict[ModuleType],
+                drivers: dict[ModuleType]) -> None:
+    """This function uses the importlib module to load the drivers."""
+    logging.debug("Loading drivers...")
+    drivers_list: list = config["drivers"]
+
+    for driver_name in drivers_list:
+        logging.debug("Looking for <<%s>> driver...", driver_name)
+        for file in os.listdir(f'./{dirs["DRIVERS"]}/{driver_name}'):
+            if file == "__init__.py":
+                # Importing Driver (a.k.a Python Module)
+                logging.debug("Importing <<%s>> driver...", driver_name)
+                drivers[driver_name] = importlib.import_module(
+                    f"{dirs['DRIVERS']}.{driver_name}.{driver_name}"
+                    )
+                for interface in drivers[driver_name].interfaces:
+                    if interface not in interfaces:
+                        logging.error("Interface [%s] is required for <<%s>> driver",
+                                      interface, driver_name)
+                        sys.exit(1)
+                    else:
+                        drivers[driver_name].interfaces[interface] = interfaces[interface]
+                        logging.info("Interface [%s] synced with <<%s>> driver",
+                                     interface, driver_name)
+                logging.info("Imported <<%s>> driver", driver_name)

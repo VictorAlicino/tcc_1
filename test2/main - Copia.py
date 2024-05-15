@@ -4,9 +4,7 @@ import sys
 import asyncio
 from types import ModuleType
 from typing import Final
-from core.device_manager import DeviceManager
 import initializers
-import core
 
 
 # Python Version
@@ -35,9 +33,21 @@ DRIVERS: dict[ModuleType] = {}
 INTERFACES: dict[ModuleType] = {}
 
 async def main() -> None:
-    """The main function.""" 
-    print("Hello, World!")
+    """The main function."""    
+    await DRIVERS['sonoff'].start()
+    await asyncio.sleep(2)
+    print(DRIVERS['sonoff'].get_known_devices())
+    luz1 = await DRIVERS['sonoff'].create_sonoff_light(
+        "Luz1",
+        DRIVERS['sonoff'].get_known_devices()[0]
+        )
+    print(luz1)
+    INTERFACES['mqtt'].start_thread()
     while True:
+        await asyncio.sleep(0.001)
+        await luz1.on()
+        await asyncio.sleep(1)
+        await luz1.off()
         await asyncio.sleep(1)
 
 if __name__ == "__main__":
@@ -50,9 +60,6 @@ if __name__ == "__main__":
     CONFIG = initializers.load_configurations()
     initializers.load_interfaces(config=CONFIG, dirs=DIRS, interfaces=INTERFACES)
     initializers.load_drivers(config=CONFIG, dirs=DIRS, drivers=DRIVERS, interfaces=INTERFACES)
-    devices_manager = DeviceManager()
-    devices_manager.devices_init()
-    devices_manager.print_all_devices()
     #print(INTERFACES)
     # TODO: Start devices manager
 
