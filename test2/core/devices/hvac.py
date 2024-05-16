@@ -2,6 +2,7 @@
 
 from uuid import UUID
 from enum import Enum
+from .__generic import OpusDevice
 
 class HVACLevels(Enum):
     """Enum for HVAC Levels"""
@@ -14,14 +15,21 @@ class HVACLevels(Enum):
 
 type hvac_levels_t = HVACLevels
 
-class OpusHVAC():
+class OpusHVAC(OpusDevice):
     """Generic Implementation of a hVAC Unit"""
-    def __init__(self):
-        self.name: str
-        self.id: UUID | None
-        self.room_id: UUID | None
-        self.space_id: UUID | None
-        self.building: UUID | None
+    def __init__(self, name: str,
+                 uuid: UUID,
+                 room_id: str,
+                 space_id: str,
+                 building: str,
+                 driver: any):
+        super().__init__()
+        self.name = name
+        self.id = uuid
+        self.room_id = room_id
+        self.space_id = space_id
+        self.building = building
+        self.driver = driver
 
         self.power_state: bool  # Is the light On or Off
         self.vendor: str | None

@@ -1,30 +1,28 @@
 """Generic Class for Light"""
+from abc import abstractmethod
+from .__generic import OpusDevice
 
-from uuid import UUID
-
-class OpusLight():
+class OpusLight(OpusDevice):
     """Generic Implementation of a Light"""
-    def __init__(self):
-        self.name: str
-        self.id: UUID | None
-        self.room_id: UUID | None
-        self.space_id: UUID | None
-        self.building: UUID | None
-        self.driver: any
-
+    def __init__(self, name: str,
+                 uuid: str,
+                 room_id: str,
+                 space_id: str,
+                 building: str,
+                 driver: any):
+        super().__init__()
+        self.name = name
+        self.id = uuid
+        self.room_id = room_id
+        self.space_id = space_id
+        self.building = building
+        self.driver = driver
         self.power_state: bool  # Is the HVAC On or Off
 
+    @abstractmethod
     async def on(self) -> None:
         """Turn the light on"""
 
+    @abstractmethod
     async def off(self) -> None:
         """Turn the light off"""
-    
-    def __str__(self) -> str:
-        return (f"name: {self.name}\n"
-            f"id: {self.id}\n"
-            f"room_id: {self.room_id}\n"
-            f"space_id: {self.space_id}\n"
-            f"building: {self.building}\n"
-            f"driver: {self.driver}\n"
-            f"power_state: {self.power_state}")

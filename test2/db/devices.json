@@ -1,30 +1,17 @@
 {
-    "id": "a0cda61f-c742-4a82-87d6-5a75aa798f2a",
-    "room_id": "c5b5bf5c-1898-4ffb-9106-d26b1641300e",
-    "device_name": "Interruptor Sala 04",
-    "device_type": "Sonoff",
-    "driver_module": "sonoff",
-    "driver": {
-        "module": "sonoff",
-        "device_id": "1000a4c7e3"
+    "light" : {
+        "luz1": "python object",
+        "luz2": "python object",
+        "luz3": "python object"
     },
-    "abilities": [
-        {
-            "name": "Light Switch",
-            "type": "sonoff:onoff-status"
-        },
-        {
-            "name": "Timer",
-            "type": "sonoff:inching"
-        }
-    ],
-    "values": [
-        {
-            "switch": true
-        },
-        {
-            "pulse": false,
-            "pulseWidth": 500
-        }
-    ]
+    "hvac": {
+        "ac1": "python object",
+        "ac2": "python object",
+        "ac3": "python object"
+    },
+    "projector": {
+        "projector1": "python object",
+        "projector2": "python object",
+        "projector3": "python object"
+    }
 }

@@ -12,8 +12,15 @@ log = logging.getLogger(__name__)
 
 class SonoffLight(OpusLight):
     """Sonoff API Light Implementation"""
-    def __init__(self, device_name: str):
-        super().__init__()
+    def __init__(self, name: str, uuid: str, room_id: str, space_id: str, building: str):
+        super().__init__(
+            name=name,
+            uuid=uuid,
+            room_id=room_id,
+            space_id=space_id,
+            building=building,
+            driver="sonoff"
+        )
         self.link: SonoffDevice
 
     async def on(self) -> None:
@@ -41,8 +48,7 @@ class SonoffLight(OpusLight):
                             "deviceid": self.link.device_id,
                             "data": { "switch": "off"}
                             })
-                        ) as resp:
-                    #print(await resp.text())
+                        ):
                     ...
             except ConnectionError as e:
                 log.error("Error: %s", e)
@@ -59,8 +65,7 @@ class SonoffLight(OpusLight):
                             "deviceid": self.link.device_id,
                             "data": { "switch": f"{not self.power_state}"}
                             })
-                        ) as resp:
-                    #print(await resp.text())
+                        ):
                     ...
             except ConnectionError as e:
                 print(f"Error: {e}")
@@ -97,7 +102,7 @@ class SonoffLight(OpusLight):
 async def create_sonoff_light(name: str, link: SonoffDevice) -> SonoffLight:
     """Create a new Sonoff Light"""
     log.debug("Registering new Sonoff Light: %s", name)
-    new_light = SonoffLight(name)
+    new_light = SonoffLight(name, "", "", "", "")
     new_light.link = link
     device_payload: json = {}
     # Get the "device_id" which was not possible before
@@ -112,8 +117,8 @@ async def create_sonoff_light(name: str, link: SonoffDevice) -> SonoffLight:
                         })
                     ) as resp:
                 device_payload = await resp.json()
-        except Exception as e: #TODO: Change to a more specific exception
-                log.error("Error: %s", e)           
+        except Exception as e: #TODO: Change to a more specific exception #pylint: disable=broad-except
+            log.error("Error: %s", e)        
 
     new_light.power_state = device_payload['data']['switch']
     new_light.link.device_id = device_payload['data']['deviceid']

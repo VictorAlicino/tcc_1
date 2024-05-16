@@ -3,21 +3,20 @@ import sys
 import os
 import importlib
 import logging
-from types import ModuleType
 import yaml
 
 
 def define_log() -> None:
     """Logging System"""
     logging.basicConfig(encoding='utf-8', level=logging.DEBUG,
-                            format=
-                            #'[%(levelname)s][%(filename)s:%(lineno)d][%(name)s] %(message)s', # pylint: disable=line-too-long
-                            '%(filename)s -> %(message)s',
-                            handlers=[
-                                #logging.FileHandler("debug.log"),
-                                logging.StreamHandler()
-                            ]
-                            )
+                        format=
+                        #'[%(levelname)s][%(filename)s:%(lineno)d][%(name)s] %(message)s',
+                        '%(filename)s -> %(message)s',
+                        handlers=[
+                            # logging.FileHandler("debug.log"),
+                            logging.StreamHandler()
+                        ]
+                        )
 
 
 def check_configurations(dirs: dict) -> None:
@@ -42,7 +41,7 @@ def check_os(supported_os: list) -> None:
             is_supported = True
             break
     if is_supported is False:
-        logging.error("%s is currentely not supported.", sys.platform)
+        logging.error("%s is currently not supported.", sys.platform)
         sys.exit(1)
 
 
@@ -50,7 +49,7 @@ def check_python(required_python_ver: tuple) -> None:
     """Check if the right Python version is running."""
     logging.debug("Checking Python version...")
     logging.debug("Python version: %d.%d.%d",
-                  sys.version_info[0],sys.version_info[1],sys.version_info[2])
+                  sys.version_info[0], sys.version_info[1], sys.version_info[2])
     if sys.version_info < required_python_ver:
         logging.error("Python %d.%d.%d or higher is required.", required_python_ver[0],
                       required_python_ver[1], required_python_ver[2])
@@ -76,7 +75,7 @@ def load_configurations() -> dict[str]:
     return temp
 
 
-def load_interfaces(config: dict[str], dirs: dict[str], interfaces: dict[ModuleType]) -> None:
+def load_interfaces(config: dict, dirs: dict, interfaces: dict) -> None:
     """This function uses the importlib module to load the interfaces."""
     logging.debug("Loading interfaces...")
 
@@ -94,7 +93,7 @@ def load_interfaces(config: dict[str], dirs: dict[str], interfaces: dict[ModuleT
                         # Import the interface module
                         interface_module = importlib.import_module(
                             f"{dirs['INTERFACES']}.{interface_name}"
-                            )
+                        )
                         # and load the interface class
                         interfaces[interface_name] = interface_module.initialize()
                         # Initialize the interface with the config
@@ -109,10 +108,10 @@ def load_interfaces(config: dict[str], dirs: dict[str], interfaces: dict[ModuleT
                 sys.exit(1)
 
 
-def load_drivers(config: dict[str],
-                dirs: dict[str],
-                interfaces: dict[ModuleType],
-                drivers: dict[ModuleType]) -> None:
+def load_drivers(config: dict,
+                 dirs: dict,
+                 interfaces: dict,
+                 drivers: dict) -> None:
     """This function uses the importlib module to load the drivers."""
     logging.debug("Loading drivers...")
     drivers_list: list = config["drivers"]
@@ -125,7 +124,7 @@ def load_drivers(config: dict[str],
                 logging.debug("Importing <<%s>> driver...", driver_name)
                 drivers[driver_name] = importlib.import_module(
                     f"{dirs['DRIVERS']}.{driver_name}.{driver_name}"
-                    )
+                )
                 for interface in drivers[driver_name].interfaces:
                     if interface not in interfaces:
                         logging.error("Interface [%s] is required for <<%s>> driver",
