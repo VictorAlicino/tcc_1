@@ -1,6 +1,4 @@
 """SONOFF Connection Driver"""
-
-import asyncio
 import logging
 from ipaddress import ip_address
 # Non-Standard Libraries
@@ -81,29 +79,3 @@ async def start_sonoff_finder() -> list[SonoffDevice]:
 async def start() -> None:
     """Main Function"""
     await start_sonoff_finder()
-
-async def main_debug() -> None:
-    """Main for Debug porpuses"""
-    luz1 = SonoffLight("ablublé")
-    luz1.link = SonoffDevice(ip_address("192.168.15.2"))
-    luz1.link.device_id = "10016d3258"
-    luz1.link.hostname = "eWeLink_10016d3258._ewelink._tcp.local."
-
-    await start_sonoff_finder()
-    await asyncio.sleep(1)
-    for device in known_devices:
-        await register_device(device)
-    print(registered_devices)
-    while True:
-        for device in registered_devices:
-            try:
-                await device.on()
-                await asyncio.sleep(2)
-                await device.off()
-                await asyncio.sleep(2)
-            except Exception as e:
-                print(f"Error: {e}")
-                raise e
-
-if __name__ == "__main__":
-    asyncio.run(main_debug())

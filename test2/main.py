@@ -71,7 +71,8 @@ if __name__ == "__main__":
     initializers.load_drivers(config=CONFIG, dirs=DIRS, drivers=DRIVERS, interfaces=INTERFACES)
 
     D_MANAGER = DeviceManager(DIRS)
-    L_MANAGER = LocationManager()
+    L_MANAGER = LocationManager(DIRS)
+    L_MANAGER.load_db()
 
     # (INTERFACES)
     # TODO: Start devices manager
