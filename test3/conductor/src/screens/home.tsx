@@ -1,5 +1,5 @@
 import { AnimatePresence, MotiView } from "moti";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import colors from "tailwindcss/colors";
 
@@ -163,6 +163,10 @@ export function Home() {
     setCurrentBuilding(building);
     setBuildingsVisible(false);
   }
+
+  useEffect(() => {
+    setCurrentSpace(defaultSpace);
+  }, [currentBuilding]);
 
   return (
     <SafeAreaView>
