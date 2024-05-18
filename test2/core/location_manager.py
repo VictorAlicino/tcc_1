@@ -1,15 +1,16 @@
 """Room/Space/Building Manager"""
 import logging
-import sqlite3
 from typing import Any
 from uuid import uuid1, UUID
+from sqlalchemy.orm import Session
+from db import models
 
 log = logging.getLogger(__name__)
 
+INTERFACES = {}
 
 class Building:
     """Building class"""
-
     def __init__(self):
         self.id: UUID
         self.name: str
@@ -17,7 +18,6 @@ class Building:
 
 class Space:
     """Space class"""
-
     def __init__(self):
         self.id: UUID
         self.name: str
@@ -26,28 +26,61 @@ class Space:
 
 class Room:
     """Room class"""
-
     def __init__(self):
         self.id: UUID
         self.name: str
         self.space: UUID
         self.building: UUID
 
+def create_building_on_db(db: Session, building: Building):
+    """Create a new building on the database"""
+    db = next(db)
+    db_building = models.Building(
+        building_pk=building.id,
+        building_name=building.name
+    )
+    db.add(db_building)
+    db.commit()
+    db.refresh(db_building)
+    log.debug('Building %s added to the database.', building.name)
+
+def create_space_on_db(db: Session, space: Space):
+    """Create a new space on the database"""
+    db = next(db)
+    db_space = models.BuildingSpace(
+        building_space_pk=space.id,
+        building_fk=space.building,
+        space_name=space.name
+    )
+    db.add(db_space)
+    db.commit()
+    db.refresh(db_space)
+    log.debug('Space %s added to the database.', space.name)
+
+def create_room_on_db(db: Session, room: Room):
+    """Create a new room on the database"""
+    db = next(db)
+    db_room = models.BuildingRoom(
+        building_room_pk=room.id,
+        building_space_fk=room.space,
+        room_name=room.name
+    )
+    db.add(db_room)
+    db.commit()
+    db.refresh(db_room)
+    log.debug('Room %s added to the database.', room.name)
 
 class LocationManager:
     """Location Manager"""
 
-    def __init__(self, dirs: dict):
+    def __init__(self, interfaces: dict):
         log.debug('Initializing Location Manager.')
         self.buildings: dict = {}
         self.spaces: dict = {}
         self.rooms: dict = {}
+        self.opus_db = interfaces['opus_db']
 
-        log.debug('Connecting to the local database.')
-        self.db_conn = sqlite3.connect(f'{dirs['DATABASES']}/opus-vault.db')  # Persistent database
-        with open(f'{dirs['DATABASES']}/create_db.sql', 'r', encoding='utf-8') as f:
-            c = self.db_conn.cursor()
-            c.executescript(f.read())
+        self.load_db()
 
     def new_building(self, name: str) -> None:
         """Add a new building"""
@@ -59,34 +92,28 @@ class LocationManager:
         # Check if the name is already in use
         for building in self.buildings.values():
             if building.name == name:
-                raise ValueError('Building name already in use.')
-
+                raise ValueError(f'{building.name} Building name already in use.')
         building = Building()
         building.id = new_uuid
         building.name = name
         self.buildings[building.id] = building
-        db = self.db_conn.cursor()
-        db.execute("""
-            INSERT INTO building (building_pk, building_name)
-                   VALUES (?, ?)""",
-            (building.id.bytes, building.name)
-        )
+        create_building_on_db(self.opus_db.get_db(), building)
         log.debug('New Building Added')
         log.debug('└─── Building: %s', building.name)
         log.debug('     └── UUID: %s', building.id)
-        self.db_conn.commit()
 
     def new_space(self, name: str, building: UUID) -> None:
         """Add a new space"""
         log.debug('Adding new space %s', name)
         new_uuid = uuid1()
         # Check if the provided building exists
+        print(self.buildings)
         if building not in self.buildings:
-            raise ValueError('Building not found.')
+            raise ValueError(f'{building.name} Building not found.')
         # Check if the name is already in use
         for space in self.spaces.values():
             if space.name == name:
-                raise ValueError('Space name already in use.')
+                raise ValueError(f'{space.name} Space name already in use.')
         # Check if the UUID is already in use
         while new_uuid in self.spaces:
             new_uuid = uuid1()
@@ -96,19 +123,13 @@ class LocationManager:
         space.name = name
         space.building = building
         self.spaces[space.id] = space
-        db = self.db_conn.cursor()
-        db.execute("""
-            INSERT INTO building_space (building_space_pk, space_name, building_fk)
-            VALUES (?, ?, ?)""",
-            (space.id.bytes, space.name, space.building.bytes)
-        )
+        create_space_on_db(self.opus_db.get_db(), space)
         log.debug('New Space Added')
         log.debug('└─── Space: %s', space.name)
         log.debug('     ├── UUID: %s', space.id)
         log.debug('     └── Building: %s | %s',
                   self.buildings[space.building].name,
                   self.buildings[space.building].id)
-        self.db_conn.commit()
 
     def new_room(self, name: str, space: UUID) -> None:
         """Add a new room"""
@@ -125,7 +146,7 @@ class LocationManager:
         # Check if the name is already in use
         for room in self.rooms.values():
             if room.name == name:
-                raise ValueError('Room name already in use.')
+                raise ValueError(f'{room.name} Room name already in use.')
 
         room = Room()
         room.id = new_uuid
@@ -133,11 +154,7 @@ class LocationManager:
         room.space = space.id
         room.building = space.building
         self.rooms[room.id] = room
-        db = self.db_conn.cursor()
-        db.execute("""INSERT INTO building_room (building_room_pk, room_name, building_space_fk)
-                   VALUES (?, ?, ?)""",
-            (room.id.bytes, room.name, room.space.bytes)
-        )
+        create_room_on_db(self.opus_db.get_db(), room)
         log.debug('New Room Added')
         log.debug('└─── Room: %s', room.name)
         log.debug('     ├── UUID: %s', room.id)
@@ -147,7 +164,6 @@ class LocationManager:
         log.debug('     └── Building: %s | %s',
                   self.buildings[room.building].name,
                   self.buildings[room.building].id)
-        self.db_conn.commit()
 
     def load_db(self) -> None:
         """Load all locations from the database"""
@@ -162,36 +178,39 @@ class LocationManager:
 
     def _load_buildings_from_db(self) -> None:
         """Load buildings from the database"""
-        db = self.db_conn.cursor()
-        db.execute('SELECT * FROM building')
-        for row in db.fetchall():
-            building = Building()
-            building.id = UUID(bytes=row[0])
-            building.name = row[1]
-            self.buildings[building.id] = building
+        db = next(self.opus_db.get_db())
+        db.query(models.Building).all()
+        for building in db.query(models.Building).all():
+            new_building = Building()
+            new_building.id = building.building_pk
+            new_building.name = building.building_name
+            self.buildings[new_building.id] = new_building
+        db.close()
 
     def _load_spaces_from_db(self) -> None:
         """Load spaces from the database"""
-        db = self.db_conn.cursor()
-        db.execute('SELECT * FROM building_space')
-        for row in db.fetchall():
-            space = Space()
-            space.id = UUID(bytes=row[0])
-            space.name = row[1]
-            space.building = UUID(bytes=row[1])
-            self.spaces[space.id] = space
+        db = next(self.opus_db.get_db())
+        db.query(models.BuildingSpace).all()
+        for space in db.query(models.BuildingSpace).all():
+            new_space = Space()
+            new_space.id = space.building_space_pk
+            new_space.name = space.space_name
+            new_space.building = space.building_fk
+            self.spaces[new_space.id] = new_space
+        db.close()
 
     def _load_rooms_from_db(self) -> None:
         """Load rooms from the database"""
-        db = self.db_conn.cursor()
-        db.execute('SELECT * FROM building_room')
-        for row in db.fetchall():
-            room = Room()
-            room.id = UUID(bytes=row[0])
-            room.name = row[1]
-            room.space = UUID(bytes=row[1])
-            room.building = self.spaces[room.space].building
-            self.rooms[room.id] = room
+        db = next(self.opus_db.get_db())
+        db.query(models.BuildingRoom).all()
+        for room in db.query(models.BuildingRoom).all():
+            new_room = Room()
+            new_room.id = room.building_room_pk
+            new_room.name = room.room_name
+            new_room.space = room.building_space_fk
+            new_room.building = self.spaces[new_room.space].building
+            self.rooms[new_room.id] = new_room
+        db.close()
 
     def get_building(self, name: str = None,
                      building_id: UUID = None) -> Any | None:

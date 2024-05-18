@@ -33,7 +33,7 @@ class SonoffLight(OpusLight):
                         "deviceid": self.link.device_id,
                         "data": { "switch": "on"}
                         })
-                    ) as resp:
+                    ):
                 #print(await resp.text())
                 ...
 

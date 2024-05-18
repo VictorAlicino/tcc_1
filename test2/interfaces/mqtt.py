@@ -18,9 +18,8 @@ class SingletonMeta(type):
                 cls._instances[cls] = instance
         return cls._instances[cls]
 
-class MQTTClient(metaclass=SingletonMeta):
-    """Singleton MQTT Client"""
-
+class MQTTClient():
+    """MQTT Client"""
     def __init__(self):
         self.client_id = f'opus-server-{gma()[-5:].replace(":", "")}'
         self.client = mqtt.Client(
@@ -33,16 +32,19 @@ class MQTTClient(metaclass=SingletonMeta):
             manual_ack=False
         )
         self.thread: Thread
+        self.log_id = None
         log.debug("MQTT Initialized")
 
     def begin(self, config: dict) -> bool:
         """Begin the MQTT Client"""
+        self.log_id = config['log_id']
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
 
         log.debug("Connecting to %s:%s as %s", config['host'], config['port'], self.client_id)
         try:
             self.client.connect(config['host'], config['port'])
+            self.subscribe(f'{self.client_id}/#')
             return True
         except TimeoutError as exp:
             log.error("Could not connect to %s:%s", config['host'], config['port'])
@@ -68,7 +70,16 @@ class MQTTClient(metaclass=SingletonMeta):
 
     def on_message(self, client, userdata, msg): # pylint: disable=unused-argument
         """On Message Callback"""
-        log.debug("Message Received: %s %s", msg.topic, msg.payload)
+        log.debug("%s Message Received: %s %s", self.log_id, msg.topic, msg.payload)
+        log.debug("%s Received Message", self.log_id)
+        topic = msg.topic.split('/')
+        match topic[1]:
+            case 'building':
+                log.debug("Building Message: %s", msg.payload)
+            case 'space':
+                log.debug("Space Message: %s", msg.payload)
+            case 'room':
+                log.debug("Room Message: %s", msg.payload)
 
     def connect(self, host: str, port: int = 1883):
         """Connect to MQTT Broker"""
@@ -81,6 +92,7 @@ class MQTTClient(metaclass=SingletonMeta):
     def subscribe(self, topic: str):
         """Subscribe to a topic"""
         self.client.subscribe(topic)
+        log.debug("Subscribed to %s", topic)
 
 def initialize() -> MQTTClient:
     """Initialize the MQTT Interface"""

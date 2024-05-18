@@ -4,22 +4,15 @@ from ipaddress import ip_address
 # Non-Standard Libraries
 import json
 from zeroconf import ServiceBrowser, Zeroconf
+from core.device_manager import DeviceManager
 from .sonoff_device import SonoffDevice
 from .sonoff_light import create_sonoff_light, SonoffLight
 
 log = logging.getLogger(__name__)
 
 interfaces: dict[any, str] = {}
-known_devices: list[SonoffDevice] = []
-registered_devices: list[any] = []
 
-def get_known_devices() -> list[SonoffDevice]:
-    """Get the known devices"""
-    return known_devices
-
-def get_registered_devices() -> list:
-    """Get the registered devices"""
-    return registered_devices
+OPUS_D_MANAGER: DeviceManager = None
 
 def _found_new_device(name, info) -> None:
     ip = info.addresses[0]
@@ -31,15 +24,17 @@ def _found_new_device(name, info) -> None:
     new_device.service_instace_name = info.type
     new_device.device_id = bytes(info.properties[('id').encode('utf-8')]).decode()
     new_device.startup_info_dump = info.properties
+    setattr(new_device, 'driver', 'sonoff')
 
-    known_devices.append(new_device)
+    OPUS_D_MANAGER.new_device(new_device)
 
-async def register_device(device: SonoffDevice) -> None:
+async def register_device(device: SonoffDevice,
+                          device_manager: DeviceManager) -> None:
     """Register a new Device"""
     match device.device_type:
         case "diy_plug":
             log.debug("Registering a new DIY Plug")
-            registered_devices.append(await create_sonoff_light("ablublé", device))
+            device_manager.register_device(await create_sonoff_light("ablublé", device))
 
 sonoff_discovered_devices: list = []
 
@@ -56,26 +51,32 @@ class MDNSListener:
         info = zeroconf.get_service_info(type, name)
         if info:
             if (info.properties.get(b'id').decode() in
-            [device.device_id for device in known_devices]):
-                log.debug("Device %s state changed -> %s", 
+            [device.device_id for device in OPUS_D_MANAGER.available_devices['sonoff']]):
+                log.debug("Device %s state changed -> %s",
                           info.properties.get(b'id').decode(),
-                          json.loads(info.properties.get(b'data1'))['switch'])
+                          info.properties)
 
     def add_service(self, zeroconf, type, name): # pylint: disable=redefined-builtin
         """Add a Device to the known devices list"""
         info = zeroconf.get_service_info(type, name)
+        # If info is not None and the device is not encrypted
         if info and info.properties.get(b'encrypt') is None:
             _found_new_device(name, info)
 
 
-async def start_sonoff_finder() -> list[SonoffDevice]:
+def start_sonoff_finder() -> None:
     """Search for Sonoff Devices in the network"""
     zeroconf = Zeroconf()
     listener = MDNSListener()
     ServiceBrowser(zeroconf, "_ewelink._tcp.local.", listener)
 
-    return known_devices
-
-async def start() -> None:
+def start(dirs: dict,
+          config: dict,
+          drivers: dict,
+          interfaces: dict,
+          managers: dict) -> None:
     """Main Function"""
-    await start_sonoff_finder()
+    log.debug("Starting Sonoff Driver")
+    global OPUS_D_MANAGER # pylint: disable=global-statement
+    OPUS_D_MANAGER = managers['devices']
+    start_sonoff_finder()

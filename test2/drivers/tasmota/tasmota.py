@@ -1,12 +1,11 @@
 """Tasmota Driver Main"""
-import asyncio
+import logging
 from .tasmota_device import TasmotaDevice
-from .tasmota_hvac import create_tasmota_hvac
+# from .tasmota_hvac import create_tasmota_hvac
 
-interfaces: dict[str, any] = {'mqtt': None}
-known_devices: list[TasmotaDevice] = []
-registered_devices: list[any] = []
+log = logging.getLogger(__name__)
 
+interfaces: dict[str, any] = {'mqtt<local>': None}
 # TODO: Find all devices
 
 # TODO: Register new devices
@@ -15,13 +14,12 @@ async def register_device(device: TasmotaDevice) -> None:
     match device.device_type:
         case "hvac":
             print("Found a HVAC Device")
-            device.mqtt = interfaces['mqtt']
-            registered_devices.append(await create_tasmota_hvac("ablublé2", device))
 
 
-async def debug_main() -> None:
-    """USE FOR DEBUG PURPOSES ONLY"""
-
-
-if __name__ == "__main__":
-    asyncio.run(debug_main())
+def start(dirs: dict,
+          config: dict,
+          drivers: dict,
+          interfaces: dict,
+          managers: dict) -> None:
+    """Main Function"""
+    log.debug("Starting Tasmota Driver")
