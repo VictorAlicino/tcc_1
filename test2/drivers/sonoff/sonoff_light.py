@@ -2,8 +2,11 @@
 
 import json
 import logging
+from uuid import UUID
+from ipaddress import ip_address
 # Non-Standard Libraries
 import aiohttp
+import requests
 from core.devices.light import OpusLight
 from .sonoff_device import SonoffDevice # pylint: disable=import-error
 
@@ -12,116 +15,94 @@ log = logging.getLogger(__name__)
 
 class SonoffLight(OpusLight):
     """Sonoff API Light Implementation"""
-    def __init__(self, name: str, uuid: str, room_id: str, space_id: str, building: str):
+    def __init__(self,
+                 name: str,
+                 sonoff_device: SonoffDevice):
         super().__init__(
             name=name,
-            uuid=uuid,
-            room_id=room_id,
-            space_id=space_id,
-            building=building,
+            uuid=UUID(str(sonoff_device.id)),
             driver="sonoff"
         )
-        self.link: SonoffDevice
+        self.ip_address: ip_address = ip_address(sonoff_device.ip_address)
+        self.hostname: str = str(sonoff_device.hostname)
+        self.port: int = int(sonoff_device.port)
+        self.device_id: str
+        self.startup_info_dump: dict = {}
 
-    async def on(self) -> None:
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                    f'http://{self.link.ip_address}:{self.link.port}'
-                    f'/zeroconf/switch',
-                    # "{"deviceid": "10016d3258", "data": { "switch": "on" }}"
-                    data= json.dumps({
-                        "deviceid": self.link.device_id,
-                        "data": { "switch": "on"}
-                        })
-                    ):
-                #print(await resp.text())
-                ...
+        # Get the "device_id" which was not possible before
+        device_payload = requests.post(
+            url=f'http://{self.ip_address}:{self.port}/zeroconf/info',
+            data= json.dumps({
+                "deviceid": "",
+                "data": {}
+                }),
+            headers={"Content-Type": "application/json"},
+            timeout=5
+            )
+        device_payload = device_payload.json()
 
-    async def off(self) -> None:
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.post(
-                        f'http://{self.link.ip_address}:{self.link.port}'
-                        f'/zeroconf/switch',
-                        # "{"deviceid": "10016d3258", "data": { "switch": "off" }}"
-                        data= json.dumps({
-                            "deviceid": self.link.device_id,
-                            "data": { "switch": "off"}
-                            })
-                        ):
-                    ...
-            except ConnectionError as e:
-                log.error("Error: %s", e)
+        self.power_state = device_payload['data']['switch']
+        self.device_id = device_payload['data']['deviceid']
+        self.bssid = device_payload['data']['bssid']
 
-    async def toggle(self) -> None:
+    def on(self) -> None:
+        requests.post(
+            url=f'http://{self.ip_address}:{self.port}/zeroconf/switch',
+            data= json.dumps({
+                "deviceid": self.device_id,
+                "data": { "switch": "on"}
+                }),
+            headers={"Content-Type": "application/json"},
+            timeout=5
+        )
+
+    def off(self) -> None:
+        requests.post(
+            url=f'http://{self.ip_address}:{self.port}/zeroconf/switch',
+            data= json.dumps({
+                "deviceid": self.device_id,
+                "data": { "switch": "off"}
+                }),
+            headers={"Content-Type": "application/json"},
+            timeout=5
+        )
+
+    def toggle(self) -> None:
         """Toggle the Light On/Off"""
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.post(
-                        f'http://{self.link.ip_address}:{self.link.port}'
-                        f'/zeroconf/switch',
-                        # "{"deviceid": "10016d3258", "data": { "switch": "toggle" }}"
-                        data= json.dumps({
-                            "deviceid": self.link.device_id,
-                            "data": { "switch": f"{not self.power_state}"}
-                            })
-                        ):
-                    ...
-            except ConnectionError as e:
-                print(f"Error: {e}")
+        requests.post(
+            url=f'http://{self.ip_address}:{self.port}/zeroconf/switch',
+            data= json.dumps({
+                "deviceid": self.device_id,
+                "data": { "switch": "toggle"}
+                }),
+            headers={"Content-Type": "application/json"},
+            timeout=5
+        )
 
-    async def update_status(self) -> None:
+    def update_status(self) -> None:
         """Update the Status of the Light"""
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.post(
-                        f'http://{self.link.ip_address}:{self.link.port}'
-                        f'/zeroconf/info',
-                        # "{"deviceid": "10016d3258", "data": {}}"
-                        data= json.dumps({
-                            "deviceid": self.link.device_id,
-                            "data": {}
-                            })
-                        ) as resp:
-                    log.debug(await resp.text())
-            except ConnectionError as e:
-                print(f"Error: {e}")
+        requests.post(
+            url=f'http://{self.ip_address}:{self.port}/zeroconf/info',
+            data= json.dumps({
+                "deviceid": self.device_id,
+                "data": {}
+                }),
+            headers={"Content-Type": "application/json"},
+            timeout=5
+        )
 
-    def __str__(self):
-        return (f"Sonoff Light -> \n"
-                #f"Core Data:\n"
-                #f"\tName: {super.name}\n"
-                #f"\tID: {super.id}\n"
-                #f"\tRoom ID: {super.room_id}\n"
-                #f"\tSpace ID: {super.space_id}\n"
-                #f"\tBuilding: {super.building}\n"
-                #f"\tDriver: {super.driver}\n"
-                f"Driver Data:\n"
-                f"{self.link}")
-
-async def create_sonoff_light(name: str, link: SonoffDevice) -> SonoffLight:
-    """Create a new Sonoff Light"""
-    log.debug("Registering new Sonoff Light: %s", name)
-    new_light = SonoffLight(name, "", "", "", "")
-    new_light.link = link
-    device_payload: json = {}
-    # Get the "device_id" which was not possible before
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.post(
-                    f'http://{new_light.link.ip_address}:{new_light.link.port}'
-                    f'/zeroconf/info',
-                    data= json.dumps({
-                        "deviceid": new_light.link.device_id,
-                        "data": {}
-                        })
-                    ) as resp:
-                device_payload = await resp.json()
-        except Exception as e: #TODO: Change to a more specific exception #pylint: disable=broad-except
-            log.error("Error: %s", e)        
-
-    new_light.power_state = device_payload['data']['switch']
-    new_light.link.device_id = device_payload['data']['deviceid']
-    new_light.link.bssid = device_payload['data']['bssid']
-
-    return new_light
+    def print_data(self) -> None:
+        """Print the Light Data"""
+        log.debug("Name: %s", self.name)
+        log.debug("\t├── ID: %s", self.id)
+        log.debug("\t├── Room ID: %s", self.room_id)
+        log.debug("\t├── Space ID: %s", self.space_id)
+        log.debug("\t├── Building ID: %s", self.building_id)
+        log.debug("\t├── Driver: %s", self.driver)
+        log.debug("\t├── Type: %s", self.type)
+        log.debug("\t├── IP Address: %s", self.ip_address)
+        log.debug("\t├── Hostname: %s", self.hostname)
+        log.debug("\t├── Port: %s", self.port)
+        log.debug("\t├── Device ID: %s", self.device_id)
+        log.debug("\t├── Power State: %s", self.power_state)
+        log.debug("\t└── BSSID: %s", self.bssid)

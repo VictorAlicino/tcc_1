@@ -19,6 +19,7 @@ DIRS: dict = {
     "DRIVERS": "drivers",
     "DATABASES": "db",
     "SERVER": "server",
+    "LOGS": "logs",
 }
 
 # Global Configuration
@@ -39,7 +40,8 @@ MANAGERS: dict = {
 
 async def main() -> None:
     """The main function."""
-    MANAGERS["locations"].dump_rooms()
+    #MANAGERS["locations"].dump_buildings()
+    #MANAGERS["locations"].dump_rooms()
     #MANAGERS["locations"].new_building("Casa1")
     #MANAGERS["locations"].new_space("Patio", MANAGERS["locations"].get_building("Igreja").id)
     #MANAGERS["locations"].new_room("Portão", MANAGERS["locations"].get_space("Patio").id)
@@ -54,7 +56,7 @@ async def main() -> None:
 if __name__ == "__main__":
     exit_code: int = 0
 
-    initializers.define_log()
+    initializers.define_log(DIRS, log_level="DEBUG")
     initializers.check_python(REQUIRED_PYTHON_VER)
     initializers.check_os(SUPPORTED_OS)
     initializers.check_directories(DIRS)
@@ -68,7 +70,8 @@ if __name__ == "__main__":
     initializers.load_managers(
         dirs=DIRS,
         managers=MANAGERS,
-        interfaces=INTERFACES
+        interfaces=INTERFACES,
+        drivers=DRIVERS
         )
     initializers.load_drivers(
         config=CONFIG,

@@ -19,7 +19,7 @@ class OpusDB:
             )
         self.session_local = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         models.Base.metadata.create_all(bind=self.engine)
-        log.debug('Database Started')
+        log.info('Database Started')
 
     def get_db(self):
         """Get database session"""

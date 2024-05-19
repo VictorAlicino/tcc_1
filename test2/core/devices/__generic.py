@@ -1,6 +1,14 @@
 """Generic Device Class"""
 from uuid import UUID
 
+class DeviceType(enumerate):
+    """Enumerate for Device Types"""
+    UNKNOWN = "UNKNOWN"
+    LIGHT = "LIGHT"
+    HVAC = "HVAC"
+    PROJECTOR = "PROJECTOR"
+    GATE_OPENER = "GATE_OPENER"
+
 
 class OpusDevice():
     """Generic Device Class"""
@@ -9,5 +17,6 @@ class OpusDevice():
         self.id: UUID | None
         self.room_id: UUID | None
         self.space_id: UUID | None
-        self.building: UUID | None
+        self.building_id: UUID | None
         self.driver: any
+        self.type: DeviceType

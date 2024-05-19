@@ -1,5 +1,7 @@
 """Room/Space/Building Manager"""
 import logging
+import json
+import traceback
 from typing import Any
 from uuid import uuid1, UUID
 from sqlalchemy.orm import Session
@@ -7,14 +9,11 @@ from db import models
 
 log = logging.getLogger(__name__)
 
-INTERFACES = {}
-
 class Building:
     """Building class"""
     def __init__(self):
         self.id: UUID
         self.name: str
-
 
 class Space:
     """Space class"""
@@ -22,7 +21,6 @@ class Space:
         self.id: UUID
         self.name: str
         self.building: UUID
-
 
 class Room:
     """Room class"""
@@ -81,6 +79,8 @@ class LocationManager:
         self.opus_db = interfaces['opus_db']
 
         self.load_db()
+        self._configure_mqtt(interfaces)
+        log.info('Location Manager Initialized.')
 
     def new_building(self, name: str) -> None:
         """Add a new building"""
@@ -107,13 +107,12 @@ class LocationManager:
         log.debug('Adding new space %s', name)
         new_uuid = uuid1()
         # Check if the provided building exists
-        print(self.buildings)
         if building not in self.buildings:
             raise ValueError(f'{building.name} Building not found.')
-        # Check if the name is already in use
+        # Check if the name is already in use in this building
         for space in self.spaces.values():
-            if space.name == name:
-                raise ValueError(f'{space.name} Space name already in use.')
+            if space.name == name and space.building == building:
+                raise ValueError(f'{space.name} Space name already in use in this building.')
         # Check if the UUID is already in use
         while new_uuid in self.spaces:
             new_uuid = uuid1()
@@ -131,22 +130,24 @@ class LocationManager:
                   self.buildings[space.building].name,
                   self.buildings[space.building].id)
 
-    def new_room(self, name: str, space: UUID) -> None:
+    def new_room(self, name: str, space: UUID, building: UUID) -> None:
         """Add a new room"""
         log.debug('Adding new room %s', name)
         new_uuid = uuid1()
         # Check if the provided space exists
         try:
             space = self.spaces[space]
+            if space.building != self.get_building(building_id=building).id:
+                raise ValueError(f'{space.name} Space not in the provided building.')
         except KeyError as exc:
             exc.args = ('Space not found.',)
+        # Check if the name is already in use in this space
+        for room in self.rooms.values():
+            if room.name == name and room.space == space.id:
+                raise ValueError(f'{room.name} Room name already in use in this space.')
         # Check if the UUID is already in use
         while new_uuid in self.rooms:
             new_uuid = uuid1()
-        # Check if the name is already in use
-        for room in self.rooms.values():
-            if room.name == name:
-                raise ValueError(f'{room.name} Room name already in use.')
 
         room = Room()
         room.id = new_uuid
@@ -215,28 +216,59 @@ class LocationManager:
     def get_building(self, name: str = None,
                      building_id: UUID = None) -> Any | None:
         """Return a building by name or id"""
+        log.debug('get_building is looking for building [%s | %s]', name, building_id)
         if building_id:
             return self.buildings[building_id]
         if name:
             for building in self.buildings.values():
                 if building.name == name:
                     return building
-        return None
+        raise ValueError('Building not found.')
 
-    def get_space(self, name: str = None,
-                  space_id: UUID = None) -> Any | None:
+    def get_space(self,
+                  name: str = None,
+                  space_id: UUID = None,
+                  building_name: str = None,
+                  building_id: UUID = None) -> Any | None:
         """Return a space by name or id"""
+        log.debug('get_space is looking for space [%s | %s] @ [%s | %s]',
+                  name,
+                  space_id,
+                  building_name,
+                  building_id)
         if space_id:
-            return self.spaces[space_id]
-        if name:
+            try:
+                return self.spaces[space_id]
+            except KeyError as exc:
+                exc.args = ('Space not found.',)
+        if name and (building_name or building_id):
+            candidates = []
             for space in self.spaces.values():
                 if space.name == name:
-                    return space
-        return None
+                    candidates.append(space)
+            for candidate in candidates:
+                if building_name:
+                    if self.buildings[candidate.building].name == building_name:
+                        return candidate
+                if building_id:
+                    if candidate.building == building_id:
+                        return candidate
+        raise ValueError('Space not found.')
+
+    def get_room(self,
+                 room_id: UUID = None):
+        """Return a room by id"""
+        log.debug('get_room is looking for room [%s]', room_id)
+        if room_id:
+            try:
+                return self.rooms[room_id]
+            except KeyError as exc:
+                exc.args = ('Room not found.',)
+                log.error(exc)
 
     def dump_buildings(self) -> None:
         """Print all buildings"""
-        log.debug('All buildings in the location manager')
+        log.debug('All buildings in the LocationManager')
         for building in self.buildings.values():
             log.debug('├──Building: %s', building.name)
             log.debug('│\t└── UUID: %s', building.id)
@@ -244,7 +276,7 @@ class LocationManager:
 
     def dump_spaces(self) -> None:
         """Print all spaces"""
-        log.debug('All spaces in the location manager')
+        log.debug('All spaces in the LocationManager')
         for space in self.spaces.values():
             log.debug('├──Space: %s', space.name)
             log.debug('│\t├── UUID: %s', space.id)
@@ -253,10 +285,69 @@ class LocationManager:
 
     def dump_rooms(self) -> None:
         """Print all rooms"""
-        log.debug('All rooms in the location manager')
+        log.debug('All rooms in the LocationManager')
         for room in self.rooms.values():
             log.debug('├──Room: %s', room.name)
             log.debug('│\t├── UUID: %s', room.id)
             log.debug('│\t├── @ Space: %s', self.spaces[room.space].name)
             log.debug('│\t└── @ Building: %s', self.buildings[room.building].name)
         log.debug('└── ALL ROOMS ABOVE')
+
+    def _configure_mqtt(self, interfaces: dict) -> None:
+        """Configure MQTT Interface for the right Callbacks"""
+        log.debug('Configuring MQTT Interface')
+        interfaces['mqtt<maestro>'].register_callback('building/#', self._mqtt_callback)
+        interfaces['mqtt<maestro>'].register_callback('space/#', self._mqtt_callback)
+        interfaces['mqtt<maestro>'].register_callback('room/#', self._mqtt_callback)
+        log.debug('MQTT Interface Configured')
+
+    def _mqtt_callback(self, client, userdata, msg):
+        """MQTT Callback"""
+        log.debug("MQTT Message Received: %s", msg.topic)
+        topic = msg.topic.split('/')
+        match topic[1]:
+            case 'building':
+                match topic[2]:
+                    case 'new':
+                        try:
+                            temp = json.loads(msg.payload)
+                            self.new_building(temp['name'])
+                            # log.debug(traceback.format_exc())
+                        except (ValueError, json.JSONDecodeError) as exc:
+                            log.warning(msg.payload)
+                            log.error(exc)
+                    case 'list':
+                        self.dump_buildings()
+            case 'space':
+                match topic[2]:
+                    case 'new':
+                        try:
+                            temp = json.loads(msg.payload)
+                            self.new_space(
+                                temp['name'],
+                                self.get_building(temp['building']).id
+                            )
+                        except (ValueError, json.JSONDecodeError) as exc:
+                            log.warning(msg.payload)
+                            log.error(exc)
+                            # log.debug(traceback.format_exc())
+                    case 'list':
+                        self.dump_spaces()
+            case 'room':
+                match topic[2]:
+                    case 'new':
+                        try:
+                            temp = json.loads(msg.payload)
+                            space = self.get_space(name=temp['space'],
+                                                   building_name=temp['building'])
+                            self.new_room(
+                                temp['name'],
+                                space.id,
+                                space.building
+                            )
+                        except (ValueError, json.JSONDecodeError, AttributeError) as exc:
+                            log.warning(msg.payload)
+                            log.error(exc)
+                            # log.debug(traceback.format_exc())
+                    case 'list':
+                        self.dump_rooms()

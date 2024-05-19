@@ -33,7 +33,7 @@ class MQTTClient():
         )
         self.thread: Thread
         self.log_id = None
-        log.debug("MQTT Initialized")
+        log.info("MQTT Initialized")
 
     def begin(self, config: dict) -> bool:
         """Begin the MQTT Client"""
@@ -41,7 +41,7 @@ class MQTTClient():
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
 
-        log.debug("Connecting to %s:%s as %s", config['host'], config['port'], self.client_id)
+        log.info("Connecting to %s:%s as %s", config['host'], config['port'], self.client_id)
         try:
             self.client.connect(config['host'], config['port'])
             self.subscribe(f'{self.client_id}/#')
@@ -66,20 +66,11 @@ class MQTTClient():
 
     def on_connect(self, client, userdata, flags, reason_code, properties): # pylint: disable=unused-argument
         """On Connect Callback"""
-        log.debug("Connected with result code %s", reason_code)
+        log.info("%s connected with result code %s", self.log_id, reason_code)
 
     def on_message(self, client, userdata, msg): # pylint: disable=unused-argument
         """On Message Callback"""
         log.debug("%s Message Received: %s %s", self.log_id, msg.topic, msg.payload)
-        log.debug("%s Received Message", self.log_id)
-        topic = msg.topic.split('/')
-        match topic[1]:
-            case 'building':
-                log.debug("Building Message: %s", msg.payload)
-            case 'space':
-                log.debug("Space Message: %s", msg.payload)
-            case 'room':
-                log.debug("Room Message: %s", msg.payload)
 
     def connect(self, host: str, port: int = 1883):
         """Connect to MQTT Broker"""
@@ -88,6 +79,13 @@ class MQTTClient():
     def publish(self, topic: str, payload: str):
         """Publish a message"""
         self.client.publish(topic, payload)
+
+    def register_callback(self, topic: str, callback):
+        """Register a callback for a topic"""
+        self.client.message_callback_add(
+            f'{self.client_id}/{topic}',
+            callback)
+        log.debug("%s Callback Registered for %s", self.log_id, topic)
 
     def subscribe(self, topic: str):
         """Subscribe to a topic"""

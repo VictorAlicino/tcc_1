@@ -1,6 +1,7 @@
 """General Sonoff Device Class"""
 from enum import Enum
 from ipaddress import ip_address
+from core.devices.__generic import OpusDevice
 
 class SonoffDeviceType(Enum):
     """Enumerate for Sonoff Device Types"""
@@ -15,9 +16,11 @@ class SonoffDeviceType(Enum):
 
 type sonoff_device_type_t = SonoffDeviceType
 
-class SonoffDevice:
+class SonoffDevice(OpusDevice):
     """Driver to talk to Sonoff Devices with the DIY API enabled"""
     def __init__(self, ip: ip_address):
+        super().__init__()
+        self.driver = "sonoff"
         self.ip_address: ip_address = ip
         self.hostname: str
         self.port: int = 8081
@@ -28,4 +31,4 @@ class SonoffDevice:
         self.startup_info_dump: dict = {}
 
     def __str__(self) -> str:
-        return (f"<SonoffDevice-{self.hostname}@{self.ip_address}>")
+       return (f"<SonoffDevice-{self.hostname}@{self.ip_address}>")

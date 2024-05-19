@@ -3,10 +3,12 @@ import logging
 from ipaddress import ip_address
 # Non-Standard Libraries
 import json
+from uuid import UUID, uuid1
 from zeroconf import ServiceBrowser, Zeroconf
 from core.device_manager import DeviceManager
+from core.devices.__generic import DeviceType
 from .sonoff_device import SonoffDevice
-from .sonoff_light import create_sonoff_light, SonoffLight
+from .sonoff_light import SonoffLight
 
 log = logging.getLogger(__name__)
 
@@ -17,6 +19,7 @@ OPUS_D_MANAGER: DeviceManager = None
 def _found_new_device(name, info) -> None:
     ip = info.addresses[0]
     new_device = SonoffDevice(ip_address(f'{ip[0]}.{ip[1]}.{ip[2]}.{ip[3]}'))
+    new_device.id = uuid1()
     new_device.hostname = name.split('.')[0]
     new_device.port = info.port
     new_device.bssid = None
@@ -24,17 +27,16 @@ def _found_new_device(name, info) -> None:
     new_device.service_instace_name = info.type
     new_device.device_id = bytes(info.properties[('id').encode('utf-8')]).decode()
     new_device.startup_info_dump = info.properties
-    setattr(new_device, 'driver', 'sonoff')
+
+    match info.properties.get(b'type'):
+        case b'diy_plug':
+            new_device.type = DeviceType.LIGHT
+        case b'diy_meter':
+            new_device.type = "SONOFF_METER"
+        case _:
+            new_device.type = DeviceType.UNKNOWN
 
     OPUS_D_MANAGER.new_device(new_device)
-
-async def register_device(device: SonoffDevice,
-                          device_manager: DeviceManager) -> None:
-    """Register a new Device"""
-    match device.device_type:
-        case "diy_plug":
-            log.debug("Registering a new DIY Plug")
-            device_manager.register_device(await create_sonoff_light("ablublé", device))
 
 sonoff_discovered_devices: list = []
 
@@ -63,12 +65,18 @@ class MDNSListener:
         if info and info.properties.get(b'encrypt') is None:
             _found_new_device(name, info)
 
-
 def start_sonoff_finder() -> None:
     """Search for Sonoff Devices in the network"""
     zeroconf = Zeroconf()
     listener = MDNSListener()
     ServiceBrowser(zeroconf, "_ewelink._tcp.local.", listener)
+
+def new_light(name: str, base_device: SonoffDevice) -> SonoffLight:
+    """Create a new Sonoff Light"""
+    log.debug("Registering new Sonoff Light: %s", name)
+    new = SonoffLight(name, base_device)
+    return new
+
 
 def start(dirs: dict,
           config: dict,

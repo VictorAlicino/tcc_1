@@ -2,7 +2,7 @@
 
 from uuid import UUID
 from enum import Enum
-from .__generic import OpusDevice
+from .__generic import OpusDevice, DeviceType
 
 class HVACLevels(Enum):
     """Enum for HVAC Levels"""
@@ -30,6 +30,7 @@ class OpusHVAC(OpusDevice):
         self.space_id = space_id
         self.building = building
         self.driver = driver
+        self.type = DeviceType.HVAC
 
         self.power_state: bool  # Is the light On or Off
         self.vendor: str | None
