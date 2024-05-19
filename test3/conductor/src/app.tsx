@@ -1,11 +1,12 @@
 import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold, useFonts } from "@expo-google-fonts/roboto";
+import { NavigationContainer } from "@react-navigation/native";
 import { registerRootComponent } from "expo";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import colors from "tailwindcss/colors";
 
 import { Loading } from "@/components/loading";
-import { Home } from "@/screens/home";
+import { Routes } from "@/routes";
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -20,8 +21,10 @@ function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.zinc[900] }}>
-      <Home />
-      <StatusBar style="light" />
+      <NavigationContainer>
+        <Routes />
+        <StatusBar style="light" />
+      </NavigationContainer>
     </GestureHandlerRootView>
   );
 }
