@@ -44,7 +44,7 @@ const buildings: BuildingData[] = [
   },
 ];
 
-const spaces: SpaceData[] = [
+export const spaces: SpaceData[] = [
   {
     id: "1234",
     name: "Espaço 01",
@@ -67,7 +67,7 @@ const spaces: SpaceData[] = [
   },
 ];
 
-const rooms: RoomData[] = [
+export const rooms: RoomData[] = [
   {
     id: "1",
     name: "Sala 01",
