@@ -143,9 +143,10 @@ class DeviceManager:
     def get_device(self, device_id: UUID) -> any:
         """Return a device"""
         try:
-            for device_type in self.devices.items():
-                for device in self.devices[device_type]:
-                    return self.devices[device_type][device]
+            for device_type, devices in self.devices.items():
+                for device in devices.values():
+                    if device.id == device_id:
+                        return device
         except KeyError:
             log.error('Device not found')
 
@@ -231,10 +232,13 @@ class DeviceManager:
             match topic[2]:
                 case 'list_all':
                     self.dump_devices()
+                    return
                 case 'all_drivers':
                     self.dump_drivers()
+                    return
                 case 'available':
                     self.dump_available_devices()
+                    return
                 case 'register':
                     try:
                         temp = json.loads(msg.payload)
@@ -244,6 +248,7 @@ class DeviceManager:
                             device_name=temp['name'],
                             device_driver=temp['driver'],
                             room_id=UUID(temp['room_id']))
+                        return
                     except (ValueError, json.JSONDecodeError) as exc:
                         log.warning(msg.payload)
                         log.error(exc)

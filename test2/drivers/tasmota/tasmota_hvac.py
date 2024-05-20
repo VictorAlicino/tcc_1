@@ -22,17 +22,18 @@ class TasmotaHVAC(OpusHVAC):
         )
         self.mqtt_link = mqtt_link
         self.mqtt_name: str = tasmota_device.tasmota_name
+        self.temperature: float = 20.0
 
     def on(self) -> None:
         """Turn the light on"""
-        print("Turning on HVAC")
+        log.info("Turning on HVAC %s", self.name)
         self.mqtt_link.publish(
             topic=f"cmnd/{self.mqtt_name}/IRHVAC",
             payload=json.dumps({
-                "Vendor": self.vendor,
+                "Vendor": "TCL112AC",
                 "Power": "On",
-                "Mode": self.mode,
-                "FanSpeed": self.fan_speed,
+                "Mode":"Cool",
+                "FanSpeed":3,
                 "Temp": self.temperature
             })
         )
@@ -41,14 +42,12 @@ class TasmotaHVAC(OpusHVAC):
 
     def off(self) -> None:
         """Turn the light off"""
-        print("Turning off HVAC")
+        log.info("Turning off HVAC %s", self.name)
         self.mqtt_link.publish(
             topic=f"cmnd/{self.mqtt_name}/IRHVAC",
             payload=json.dumps({
-                "Vendor": self.vendor,
+                "Vendor": "TCL112AC",
                 "Power": "Off",
-                "Mode": self.mode,
-                "FanSpeed": self.fan_speed,
                 "Temp": self.temperature
             })
         )
@@ -60,10 +59,8 @@ class TasmotaHVAC(OpusHVAC):
         self.mqtt_link.publish(
             topic=f"cmnd/{self.mqtt_name}/IRHVAC",
             payload=json.dumps({
-                "Vendor": self.vendor,
+                "Vendor": "TCL112AC",
                 "Power": self.power_state,
-                "Mode": self.mode,
-                "FanSpeed": self.fan_speed,
                 "Temp": temperature
             })
         )
