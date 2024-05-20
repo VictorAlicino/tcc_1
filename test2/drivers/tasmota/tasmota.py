@@ -15,13 +15,14 @@ interfaces: dict[str, any] = {'mqtt<local>': None}
 OPUS_D_MANAGER: DeviceManager = None
 MQTT_DRIVER: MQTTClient = None
 
-def new_hvac(name: str, base_device: TasmotaDevice) -> TasmotaHVAC:
+def new_hvac(name: str, base_device: TasmotaDevice, additional_data) -> TasmotaHVAC:
     """Create a new Tasmota HVAC"""
     log.debug("Registering new Tasmota HVAC: %s", name)
     new = TasmotaHVAC(name,
                       base_device,
                       MQTT_DRIVER
                     )
+    new.vendor = additional_data['data']['vendor']
     return new
 
 def _mqtt_callback(topic, data: json) -> None:
@@ -32,7 +33,7 @@ def _mqtt_callback(topic, data: json) -> None:
             log.debug("Tasmota -> New device Requested")
             print(data)
             match data["device_type"]:
-                case "hvac":
+                case "HVAC":
                     log.debug("Creating new Tasmota HVAC")
                     new_device = TasmotaDevice()
                     new_device.id = uuid.uuid1()
@@ -44,6 +45,7 @@ def _mqtt_callback(topic, data: json) -> None:
                         device_name=data["device_name"],
                         device_driver="tasmota",
                         room_id=uuid.UUID(str(data["room_id"])),
+                        additional_data=data
                     )
                 case _:
                     log.error("Unknown Device Type: %s", data["device_type"])
@@ -56,6 +58,7 @@ def load_hvac(name: str, driver_data: dict) -> TasmotaHVAC:
     temp_obj.tasmota_name = driver_data['tasmota_name']
     temp_obj.type = driver_data['device_type']
     new = TasmotaHVAC(name, temp_obj, MQTT_DRIVER)
+    new.vendor = driver_data['vendor']
     return new
 
 def start(dirs: dict,

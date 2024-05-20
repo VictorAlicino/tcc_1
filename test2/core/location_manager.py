@@ -77,6 +77,7 @@ class LocationManager:
         self.spaces: dict = {}
         self.rooms: dict = {}
         self.opus_db = interfaces['opus_db']
+        self.opus_interfaces = interfaces
 
         self.load_db()
         self._configure_mqtt(interfaces)
@@ -266,32 +267,47 @@ class LocationManager:
                 exc.args = ('Room not found.',)
                 log.error(exc)
 
-    def dump_buildings(self) -> None:
+    def dump_buildings(self, send_to_log=False) -> None:
         """Print all buildings"""
-        log.debug('All buildings in the LocationManager')
+        if send_to_log:
+            log.debug('All buildings in the LocationManager')
+            for building in self.buildings.values():
+                log.debug('├──Building: %s', building.name)
+                log.debug('│\t└── UUID: %s', building.id)
+            log.debug('└── ALL BUILDINGS ABOVE')
+        dump: dict = {}
         for building in self.buildings.values():
-            log.debug('├──Building: %s', building.name)
-            log.debug('│\t└── UUID: %s', building.id)
-        log.debug('└── ALL BUILDINGS ABOVE')
+            dump[str(building.id)] = building.name
+        return dump
 
-    def dump_spaces(self) -> None:
+    def dump_spaces(self, send_to_log=False) -> None:
         """Print all spaces"""
-        log.debug('All spaces in the LocationManager')
+        if send_to_log:
+            log.debug('All spaces in the LocationManager')
+            for space in self.spaces.values():
+                log.debug('├──Space: %s', space.name)
+                log.debug('│\t├── UUID: %s', space.id)
+                log.debug('│\t└── @ Building: %s', self.buildings[space.building].name)
+            log.debug('└── ALL SPACES ABOVE')
+        dump: dict = {}
         for space in self.spaces.values():
-            log.debug('├──Space: %s', space.name)
-            log.debug('│\t├── UUID: %s', space.id)
-            log.debug('│\t└── @ Building: %s', self.buildings[space.building].name)
-        log.debug('└── ALL SPACES ABOVE')
+            dump[str(space.id)] = space.name
+        return dump
 
-    def dump_rooms(self) -> None:
+    def dump_rooms(self, send_to_log=False) -> None:
         """Print all rooms"""
-        log.debug('All rooms in the LocationManager')
+        if send_to_log:
+            log.debug('All rooms in the LocationManager')
+            for room in self.rooms.values():
+                log.debug('├──Room: %s', room.name)
+                log.debug('│\t├── UUID: %s', room.id)
+                log.debug('│\t├── @ Space: %s', self.spaces[room.space].name)
+                log.debug('│\t└── @ Building: %s', self.buildings[room.building].name)
+            log.debug('└── ALL ROOMS ABOVE')
+        dump: dict = {}
         for room in self.rooms.values():
-            log.debug('├──Room: %s', room.name)
-            log.debug('│\t├── UUID: %s', room.id)
-            log.debug('│\t├── @ Space: %s', self.spaces[room.space].name)
-            log.debug('│\t└── @ Building: %s', self.buildings[room.building].name)
-        log.debug('└── ALL ROOMS ABOVE')
+            dump[str(room.id)] = room.name
+        return dump
 
     def _configure_mqtt(self, interfaces: dict) -> None:
         """Configure MQTT Interface for the right Callbacks"""
@@ -305,6 +321,13 @@ class LocationManager:
         """MQTT Callback"""
         log.debug("MQTT Message Received: %s", msg.topic)
         topic = msg.topic.split('/')
+        if not msg.payload == b'':
+            try:
+                payload = json.loads(msg.payload)
+            except json.JSONDecodeError:
+                log.error('Invalid JSON Received')
+                return
+
         match topic[1]:
             case 'building':
                 match topic[2]:
@@ -312,12 +335,37 @@ class LocationManager:
                         try:
                             temp = json.loads(msg.payload)
                             self.new_building(temp['name'])
-                            # log.debug(traceback.format_exc())
-                        except (ValueError, json.JSONDecodeError) as exc:
+                            self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'success'})
+                            )
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'success'})
+                            )
+                        except (
+                            ValueError,
+                            KeyError,
+                            json.JSONDecodeError
+                            ):
                             log.warning(msg.payload)
-                            log.error(exc)
+                            self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'failed'})
+                            )
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'failed'})
+                            )
                     case 'list':
-                        self.dump_buildings()
+                        self.opus_interfaces['mqtt<local>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_buildings())
+                        )
+                        self.opus_interfaces['mqtt<maestro>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_buildings())
+                        )
             case 'space':
                 match topic[2]:
                     case 'new':
@@ -327,12 +375,37 @@ class LocationManager:
                                 temp['name'],
                                 self.get_building(temp['building']).id
                             )
-                        except (ValueError, json.JSONDecodeError) as exc:
+                            self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'success'})
+                            )
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'success'})
+                            )
+                        except (
+                            ValueError,
+                            KeyError,
+                            json.JSONDecodeError
+                            ):
                             log.warning(msg.payload)
-                            log.error(exc)
-                            # log.debug(traceback.format_exc())
+                            self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'failed'})
+                            )
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'failed'})
+                            )
                     case 'list':
-                        self.dump_spaces()
+                        self.opus_interfaces['mqtt<local>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_spaces())
+                        )
+                        self.opus_interfaces['mqtt<maestro>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_spaces())
+                        )
             case 'room':
                 match topic[2]:
                     case 'new':
@@ -345,9 +418,34 @@ class LocationManager:
                                 space.id,
                                 space.building
                             )
-                        except (ValueError, json.JSONDecodeError, AttributeError) as exc:
+                            self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'success'})
+                            )
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'success'})
+                            )
+                        except (
+                            ValueError,
+                            KeyError,
+                            json.JSONDecodeError,
+                            AttributeError):
                             log.warning(msg.payload)
-                            log.error(exc)
-                            # log.debug(traceback.format_exc())
+                            self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'failed'})
+                            )
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'failed'})
+                            )
                     case 'list':
-                        self.dump_rooms()
+                        self.opus_interfaces['mqtt<local>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_rooms())
+                        )
+                        self.opus_interfaces['mqtt<maestro>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_rooms())
+                        )

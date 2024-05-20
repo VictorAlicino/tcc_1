@@ -75,9 +75,10 @@ class MDNSListener:
             #    log.debug("Device %s state changed -> %s",
             #              info.properties.get(b'id').decode(),
             #              info.properties)
-            log.debug("Device %s state changed -> %s",
-                      info.properties.get(b'id').decode(),
-                      info.properties)
+            #log.debug("Device %s state changed -> %s",
+            #          info.properties.get(b'id').decode(),
+            #          info.properties)
+            ...
 
     def add_service(self, zeroconf, type, name): # pylint: disable=redefined-builtin
         """Add a Device to the known devices list"""

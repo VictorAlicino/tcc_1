@@ -36,7 +36,8 @@ def create_device_on_db(db: Session, device: any) -> None:
             db_device.driver_data = {
                 'id': str(device.id),
                 'tasmota_name': device.mqtt_name,
-                'device_type': device.type
+                'device_type': device.type,
+                'vendor': device.vendor
             }
         case _:
             log.error('Driver not found')
@@ -60,10 +61,11 @@ class DeviceManager:
         self.opus_db = interfaces['opus_db']
         self.opus_drivers = drivers
         self.location_manager = location_manager
+        self.opus_interfaces = interfaces
         #self._load_devices_from_db()
 
         self._manager_init(dirs)
-        self._configure_mqtt(interfaces)
+        self._configure_mqtt()
         log.info('Device Manager initialized.')
 
     def _manager_init(self, dirs: dict) -> None:
@@ -90,12 +92,13 @@ class DeviceManager:
                         device_id: UUID,
                         device_name: str,
                         device_driver: str,
-                        room_id: UUID) -> None:
+                        room_id: UUID,
+                        additional_data=None) -> None:
         """Register a device in the device manager"""
         log.debug("Registering a new device")
-        log.debug("├── Device ID: %s", device_id)
-        log.debug("├── Device Driver: %s", device_driver)
-        log.debug("└── Room ID: %s", room_id)
+        log.debug("\t├── Device ID: %s", device_id)
+        log.debug("\t├── Device Driver: %s", device_driver)
+        log.debug("\t└── Room ID: %s", room_id)
         new_device = None
         # Check if the device is available
         for available_device in self.available_devices[device_driver]:
@@ -122,7 +125,7 @@ class DeviceManager:
             case 'HVAC':
                 temp_device = (
                     self.opus_drivers[device_driver]
-                    .new_hvac(device_name, new_device)
+                    .new_hvac(device_name, new_device, additional_data)
                 )
                 temp_room = self.location_manager.get_room(room_id)
                 temp_device.room_id = temp_room.id
@@ -150,40 +153,83 @@ class DeviceManager:
         except KeyError:
             log.error('Device not found')
 
-    def dump_devices(self) -> None:
+    def dump_devices(self, send_to_log=False) -> None:
         """Print all devices"""
-        log.debug('All devices in the DeviceManager')
-        log.debug('├──REGISTERED DEVICES')
+        if send_to_log:
+            log.debug('All devices in the DeviceManager')
+            log.debug('├──REGISTERED DEVICES')
+            for device_type, devices in self.devices.items():
+                log.debug('│\t├── %s', device_type)
+                for device in devices:
+                    log.debug('│\t│\t├── %s', device)
+                log.debug('│\t│\t└── END OF %s', device_type)
+            log.debug('│\t└── END OF REGISTERED DEVICES')
+            log.debug('└──AVAILABLE DEVICES')
+            for driver, devices in self.available_devices.items():
+                log.debug('│\t├── %s', driver)
+                for device in devices:
+                    log.debug('│\t│\t├── %s : %s', device.id, device.type)
+                log.debug('│\t└── END OF %s', driver)
+            log.debug('└── END OF AVAILABLE DEVICES')
+        dump: dict = {}
+        dump['registered_devices'] = {}
         for device_type, devices in self.devices.items():
-            log.debug('│\t├── %s', device_type)
+            dump['registered_devices'][device_type] = {}
             for device in devices:
-                log.debug('│\t│\t├── %s', device)
-            log.debug('│\t│\t└── END OF %s', device_type)
-        log.debug('│\t└── END OF REGISTERED DEVICES')
-        log.debug('└──AVAILABLE DEVICES')
-        for device_type, devices in self.available_devices.items():
-            log.debug('\t├── %s', device_type)
-            for device in devices:
-                log.debug('\t│\t├── %s', device)
-            log.debug('\t│\t└── END OF %s', device_type)
-        log.debug('\t└── END OF AVAILABLE DEVICES')
-
-    def dump_available_devices(self) -> None:
-        """Print all available devices"""
-        log.debug('All available devices in the DeviceManager')
+                dump['registered_devices'][device_type][str(device)] = (
+                    self.devices[device_type][device].name)
+        dump['available_devices'] = {}
         for driver, devices in self.available_devices.items():
-            log.debug('├── %s', driver)
+            dump['available_devices'][driver] = {}
             for device in devices:
-                log.debug('│\t├── %s : %s', device.id, device.type)
-            log.debug('│\t└── END OF %s', driver)
-        log.debug('└── END OF AVAILABLE DEVICES')
+                dump['available_devices'][driver][str(device)] = device.type
+        return dump
 
-    def dump_drivers(self) -> None:
+    def dump_registered_devices(self, send_to_log=False) -> None:
+        """Print all registered devices"""
+        if send_to_log:
+            log.debug('All registered devices in the DeviceManager')
+            for device_type, devices in self.devices.items():
+                log.debug('├── %s', device_type)
+                for device in devices:
+                    log.debug('│\t├── %s', device)
+                log.debug('│\t└── END OF %s', device_type)
+            log.debug('└── END OF REGISTERED DEVICES')
+        dump: dict = {}
+        for device_type, devices in self.devices.items():
+            dump[device_type] = {}
+            for device in devices:
+                dump[device_type][str(device)] = self.devices[device_type][device].name
+        return dump
+
+    def dump_available_devices(self, send_to_log=False) -> None:
+        """Print all available devices"""
+        if send_to_log:
+            log.debug('All available devices in the DeviceManager')
+            for driver, devices in self.available_devices.items():
+                log.debug('├── %s', driver)
+                for device in devices:
+                    log.debug('│\t├── %s : %s', device.id, device.type)
+                log.debug('│\t└── END OF %s', driver)
+            log.debug('└── END OF AVAILABLE DEVICES')
+        dump: dict = {}
+        for driver, devices in self.available_devices.items():
+            dump[driver] = {}
+            for device in devices:
+                dump[driver][str(device.id)] = device.type
+        return dump
+
+    def dump_drivers(self, send_to_log=False) -> None:
         """Print all drivers"""
-        log.debug('All drivers in the DeviceManager')
+        if send_to_log:
+            log.debug('All drivers in the DeviceManager')
+            for driver, _ in self.opus_drivers.items():
+                log.debug('├── %s', driver)
+            log.debug('└── END OF DRIVERS')
+        dump: list = []
         for driver, _ in self.opus_drivers.items():
-            log.debug('├── %s', driver)
-        log.debug('└── END OF DRIVERS')
+            dump.append(driver)
+        return dump
 
     def load_devices_from_db(self) -> None:
         """Load all devices from the database"""
@@ -191,7 +237,7 @@ class DeviceManager:
         db = self.opus_db.get_db()
         db = next(db)
         for device in db.query(models.Device).all():
-            match device.device_type: 
+            match device.device_type:
                 case 'LIGHT':
                     temp_device = (
                         self.opus_drivers[device.driver_name]
@@ -217,64 +263,199 @@ class DeviceManager:
         log.info('All devices loaded from the database')
         db.close()
 
-    def _configure_mqtt(self, interfaces: dict) -> None:
+    def _configure_mqtt(self) -> None:
         """Configure MQTT"""
         log.debug('Configuring MQTT for DeviceManager.')
-        interfaces['mqtt<local>'].register_callback('devices/#', self._mqtt_callback)
-        interfaces['mqtt<maestro>'].register_callback('devices/#', self._mqtt_callback)
+        self.opus_interfaces['mqtt<local>'].register_callback('devices/#', self._mqtt_callback)
+        self.opus_interfaces['mqtt<maestro>'].register_callback('devices/#', self._mqtt_callback)
         log.debug('MQTT Configured for Device Manager.')
 
     def _mqtt_callback(self, client, userdata, msg):
         """MQTT Callback"""
         log.debug("MQTT Message Received: %s", msg.topic)
         topic = msg.topic.split('/')
-        if topic[1] == 'devices':
-            match topic[2]:
-                case 'list_all':
-                    self.dump_devices()
-                    return
-                case 'all_drivers':
-                    self.dump_drivers()
-                    return
-                case 'available':
-                    self.dump_available_devices()
-                    return
-                case 'register':
-                    try:
-                        temp = json.loads(msg.payload)
-                        print(temp)
-                        self.register_device(
-                            device_id=UUID(temp['id']),
-                            device_name=temp['name'],
-                            device_driver=temp['driver'],
-                            room_id=UUID(temp['room_id']))
+        if not msg.payload == b'':
+            try:
+                payload = json.loads(msg.payload)
+            except json.JSONDecodeError:
+                log.error('Invalid JSON Received')
+                return
+
+        match topic[1]:
+            case 'devices':
+                match topic[2]:
+                    case 'list_all':
+                        self.opus_interfaces['mqtt<local>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_devices())
+                            )
+                        self.opus_interfaces['mqtt<maestro>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_devices())
+                            )
                         return
-                    except (ValueError, json.JSONDecodeError) as exc:
-                        log.warning(msg.payload)
-                        log.error(exc)
-            if topic[2] in self.opus_drivers:
-                try:
-                    log.debug("Driver specific message received, sending to %s.", topic[2])
-                    self.opus_drivers[topic[2]]._mqtt_callback(topic, json.loads(msg.payload)) # pylint: disable=protected-access
-                except json.JSONDecodeError:
-                    log.error('Invalid JSON Received')
-            else:
-                try:
-                    device_id = UUID(topic[2])
-                    device = self.get_device(device_id)
-                    self._device_command(device, json.loads(msg.payload))
-                except ValueError:
-                    log.error('Invalid Command Received')
+                    case 'list':
+                        self.opus_interfaces['mqtt<local>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_registered_devices())
+                            )
+                        self.opus_interfaces['mqtt<maestro>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_registered_devices())
+                            )
+                        return
+                    case 'all_drivers':
+                        self.opus_interfaces['mqtt<local>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_drivers())
+                            )
+                        self.opus_interfaces['mqtt<maestro>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_drivers())
+                            )
+                        return
+                    case 'available':
+                        self.opus_interfaces['mqtt<local>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_available_devices())
+                            )
+                        self.opus_interfaces['mqtt<maestro>'].publish(
+                            payload['callback'],
+                            json.dumps(self.dump_available_devices())
+                            )
+                        return
+                    case 'list':
+                        try:
+                            temp = json.loads(msg.payload)
+                            print(temp)
+                            self.register_device(
+                                device_id=UUID(temp['id']),
+                                device_name=temp['name'],
+                                device_driver=temp['driver'],
+                                room_id=UUID(temp['room_id']))
+                            return
+                        except (ValueError, json.JSONDecodeError) as exc:
+                            log.warning(msg.payload)
+                            log.error(exc)
+                    case 'register':
+                        try:
+                            temp = json.loads(msg.payload)
+                            self.register_device(
+                                device_id=UUID(temp['id']),
+                                device_name=temp['name'],
+                                device_driver=temp['driver'],
+                                room_id=UUID(temp['room_id']))
+                            self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'success'})
+                            )
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'success'})
+                            )
+                            return
+                        except Exception as exc:
+                            log.warning(msg.payload)
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({
+                                    'status': 'failed',
+                                    'reason': str(exc)
+                                })
+                            )
+                            self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({
+                                    'status': 'failed',
+                                    'reason': str(exc)
+                                })
+                            )
+                            return
+
+                if topic[2] in self.opus_drivers:
+                    try:
+                        log.debug("Driver specific message received, sending to %s.", topic[2])
+                        self.opus_drivers[topic[2]]._mqtt_callback(topic, json.loads(msg.payload)) # pylint: disable=protected-access
+                        self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'success'})
+                            )
+                        self.opus_interfaces['mqtt<maestro>'].publish(
+                            payload['callback'],
+                            json.dumps({'status': 'success'})
+                        )
+                    except json.JSONDecodeError:
+                        log.error('Invalid JSON Received')
+                        self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({
+                                    'status': 'failed',
+                                    'reason': 'Invalid JSON Received'
+                                    })
+                            )
+                        self.opus_interfaces['mqtt<maestro>'].publish(
+                            payload['callback'],
+                            json.dumps({
+                                'status': 'failed',
+                                'reason': 'Invalid JSON Received'
+                                })
+                        )
+                else:
+                    try:
+                        device_id = UUID(topic[2])
+                        device = self.get_device(device_id)
+                        self._device_command(device, payload)
+                    except ValueError:
+                        log.error('Invalid Command Received')
+                        self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({
+                                    'status': 'failed',
+                                    'reason': 'Invalid Command Received'
+                                    })
+                            )
+                        self.opus_interfaces['mqtt<maestro>'].publish(
+                            payload['callback'],
+                            json.dumps({
+                                'status': 'failed',
+                                'reason': 'Invalid Command Received'
+                                })
+                        )
+            case _:
+                log.error('Invalid Topic Received')
+                self.opus_interfaces['mqtt<local>'].publish(
+                        payload['callback'],
+                        json.dumps({
+                            'status': 'failed',
+                            'reason': 'Invalid Topic Received'
+                            })
+                    )
 
     def _device_command(self, device, command: json) -> None:
         """Receive a command from MQTT"""
         log.debug('Device Command Received')
         log.debug('├── Device ID: %s', device.id)
         log.debug('└──> Command: %s', command)
-        match command['cmnd']:
-            case "on":
-                device.on()
-            case "off":
-                device.off()
-            case "toggle":
-                device.toggle()
+        match device.type:
+            case 'LIGHT':
+                match command['cmnd']:
+                    case "on":
+                        device.on()
+                    case "off":
+                        device.off()
+                    case "toggle":
+                        device.toggle()
+            case 'HVAC':
+                match command['cmnd']:
+                    case "on":
+                        device.on()
+                    case "off":
+                        device.off()
+                    case "set_temperature":
+                        device.set_temperature(command['temperature'])
+                    case "set_mode":
+                        device.set_mode(command['mode'])
+                    case "set_fan_speed":
+                        device.set_fan_speed(command['fan_speed'])
+            case _:
+                log.error('Device Type not found')
