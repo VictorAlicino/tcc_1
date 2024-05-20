@@ -1,34 +1,79 @@
 """Tasmota HVAC Integration"""
 #Non standard libraries
+from uuid import UUID
+import json
+import logging
+from interfaces.mqtt import MQTTClient
 from core.devices.hvac import OpusHVAC
 from .tasmota_device import TasmotaDevice
 
+log = logging.getLogger(__name__)
 
 class TasmotaHVAC(OpusHVAC):
     """Tasmota HVAC Implementation"""
-    def __init__(self, name: str):
-        super().__init__()
-        super().name = name
-        self.link: TasmotaDevice
-        self.mqt_topic_prefix: str = ""
+    def __init__(self,
+                 name: str,
+                 tasmota_device: TasmotaDevice,
+                 mqtt_link: MQTTClient):
+        super().__init__(
+            name=name,
+            uuid=UUID(str(tasmota_device.id)),
+            driver="tasmota"
+        )
+        self.mqtt_link = mqtt_link
+        self.mqtt_name: str = tasmota_device.tasmota_name
 
-    async def on(self) -> None:
+    def on(self) -> None:
         """Turn the light on"""
         print("Turning on HVAC")
-        # TODO: Implement the MQTT Logic
+        self.mqtt_link.publish(
+            topic=f"cmnd/{self.mqtt_name}/IRHVAC",
+            payload=json.dumps({
+                "Vendor": self.vendor,
+                "Power": "On",
+                "Mode": self.mode,
+                "FanSpeed": self.fan_speed,
+                "Temp": self.temperature
+            })
+        )
+        self.power_state = "On"
 
-    async def off(self) -> None:
+
+    def off(self) -> None:
         """Turn the light off"""
         print("Turning off HVAC")
-        # TODO: Implement the MQTT Logic
+        self.mqtt_link.publish(
+            topic=f"cmnd/{self.mqtt_name}/IRHVAC",
+            payload=json.dumps({
+                "Vendor": self.vendor,
+                "Power": "Off",
+                "Mode": self.mode,
+                "FanSpeed": self.fan_speed,
+                "Temp": self.temperature
+            })
+        )
+        self.power_state = "Off"
 
-    async def set_temperature(self, temperature: float) -> None:
+    def set_temperature(self, temperature: float) -> None:
         """Set the Temperature"""
         print(f"Setting Temperature to {temperature}")
-        # TODO: Implement the MQTT Logic
+        self.mqtt_link.publish(
+            topic=f"cmnd/{self.mqtt_name}/IRHVAC",
+            payload=json.dumps({
+                "Vendor": self.vendor,
+                "Power": self.power_state,
+                "Mode": self.mode,
+                "FanSpeed": self.fan_speed,
+                "Temp": temperature
+            })
+        )
 
-async def create_tasmota_hvac(name: str, link: TasmotaDevice) -> TasmotaHVAC:
-    """Create a new Tasmota HVAC Device"""
-    new_hvac = TasmotaHVAC(name)
-    new_hvac.link = link
-    return new_hvac
+    def print_data(self) -> None:
+        """Print the HVAC Data"""
+        log.debug("Name: %s", self.name)
+        log.debug("\t├── ID: %s", self.id)
+        log.debug("\t├── Room ID: %s", self.room_id)
+        log.debug("\t├── Space ID: %s", self.space_id)
+        log.debug("\t├── Building ID: %s", self.building_id)
+        log.debug("\t├── Driver: %s", self.driver)
+        log.debug("\t└── Type: %s", self.type)

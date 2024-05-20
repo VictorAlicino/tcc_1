@@ -44,17 +44,17 @@ class BuildingRoom(BuildingRoomBase):
         orm_mode: True
 
 # Driver Schemas
-class DriverBase(BaseModel):
-    driver_type: str
-
-class DriverCreate(DriverBase):
-    pass
-
-class Driver(DriverBase):
-    driver_pk: bytes
-
-    class Config:
-        orm_mode: True
+# class DriverBase(BaseModel):
+#     driver_type: str
+# 
+# class DriverCreate(DriverBase):
+#     pass
+# 
+# class Driver(DriverBase):
+#     driver_pk: bytes
+# 
+#     class Config:
+#         orm_mode: True
 
 # Device Schemas
 class DeviceBase(BaseModel):

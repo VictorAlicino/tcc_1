@@ -36,6 +36,24 @@ def _found_new_device(name, info) -> None:
         case _:
             new_device.type = DeviceType.UNKNOWN
 
+    # Check if the device is already registered
+    try:
+        for device_type in OPUS_D_MANAGER.devices:
+            for device in OPUS_D_MANAGER.devices[device_type].values():
+                if device.driver == 'sonoff' and device.device_id == new_device.device_id:
+                    log.warning("Device already registered: %s", new_device.device_id)
+                    return
+    except KeyError:
+        ...
+    # Check if the device is already available
+    try:
+        for device in OPUS_D_MANAGER.available_devices['sonoff']:
+            if device.device_id == new_device.device_id:
+                log.warning("Device already available: %s", new_device.device_id)
+                return
+    except KeyError:
+        ...
+
     OPUS_D_MANAGER.new_device(new_device)
 
 sonoff_discovered_devices: list = []
@@ -52,11 +70,14 @@ class MDNSListener:
         #print(f'Update Service {name} {type}')
         info = zeroconf.get_service_info(type, name)
         if info:
-            if (info.properties.get(b'id').decode() in
-            [device.device_id for device in OPUS_D_MANAGER.available_devices['sonoff']]):
-                log.debug("Device %s state changed -> %s",
-                          info.properties.get(b'id').decode(),
-                          info.properties)
+            #if (info.properties.get(b'id').decode() in
+            #[device.device_id for device in OPUS_D_MANAGER.available_devices['sonoff']]):
+            #    log.debug("Device %s state changed -> %s",
+            #              info.properties.get(b'id').decode(),
+            #              info.properties)
+            log.debug("Device %s state changed -> %s",
+                      info.properties.get(b'id').decode(),
+                      info.properties)
 
     def add_service(self, zeroconf, type, name): # pylint: disable=redefined-builtin
         """Add a Device to the known devices list"""
@@ -77,6 +98,19 @@ def new_light(name: str, base_device: SonoffDevice) -> SonoffLight:
     new = SonoffLight(name, base_device)
     return new
 
+def load_light(name: str, driver_data: dict) -> SonoffLight:
+    """Load a Sonoff Light"""
+    log.debug("Loading Sonoff Light: %s", name)
+    temp_obj = SonoffDevice(ip_address(driver_data['ip_address']))
+    temp_obj.id = UUID(driver_data['id'])
+    temp_obj.hostname = driver_data['hostname']
+    temp_obj.port = driver_data['port']
+    temp_obj.bssid = driver_data['bssid']
+    temp_obj.device_type = driver_data['device_type']
+    temp_obj.device_id = driver_data['device_id']
+    temp_obj.startup_info_dump = driver_data['startup_info_dump']
+    new = SonoffLight(name, temp_obj)
+    return new
 
 def start(dirs: dict,
           config: dict,

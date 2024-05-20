@@ -81,7 +81,7 @@ class SonoffLight(OpusLight):
 
     def update_status(self) -> None:
         """Update the Status of the Light"""
-        requests.post(
+        resp = requests.post(
             url=f'http://{self.ip_address}:{self.port}/zeroconf/info',
             data= json.dumps({
                 "deviceid": self.device_id,
@@ -90,6 +90,9 @@ class SonoffLight(OpusLight):
             headers={"Content-Type": "application/json"},
             timeout=5
         )
+        resp = resp.json()
+        self.power_state = resp[b'data'][b'switch']
+        log.debug("%s Power State: %s", self.name, resp[b'data'][b'switch'])
 
     def print_data(self) -> None:
         """Print the Light Data"""

@@ -25,11 +25,11 @@ class BuildingRoom(Base):
     room_name = Column(String, nullable=False)
     building_space = relationship("BuildingSpace", back_populates="rooms")
 
-class Driver(Base):
-    """Driver model"""
-    __tablename__ = "drivers"
-    driver_pk = Column(UUID, primary_key=True, nullable=False)
-    driver_type = Column(String, nullable=False)
+#class Driver(Base):
+#    """Driver model"""
+#    __tablename__ = "drivers"
+#    driver_pk = Column(UUID, primary_key=True, nullable=False)
+#    driver_type = Column(String, nullable=False)
 
 class Device(Base):
     """Device model"""
@@ -38,11 +38,10 @@ class Device(Base):
     room_fk = Column(UUID, ForeignKey('building_room.building_room_pk'), nullable=False)
     device_name = Column(String, nullable=False)
     device_type = Column(String, nullable=False)
-    driver_fk = Column(UUID, ForeignKey('drivers.driver_pk'), nullable=False)
-    driver_data = Column(JSON, nullable=False)
-    device_values = Column(JSON, nullable=False)
+    driver_name = Column(String, nullable=False)
+    driver_data = Column(JSON)
     building_room = relationship("BuildingRoom", back_populates="devices")
-    driver = relationship("Driver", back_populates="devices")
+    # driver = relationship("Driver", back_populates="devices")
 
 class Role(Base):
     """Role model"""
@@ -76,11 +75,11 @@ BuildingRoom.devices = relationship(
     order_by=Device.device_pk,
     back_populates="building_room"
     )
-Driver.devices = relationship(
-    "Device",
-    order_by=Device.device_pk,
-    back_populates="driver"
-    )
+#Driver.devices = relationship(
+#    "Device",
+#    order_by=Device.device_pk,
+#    back_populates="driver"
+#    )
 Role.users = relationship(
     "User",
     order_by=User.user_pk,

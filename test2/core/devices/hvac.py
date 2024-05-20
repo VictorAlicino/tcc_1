@@ -19,22 +19,17 @@ class OpusHVAC(OpusDevice):
     """Generic Implementation of a hVAC Unit"""
     def __init__(self, name: str,
                  uuid: UUID,
-                 room_id: str,
-                 space_id: str,
-                 building: str,
                  driver: any):
         super().__init__()
         self.name = name
         self.id = uuid
-        self.room_id = room_id
-        self.space_id = space_id
-        self.building = building
         self.driver = driver
         self.type = DeviceType.HVAC
 
-        self.power_state: bool  # Is the light On or Off
+        self.power_state: str  # Is the light On or Off
         self.vendor: str | None
         self.model: str | None
+        self.mode: str | None
         self.fan_speed: hvac_levels_t | None
         self.swing_vertical: hvac_levels_t | None
         self.swing_horizontal: str | None
@@ -51,8 +46,8 @@ class OpusHVAC(OpusDevice):
         self.sleep: int | None
         self.state_mode: str | None
 
-    async def on(self) -> None:
+    def on(self) -> None:
         """Turn the light on"""
 
-    async def off(self) -> None:
+    def off(self) -> None:
         """Turn the light off"""

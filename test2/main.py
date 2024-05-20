@@ -51,6 +51,10 @@ async def main() -> None:
     #MANAGERS["devices"].print_all_devices()
     while True:
         await asyncio.sleep(1)
+        #MANAGERS["devices"].get_device("59e900d215a811efacf9001a7dda710a").on()
+        #await asyncio.sleep(1)
+        #MANAGERS["devices"].get_device("59e900d215a811efacf9001a7dda710a").off()
+        #await asyncio.sleep(1)
 
 
 if __name__ == "__main__":
@@ -66,20 +70,21 @@ if __name__ == "__main__":
         config=CONFIG,
         dirs=DIRS,
         interfaces=INTERFACES
-        )
+    )
     initializers.load_managers(
         dirs=DIRS,
         managers=MANAGERS,
         interfaces=INTERFACES,
         drivers=DRIVERS
-        )
+    )
     initializers.load_drivers(
         config=CONFIG,
         dirs=DIRS,
         drivers=DRIVERS,
         interfaces=INTERFACES,
         managers=MANAGERS
-        )
+    )
+    MANAGERS["devices"].load_devices_from_db()
 
     # (INTERFACES)
     # TODO: Start devices manager
