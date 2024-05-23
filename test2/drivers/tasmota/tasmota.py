@@ -37,7 +37,7 @@ def _mqtt_callback(topic, data: json) -> None:
                     log.debug("Creating new Tasmota HVAC")
                     new_device = TasmotaDevice()
                     new_device.id = uuid.uuid1()
-                    new_device.tasmota_name = data["tasmota_name"]
+                    new_device.tasmota_name = data['data']["tasmota_name"]
                     new_device.type = "HVAC"
                     OPUS_D_MANAGER.new_device(new_device)
                     OPUS_D_MANAGER.register_device(

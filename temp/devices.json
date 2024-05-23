@@ -1,0 +1,17 @@
+{
+    "light" : {
+        "luz1": "python object",
+        "luz2": "python object",
+        "luz3": "python object"
+    },
+    "hvac": {
+        "ac1": "python object",
+        "ac2": "python object",
+        "ac3": "python object"
+    },
+    "projector": {
+        "projector1": "python object",
+        "projector2": "python object",
+        "projector3": "python object"
+    }
+}

@@ -1,0 +1,3 @@
+cloud-mqtt: "168.75.84.130"
+destination-server-name: "opus-server-d8c5" # "opus-server-5be2"
+client-id: "maestro_mqtt"
