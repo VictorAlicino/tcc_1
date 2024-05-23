@@ -46,9 +46,9 @@ async def create_building(new_building: Building):
                                     "callback": f"{CLIENT_ID}/callback"
                                     }
                                     ))
-        for message in client.messages:
-            print(message.payload.decode())
-            return {"callback": json.loads(message.payload.decode())}
+        #for message in client.messages:
+        #    print(message.payload.decode())
+        #    return {"callback": json.loads(message.payload.decode())}
     return {"message": "Building Created"}
 
 @app.post("/space/create")
@@ -64,9 +64,9 @@ async def create_space(new_space: Space):
                                     "callback": f"{CLIENT_ID}/callback"
                                     }
                                     ))
-        for message in client.messages:
-            print(message.payload.decode())
-            return {"callback": json.loads(message.payload.decode())}
+        #for message in client.messages:
+        #    print(message.payload.decode())
+        #    return {"callback": json.loads(message.payload.decode())}
     return {"message": "Space Created"}
 
 @app.post("/room/create")
@@ -83,9 +83,9 @@ async def create_room(new_room: Room):
                                     "callback": f"{CLIENT_ID}/callback"
                                     }
                                     ))
-        for message in client.messages:
-            print(message.payload.decode())
-            return {"callback": json.loads(message.payload.decode())}
+        #for message in client.messages:
+        #    print(message.payload.decode())
+        #    return {"callback": json.loads(message.payload.decode())}
     return {"message": "Room Created"}
 
 # List
@@ -255,9 +255,9 @@ async def register_device(device: Device):
                                     "callback": f"{CLIENT_ID}/callback"
                                     }
                                 ))
-        for message in client.messages:
-            print(message.payload.decode())
-            return {"callback": json.loads(message.payload.decode())}
+        #for message in client.messages:
+        #    print(message.payload.decode())
+        #    return {"callback": json.loads(message.payload.decode())}
     return {"message": "Device Registered"}
 
 @app.post("/devices/{driver}/new_device")
@@ -275,9 +275,9 @@ async def new_device(driver: str, device: DeviceByDriver):
                                     "callback": f"{CLIENT_ID}/callback"
                                     }
                                 ))
-        for message in client.messages:
-            print(message.payload.decode())
-            return {"callback": json.loads(message.payload.decode())}
+        #for message in client.messages:
+        #    print(message.payload.decode())
+        #    return {"callback": json.loads(message.payload.decode())}
     return {"message": "Device Created"}
 
 @app.post("/devices/{device}")
