@@ -71,7 +71,7 @@ class DeviceManager:
     def _manager_init(self, dirs: dict) -> None:
         """Initialize Device Manager in-memory database"""
         log.debug('Initializing Device Manager in-memory database.')
-        for device_type in os.listdir(f'{dirs['CORE']}/devices'):
+        for device_type in os.listdir(f"{dirs['CORE']}/devices"):
             if device_type.endswith('.py') and not device_type.startswith('__'):
                 log.debug('Creating virtual db for %s', device_type[:-3])
                 self.devices[f'opus_{device_type[:-3]}'] = {}
