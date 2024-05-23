@@ -36,8 +36,6 @@ class DeviceByDriver(BaseModel):
 class Command(BaseModel):
     """Command model."""
     cmnd: str | dict
-    set_temperature: float | None
-    set_mode: str | dict | None
-    set_fan_speed: str | dict | None
-
-    
+    temperature: float | None
+    mode: str | dict | None
+    fan_speed: str | dict | None
