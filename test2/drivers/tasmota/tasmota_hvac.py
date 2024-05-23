@@ -110,4 +110,5 @@ class TasmotaHVAC(OpusHVAC):
         log.debug("\t├── Space ID: %s", self.space_id)
         log.debug("\t├── Building ID: %s", self.building_id)
         log.debug("\t├── Driver: %s", self.driver)
+        log.debug("\t├── Vendor: %s", self.vendor)
         log.debug("\t└── Type: %s", self.type)
