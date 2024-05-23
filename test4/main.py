@@ -289,9 +289,9 @@ async def device_command(device: str, command: Command):
                              payload=json.dumps(
                                  {
                                     "cmnd": command.cmnd,
-                                    "temperature": command.set_temperature,
-                                    "mode": command.set_mode,
-                                    "fan_speed": command.set_fan_speed,
+                                    "temperature": command.temperature,
+                                    "mode": command.mode,
+                                    "fan_speed": command.fan_speed,
                                     "callback": f"{CLIENT_ID}/callback"
                                     }
                                 ))
