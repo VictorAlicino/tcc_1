@@ -1,11 +1,13 @@
 # University Final Paper
 
-* Define the problem
+This is a system that can make a bridge between cheap IoT devices and multiple users in a same building.
+Making possible that a lot of authorized people control the same light, HVAC and etc
 
-    IoT devices are more and more growing in availability,
-    but for small to medium buildings is not possible to properly take advantage of this new and cheap devices.
+* Opus (Local Server): Create the bridge between IoT devices and any other device necessary to control a building.
 
-    Services like Tuya and eWeLink largely used by chinese manufactures of such devices wasn't made for multi-users in mind.
+* Maestro (Public Server): Authenticate the users, keeps a relation of all Local Servers and it's the "outside of network" bridge
+for controlling Local Server
 
-    The result of this is that small to large buildings can not take full advantage of this devices without compromises.
+* Conductor (WebApp): WebApp for an Admin control the Local Server
 
+* Conductor Mobile (MobileApp): Any user app, basically the front-end
