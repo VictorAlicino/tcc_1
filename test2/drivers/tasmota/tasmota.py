@@ -17,12 +17,12 @@ MQTT_DRIVER: MQTTClient = None
 
 def new_hvac(name: str, base_device: TasmotaDevice, additional_data) -> TasmotaHVAC:
     """Create a new Tasmota HVAC"""
-    log.debug("Registering new Tasmota HVAC: %s", name)
     new = TasmotaHVAC(name,
                       base_device,
                       MQTT_DRIVER
                     )
     new.vendor = additional_data['data']['vendor']
+    log.debug("Registering new Tasmota HVAC: %s", name)
     return new
 
 def _mqtt_callback(topic, data: json) -> None:
