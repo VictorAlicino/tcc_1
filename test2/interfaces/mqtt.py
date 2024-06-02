@@ -1,6 +1,7 @@
 """MQTT Interface"""
 from threading import Lock, Thread
 import logging
+import socket
 import paho.mqtt.client as mqtt
 from getmac import get_mac_address as gma
 
@@ -52,6 +53,11 @@ class MQTTClient():
             return False
         except ConnectionRefusedError as exp:
             log.error("Connection Refused to %s:%s", config['host'], config['port'])
+            log.error(exp)
+            return False
+        except socket.gaierror as exp:
+            log.error("Server at %s not found, connection is impossible!",
+                      config['host'])
             log.error(exp)
             return False
 

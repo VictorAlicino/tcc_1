@@ -13,6 +13,7 @@ from db.db import OpusDB
 
 
 class LevelFilter(logging.Filter):
+    """Log Level Filter"""
     def __init__(self, level):
         self.level = level
 
@@ -192,7 +193,6 @@ def load_interfaces(config: dict, dirs: dict, interfaces: dict) -> None:
             except AttributeError:
                 logging.error("YAML file is not properly formatted")
                 sys.exit(1)
-
 
 def load_drivers(config: dict,
                  dirs: dict,

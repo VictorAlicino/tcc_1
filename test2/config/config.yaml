@@ -2,7 +2,7 @@
 interfaces: # Interfaces are expected to be configurable, so don't forget the colon at the end of the line
   - mqtt<local>: 
       log_id: "mqtt<local>"
-      host: "opus-server"
+      host: "magi.local"
       port: 1883
       username: ""
       password: ""
