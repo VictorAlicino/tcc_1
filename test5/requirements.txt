@@ -1,0 +1,5 @@
+pydantic==2.7.2
+colorlog==6.8.2
+fastapi==0.111.0
+fastapi-authlib==0.0.4
+httpx==0.27.0
