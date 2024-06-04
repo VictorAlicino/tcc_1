@@ -4,19 +4,11 @@ import os
 import logging
 import uvicorn
 import yaml
-from initializers import define_log
-
-log = logging.getLogger(__name__)
+from db.database import DB
 
 if sys.platform.lower() == "win32" or os.name.lower() == "nt":
     from asyncio import set_event_loop_policy, WindowsSelectorEventLoopPolicy
     set_event_loop_policy(WindowsSelectorEventLoopPolicy())
-
-# Directories Path
-DIRS: dict = {
-    "LOGS": "logs",
-    "ROUTES": "routes",
-}
 
 # Load YAML file
 with open("config.yaml", "r", encoding='utf-8') as stream:
@@ -26,10 +18,11 @@ with open("config.yaml", "r", encoding='utf-8') as stream:
         print(exc)
 
 def _main() -> None:
-    define_log(DIRS, "DEBUG")
+    # Start the database
+    db = DB(config["database"]["url"])
+    db.create_all()
 
     # Run the server
-    log.info("Starting server")
     uvicorn.run(
         "api.server:api",
         host="0.0.0.0",

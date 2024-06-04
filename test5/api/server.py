@@ -67,3 +67,4 @@ async def auth(request: Request):
     #print(token)
     print(f"New User Logged In:\n"
           f"Name: {token['userinfo']['name']}\nEmail: {token['userinfo']['email']}")
+    return f"Hi, {token['userinfo']['name']}! You are now registered in."
