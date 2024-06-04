@@ -4,3 +4,5 @@ fastapi==0.95.0
 httpx>=0.24.0
 psycopg2>=2.9.9
 fastapi-authlib>=0.0.4
+PyYAML>=6.0.1
+SQLAlchemy>=2.0.30
