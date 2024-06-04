@@ -8,7 +8,7 @@ from db.models import Base
 class DB:
     """Database ORM"""
     def __init__(self, db_url: str):
-        self.engine = create_engine(db_url, connect_args={"check_same_thread": False})
+        self.engine = create_engine(db_url)
         self.session_local = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
     def get_db(self):
