@@ -7,9 +7,9 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 # User Model
-class User(Base):
+class OpusUser(Base):
     """User model."""
-    __tablename__ = 'user'
+    __tablename__ = 'opus_user'
 
     user_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     google_sub = Column(String)
@@ -22,7 +22,7 @@ class User(Base):
 # Local Server (Opus) Model
 class OpusServer(Base):
     """Opus Server model."""
-    __tablename__ = 'opus'
+    __tablename__ = 'opus_server'
 
     server_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String)
@@ -32,7 +32,7 @@ class OpusServer(Base):
 # N to N Relationship to define users roles
 roles = Table('roles',
               Base.metadata,
-              Column('user_id', UUID, ForeignKey('user.user_id')),
-              Column('server_id', UUID, ForeignKey('opus.server_id')),
+              Column('user_id', UUID, ForeignKey('opus_user.user_id')),
+              Column('server_id', UUID, ForeignKey('opus_server.server_id')),
               Column('role', SmallInteger, default=1)
              )

@@ -1,11 +1,19 @@
 """Database ORM"""
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 from db.models import Base
 
+class SingletonMeta(type):
+    """Singleton metaclass"""
+    _instances = {}
 
-class DB:
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]
+
+class DB(metaclass=SingletonMeta):
     """Database ORM"""
     def __init__(self, db_url: str):
         self.engine = create_engine(db_url)

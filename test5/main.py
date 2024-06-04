@@ -1,7 +1,6 @@
 """Main entry point for the application."""
 import sys
 import os
-import logging
 import uvicorn
 import yaml
 from db.database import DB

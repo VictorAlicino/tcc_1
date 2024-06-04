@@ -1,10 +1,13 @@
 """API endpoints for the server."""
 import yaml
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.responses import HTMLResponse
 from starlette.requests import Request
 from starlette.middleware.sessions import SessionMiddleware
 from authlib.integrations.starlette_client import OAuth
+from db.models import OpusUser
+from db.users import get_user_by_google_sub, create_user
+from db.database import DB
 #from aiomqtt import Client
 #from api.models import Building, Space, Room, Device, DeviceByDriver, Command
 
@@ -15,9 +18,9 @@ with open("config.yaml", "r", encoding='utf-8') as stream:
     except yaml.YAMLError as exc:
         print(exc)
 
+db = DB(config["database"]["url"])
 api: FastAPI = FastAPI()
 api.add_middleware(SessionMiddleware, secret_key="your-secret")
-
 oauth = OAuth()
 
 oauth.register(
@@ -48,6 +51,7 @@ async def root():
 @api.get("/login")
 async def login(request: Request):
     """Login endpoint for the server."""
+    # Print the request
     redirect_uri = request.url_for('auth')
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
@@ -63,8 +67,20 @@ async def auth(request: Request):
         token = await oauth.google.authorize_access_token(request)
     except Exception as e:
         print(e)
-        return str(e)
-    #print(token)
-    print(f"New User Logged In:\n"
-          f"Name: {token['userinfo']['name']}\nEmail: {token['userinfo']['email']}")
-    return f"Hi, {token['userinfo']['name']}! You are now registered in."
+        # Return 401
+        return "Unauthorized", status.HTTP_401_UNAUTHORIZED
+
+    # Check if the user is authenticated
+    if get_user_by_google_sub(next(db.get_db()), token['userinfo']['sub']):
+        return "User already exists"
+    user = OpusUser(
+        google_sub = token['userinfo']['sub'],
+        email = token['userinfo']['email'],
+        name = token['userinfo']['name'],
+        given_name = token['userinfo']['given_name'],
+        family_name = token['userinfo']['family_name'],
+        picture = token['userinfo']['picture']
+    )
+    create_user(next(db.get_db()), user)
+    return (f"Mr(s). {user.given_name} {user.family_name} "
+            f"has been created with the email {user.email}")
