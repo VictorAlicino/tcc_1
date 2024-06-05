@@ -1,0 +1,56 @@
+\documentclass[
+	12pt,				% tamanho da fonte
+	a4paper,			% tamanho do papel. 
+	oneside,            % imprimir em um lado da folha  //twosides
+	%english,
+    %french,
+    brazil,			
+]{Pacotes/abntex2}
+
+
+\input{Pacotes/packages}
+\input{Conteudo/informacoesGerais}
+
+\makeindex
+\begin{document}
+
+    \input{Automatico/capa}
+    \input{Automatico/folhaRosto}
+    \input{Automatico/aprovacao}
+    
+    \input{Conteudo/dedicatoria}
+    \input{Conteudo/agradecimentos}
+    \input{Conteudo/epigrafe}
+    \input{Conteudo/resumo}
+    
+    \input{Automatico/lista_figuras}
+    \input{Automatico/lista_tabelas}
+    \input{Automatico/lista_siglas}    
+    \input{Automatico/sumario}
+
+    \textual
+    \setcounter{page}{1}
+    
+        %\include{Conteudo/introducao}
+
+        % BEGIN REVISÃO BIBLIOGRÁFICA
+        \include{Conteudo/RevisaoBibliografica/edificio-inteligente.tex}
+        \include{Conteudo/RevisaoBibliografica/internet-das-coisas.tex}
+        \include{Conteudo/RevisaoBibliografica/tecnologias.tex}
+        % END REVISÃO BIBLIOGRÁFICA
+
+        
+        %\include{Conteudo/cap2-exemplos}
+        %\include{Conteudo/cap3} ....
+        %\include{Conteudo/capX}
+        %\include{Conteudo/capX+1-proposta}
+        %\include{Conteudo/capX+1-desenvolvimento-proposta}
+        %\include{Conteudo/capX+3-experimentos}
+        %\include{Conteudo/conclusoes}
+
+        %\nocite{*}
+        \bibliography{Conteudo/bibliografia}
+        
+        %\include{Conteudo/anexos}
+        
+\end{document}

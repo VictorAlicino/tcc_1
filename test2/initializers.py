@@ -9,6 +9,7 @@ import yaml
 import colorlog
 from core.device_manager import DeviceManager
 from core.location_manager import LocationManager
+from core.cloud_manager import CloudManager
 from db.db import OpusDB
 
 
@@ -157,6 +158,11 @@ def load_managers(dirs: dict, managers: dict, interfaces: dict, drivers: dict) -
                                     interfaces,
                                     drivers,
                                     managers["locations"]
+                                    )
+    managers["maestro"] = CloudManager(dirs,
+                                       interfaces,
+                                       managers,
+                                       drivers
                                     )
 
 def load_interfaces(config: dict, dirs: dict, interfaces: dict) -> None:

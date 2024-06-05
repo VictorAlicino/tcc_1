@@ -5,7 +5,6 @@ import json
 from uuid import UUID
 from sqlalchemy.orm import Session
 from db import models
-from .devices import hvac, light
 
 log = logging.getLogger(__name__)
 
@@ -146,7 +145,7 @@ class DeviceManager:
     def get_device(self, device_id: UUID) -> any:
         """Return a device"""
         try:
-            for device_type, devices in self.devices.items():
+            for device_type, devices in self.devices.items(): # pylint: disable=unused-variable
                 for device in devices.values():
                     if device.id == device_id:
                         return device
@@ -270,7 +269,7 @@ class DeviceManager:
         self.opus_interfaces['mqtt<maestro>'].register_callback('devices/#', self._mqtt_callback)
         log.debug('MQTT Configured for Device Manager.')
 
-    def _mqtt_callback(self, client, userdata, msg):
+    def _mqtt_callback(self, client, userdata, msg): # pylint: disable=unused-argument
         """MQTT Callback"""
         log.debug("MQTT Message Received: %s", msg.topic)
         topic = msg.topic.split('/')
@@ -354,7 +353,7 @@ class DeviceManager:
                                 json.dumps({'status': 'success'})
                             )
                             return
-                        except Exception as exc:
+                        except Exception as exc: # pylint: disable=broad-except
                             log.warning(msg.payload)
                             self.opus_interfaces['mqtt<maestro>'].publish(
                                 payload['callback'],

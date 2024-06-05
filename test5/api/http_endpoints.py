@@ -1,4 +1,4 @@
-"""API endpoints for the server."""
+"""HTTP API endpoints for the server."""
 import yaml
 from fastapi import FastAPI, status
 from fastapi.responses import HTMLResponse
@@ -65,7 +65,7 @@ async def auth(request: Request):
     """Auth endpoint for the server."""
     try:
         token = await oauth.google.authorize_access_token(request)
-    except Exception as e:
+    except Exception as e: # pylint: disable=broad-except
         print(e)
         # Return 401
         return "Unauthorized", status.HTTP_401_UNAUTHORIZED

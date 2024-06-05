@@ -1,0 +1,86 @@
+\chapter{Internet das Coisas}
+
+Enquanto a internet foi desenvolvida com dados criados por pessoas, 
+a Internet das Coisas é sobre os dados criados por objetos \cite{Nord2019}. 
+Madakam, Ramaswamy e Tripathi definem Internet das Coisas como uma rede de objetos inteligente 
+aberta que tem a capacidade de se auto-organizar, compartilhar informações, dados e 
+recursos \cite{Madakam2015}.
+
+Internet das Coisas é muitas vezes referido pela sigla \verb'IoT' que vem do 
+seu nome em inglês \textit{Internet of Things}. No nome dessa tecnologia temos as 
+duas partes que desempenham os principais papéis: \emph{Internet} e \emph{Coisas}.
+\emph{Internet} aqui, se refere a mesma internet usadas por bilhões de pessoas ao 
+redor do mundo, já \emph{Coisas}, se refere aos dispositivos com capacidades computacionais 
+atrelados a sensores ou atuadores conectados à rede, o que permite a eles trocarem e 
+consumirem informações.
+
+Em uma rede \verb'IoT', dispositivos (muitas vezes chamados de \emph{inteligentes}) tem a habilidade
+de se comunicarem para monitorar o ambiente em que estão, ou alterar este ambiente. Essas ações 
+podem ser configuradas previamente pelo usuário ou serem definidas na hora com a possibilidade de 
+ser acionadas fora da rede local onde esses dispositivos estão conectados através da internet.
+Como por exemplo, verificar a temperatura de uma sala sem ter chego nela e solicitar ao sistema que 
+acione as unidades AVAC para que a sala esteja na temperatura desejada ao chegar.
+
+Apesar de ocorrer leves diferenças nos modelos de arquitetura, 
+geralmente um sistema IoT é formado por três camadas, sendo elas:
+
+\begin{itemize}
+    \item Camada Física: responsável por perceber o ambiente físico com sensores, 
+    atuadores ou qualquer tipo de interface para perceber e modificar o ambiente físico;
+
+    \item Camada de Rede: camada de transmissão dos dados através das inúmeras formas de conexões 
+    disponíveis como redes sem fio, redes móveis e a internet, a fim de fornecer os dados da 
+    Camada Física para a Camada de Aplicação;
+
+    \item Camada de Aplicação, que oferece os serviços chamados \emph{inteligentes} para os usuários 
+    finais.
+\end{itemize}
+\cite{Yan2014}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [\citeonline{statista-iot-connected-devices}]         % Fonte   
+    {0.3}                               % scale: 0.01 - 1
+    {statistic_id1183457.jpg}                 % filename. A figura deve estar na pasta Imagens
+    {Números de dispositivos IoT conectados no mundo de 2019 à 2023}     % Texto
+    {fig:statistic_01}                      % identificador da figura
+\end{figure}
+
+Segundo a empresa especializada em coleta de dados, Statista, 
+a quantidade de dispositivos \verb'IoT' conectados no mundo passa de 15 bilhões em 
+2023 com projeção para quase o dobro deste número até o fim da década 
+\cite{statista-iot-connected-devices} como mostrado na figura \ref{fig:statistic_01}. 
+
+Isso se deve muito ao fato de que sensores e microcontroladores ficaram mais baratos, o 
+preço médio dos sensores caiu 200\% entre 2004 e 2018 \cite{microsoft-1} o que significa
+mais produtos finais voltado para \verb'IoT' já que ficou possível embarcar sensores em itens 
+do dia a dia com custos acessíveis.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [\citeonline{Minoli2017}]         % Fonte   
+    {0.8}                               % scale: 0.01 - 1
+    {Minoli2017.jpg}                 % filename. A figura deve estar na pasta Imagens
+    {Convergência da tecnologia de sistemas inteligentes para edifícios nos últimos anos}     % Texto
+    {fig:acs-iot-evolution}                      % identificador da figura
+\end{figure}
+
+Alguns anos atrás, mesmo em edifícios com BACS, não era incomum encontrar diferentes protocolos, 
+redes e cabos, o que gerava ineficiência tanto na implantação como nos sistemas de gerenciamento. 
+Dessa forma algumas soluções migraram para o uso de cabo e conjunto de protocolos comuns entre as 
+aplicações, como o cabo de par trançado categoria 6 e o protocolo TCP/IP. 
+Com a convergência para protocolos como TCP/IP facilitou a entrada do \verb'IoT' em BACS, 
+como mostrado na figura 
+\ref{fig:acs-iot-evolution} \cite{Minoli2017}.
+
+Já é possível encontrar equipamentos preparados para uso em BACS com suporte a protocolos \verb'IoT',
+como o PFC200 da WAGO que suporta o protocolo MQTT (citado na seção \ref{sec:mqtt}).
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [\citeonline{wago-1}]         % Fonte   
+    {0.15}                               % scale: 0.01 - 1
+    {wago-pfc200.png}                 % filename. A figura deve estar na pasta Imagens
+    {Controlador PFC200}     % Texto
+    {fig:pfc200}                      % identificador da figura
+\end{figure}
