@@ -1,0 +1,41 @@
+\section{Proposta}
+\label{sec:proposta}
+
+\subsection{Objetivo Geral}
+Este trabalho tem como objetivo cirar um sistema mínimo que possa testar
+a viabilidade de um sistema de edifício inteligente com múltiplos usuários.
+
+\subsection{Objetivos Específicos}
+Para atingir o objetivo geral, uma pequena arquitetura foi proposta, esta 
+arquitetura é composta de quatro componentes principais, sendo eles:
+\begin{itemize}
+    \item \textbf{Servidor Local}
+    \item \textbf{Servidor Remoto}
+    \item \textbf{Aplicativo Móvel}
+    \item \textbf{Aplicativo Web}
+\end{itemize}
+
+\subsubsection{Servidor Local} 
+O \emph{Servidor Local} é responsável por criar uma
+camada de tradução entre dispositivos IoT de diferentes fabricantes, que muitas
+vezes utilizam diferentes protocolos de comunicação. Ele se comunica com esses
+dispositivos e traduz comandos recebidos pelos usuários para os dispositivos
+com seus respectivos protocolos, o \emph{Servidor Local} também é responsável manter
+o que cada usuário pode acessar e controlar.
+
+\subsubsection{Servidor Remoto}
+O servidor remoto é responsável por autenticar e armazenar usuários, manter uma
+relação de todos os \emph{Servidores Locais} conectados e disponíveis e servir como uma
+ponte de acesso para um usuário acessar um \emph{Servidor Local} fora da rede local através
+da internet.
+
+\subsubsection{Aplicativo Móvel}
+O aplicativo móvel é a interface principal do usuário com o sistema, nele um usuário pode interagir
+com os dispositivos disponíveis no \emph{Servidor Local}, como por exemplo, ligar e desligar luzes, ar condicionado.
+
+\subsubsection{Aplicativo Web}
+O aplicativo web é a interface pensado para o administrador do \emph{Servidor Local}, nele o administrador pode
+gerenciar os edifícios, andares e salas disponíveis para aquele \emph{Servidor Local}, além de poder adicionar 
+novos dispositivos e usuários.
+
+É esperado que ao desenvolver essa arquitetura, seja possível responder a problemática inicial.
