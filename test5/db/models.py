@@ -34,5 +34,5 @@ roles = Table('roles',
               Base.metadata,
               Column('user_id', UUID, ForeignKey('opus_user.user_id')),
               Column('server_id', UUID, ForeignKey('opus_server.server_id')),
-              Column('role', SmallInteger, default=1)
+              Column('role', SmallInteger, default=1) # 0 = Admin, 1 = User
              )

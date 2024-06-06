@@ -1,6 +1,12 @@
 """Models for API endpoints."""
-from sqlalchemy import Column, Integer, String, ForeignKey, JSON, UUID
 from pydantic import BaseModel
+
+# Server Requests
+class Role(BaseModel):
+    """Role model."""
+    user_id: str
+    server_id: str
+    role: int
 
 class Building(BaseModel):
     """Building model."""

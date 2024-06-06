@@ -1,0 +1,79 @@
+\section{Camada Física}
+\label{arq-subsec:camada-fisica}
+Camada física é o nome dado por este trabalho a tudo que tem por característica
+principal, seu hardware, como é o caso de um microcontrolador e um smartphone.
+
+Nesta camada estão dispostos os dispositivos controlados pelo \emph{Opus} e as interfaces
+gráficas de usuário (GUI) como o aplicativo móvel e o aplicativo web.
+
+\subsection{Dispositivos Controlados}
+\label{arq-subsubsec:dispositivos-controlados}
+O sistema \emph{Opus} é feito para ser possível controlar qualquer dispositivo que o desenvolvedor
+projetar um \emph{driver} para ele. Esses dispositivos em sua forma física normalmente
+são constituídos de um microcontrolador com acesso à internet e um ou mais atuadores.
+
+\subsection{Interfaces Gráficas de Usuário}
+\label{arq-subsubsec:interfaces-graficas-usuario}
+As interfaces gráficas de usuário são os meios que o usuário tem para interagir com o sistema.
+Nesta arquitetura temos duas interfaces gráficas de usuário: o aplicativo móvel e o aplicativo web.
+O aplicativo móvel é feito para servir de ponto principal de acesso para o usuário, podendo interagir com
+os \emph{Dispositivos Controlados} pelo \emph{Opus} já o aplicativo web é a forma que o administrador
+tem de interagir com o \emph{Maestro}.
+
+
+\section{Rede Local}
+\label{arq-subsec:rede-local}
+A rede local refere-se a conexão local dentro de um ambiente, como a rede interna de um edifício. Ela pode ou não
+estar conectada a internet já que a maioria dos protocolos de comunicação utilizado pelos
+\emph{Dispositivos Controlados} não requerem conexão com a internet, apenas à uma rede local com DHCP.
+
+\subsection{Banco de Dados}
+\label{arq-subsubsec:rede-local-banco-dados}
+Dentro da rede local deve estar situado o banco de dados que o \emph{Opus} utiliza para armazenar a estrutura
+do edifício e os dados dos \emph{Dispositivos Controlados}. Devido ao fato do \emph{Opus} ser toda uma aplicação 
+contida dentro de si mesma, sem dependências além das bibliotecas utilizadas na sua concepção e das 
+escolhidas pelo usuário como os \emph{Drivers}, o banco de dados escolhido foi o SQLite3, assim não é necessário
+que o usuário precise instalar outro software para que o \emph{Opus} funcione.
+
+\subsection{Opus}
+\label{arq-subsubsec:rede-local-opus}
+O \emph{Opus} é o núcleo do sistema, a aplicação propriamente dita, responsável por se comunicar
+com os \emph{Dispositivos Controlados} e manter as estruturas do edifício. O \emph{Opus} requer comunicação
+constante com o \emph{Maestro} para receber comandos do usuário, logo, apesar de estar situado na Rede Local, que
+por sua vez não necessita de conexão com a internet, o \emph{Opus} necessita de uma.
+
+\subsection{Drivers}
+\label{arq-subsubsec:rede-local-drivers}
+Os \emph{Drivers} são as partes do \emph{Opus} que podem ser estendidas por outros programadores,
+\emph{Drivers} são responsáveis por se comunicar com os \emph{Dispositivos Controlados}, traduzindo
+os comandos do \emph{Opus} para o protocolo do dispositivo, eles são desenvolvidos como módulos do 
+Python, e são carregados dinamicamente pelo \emph{Opus}.
+
+\subsection{Tasmota}
+\label{arq-subsec:rede-local-tasmota}
+Para provar a viabilidade do sistema, foi escrito um \emph{Driver} para o \emph{Opus},
+um driver para comunicação com o firmware Tasmota \ref{sec:tasmota}.
+
+
+\section{Internet}
+\label{arq-subsec:internet}
+Na camada de internet está o \emph{Maestro}, o servidor central na nuvem, onde ficam armazenados
+os usuários e os servidores \emph{Opus} cadastrados.
+
+\subsection{Banco de Dados}
+\label{arq-subsubsec:internet-banco-dados}
+O banco de dados da camada de internet é o responsável por armazenar os usuários e os servidores
+\emph{Opus} cadastrados, este banco de dados não necessariamente precisa estar na mesma máquina
+que o \emph{Maestro}, sendo assim, existe a possbilidade de configurar um banco de dados externo.
+A escolha do banco de dados foi o PostgreSQL, por ser um banco de dados de código aberto e versátil.
+
+\subsection{Autenticação do Google}
+\label{arq-subsubsec:internet-autenticacao-google}
+Inspirado no modelo \emph{Zero Trust} ou \emph{Confiança Zero} \cite{Kang2023}, o sistema não tenta implementar autenticação de usuários
+e sim delega essa responsabilidade para uma entidade externa que pode verificar a autenticidade do usuário, 
+aqui foi escolhido o serviço de autenticação da empresa Google.
+
+\subsection{Maestro}
+\label{arq-subsubsec:internet-maestro}
+O \emph{Maestro} é o servidor central do sistema, responsável por manter os usuários e os servidores registrados,
+além de ser o responsável por intermediar a comunicação entre os servidores \emph{Opus} e os usuários.

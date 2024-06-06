@@ -1,0 +1,4 @@
+pdflatex monografia
+bibtex monografia
+pdflatex monografia
+pdflatex monografia

@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="aXPBXTIpJr6EWQpFglpt" name="Page-1">
-        <mxGraphModel dx="2948" dy="1968" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="4000" math="0" shadow="0">
+        <mxGraphModel dx="1155" dy="787" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="4000" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -128,7 +128,7 @@
                 <mxCell id="54" value="Core check the&lt;br&gt;right driver to AC" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;" parent="1" vertex="1">
                     <mxGeometry x="490" y="820" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="75" style="edgeStyle=none;html=1;" edge="1" parent="1" source="56" target="57">
+                <mxCell id="75" style="edgeStyle=none;html=1;" parent="1" source="56" target="57" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="550" y="1000"/>
@@ -136,7 +136,7 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="76" style="edgeStyle=none;html=1;" edge="1" parent="1" source="56" target="69">
+                <mxCell id="76" style="edgeStyle=none;html=1;" parent="1" source="56" target="69" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <Array as="points">
                             <mxPoint x="550" y="1000"/>
@@ -153,7 +153,7 @@
                 <mxCell id="62" style="edgeStyle=none;html=1;fontSize=11;" parent="1" source="58" target="61" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="73" style="edgeStyle=none;html=1;" edge="1" parent="1" source="58" target="72">
+                <mxCell id="73" style="edgeStyle=none;html=1;" parent="1" source="58" target="72" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="58" value="Core checks user&lt;br&gt;permission" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;" parent="1" vertex="1">
@@ -197,10 +197,10 @@
                 <mxCell id="69" value="Returns &lt;br&gt;&quot;Completed&quot;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;" parent="1" vertex="1">
                     <mxGeometry x="420" y="1030" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="74" style="edgeStyle=none;html=1;" edge="1" parent="1" source="72" target="58">
+                <mxCell id="74" style="edgeStyle=none;html=1;" parent="1" source="72" target="58" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="72" value="&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;Core local&lt;br&gt;Database" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;" vertex="1" parent="1">
+                <mxCell id="72" value="&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;Core local&lt;br&gt;Database" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;" parent="1" vertex="1">
                     <mxGeometry x="510" y="690" width="60" height="60" as="geometry"/>
                 </mxCell>
             </root>

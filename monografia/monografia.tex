@@ -18,10 +18,10 @@
     \input{Automatico/folhaRosto}
     \input{Automatico/aprovacao}
     
-    \input{Conteudo/dedicatoria}
-    \input{Conteudo/agradecimentos}
-    \input{Conteudo/epigrafe}
-    \input{Conteudo/resumo}
+    \input{Conteudo/Prologo/dedicatoria}
+    \input{Conteudo/Prologo/agradecimentos}
+    \input{Conteudo/Prologo/epigrafe}
+    \input{Conteudo/Prologo/resumo}
     
     \input{Automatico/lista_figuras}
     \input{Automatico/lista_tabelas}
@@ -44,13 +44,20 @@
 
     % MEIO ---------------------------------------------------------------
         % Proposta
-        \include{Conteudo/Comeco/proposta.tex}
+        \include{Conteudo/Meio/proposta.tex}
 
+        % Arquitetura Header
+        \include{Conteudo/Meio/arquitetura1.tex}
         % Explicando o nome dos componentes
-        \include{Conteudo/Comeco/nome-componentes.tex}
-
-        % Arquitetura
+        \include{Conteudo/Meio/nome-componentes.tex}
+        % Explicando a arquitetura
         \include{Conteudo/Meio/arquitetura.tex}
+
+        % BEGIN Opus
+        \include{Conteudo/Meio/Opus/introducao.tex}
+        \include{Conteudo/Meio/Opus/interfaces.tex}
+        % END Opus
+
         %\include{Conteudo/cap2-exemplos}
         %\include{Conteudo/cap3} ....
         %\include{Conteudo/capX}

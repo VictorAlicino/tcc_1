@@ -1,11 +1,11 @@
-\section{Proposta}
+\chapter{Proposta}
 \label{sec:proposta}
 
-\subsection{Objetivo Geral}
-Este trabalho tem como objetivo cirar um sistema mínimo que possa testar
+\section{Objetivo Geral}
+Este trabalho tem como objetivo criar um sistema mínimo que possa testar
 a viabilidade de um sistema de edifício inteligente com múltiplos usuários.
 
-\subsection{Objetivos Específicos}
+\section{Objetivos Específicos}
 Para atingir o objetivo geral, uma pequena arquitetura foi proposta, esta 
 arquitetura é composta de quatro componentes principais, sendo eles:
 \begin{itemize}
@@ -15,26 +15,25 @@ arquitetura é composta de quatro componentes principais, sendo eles:
     \item \textbf{Aplicativo Web}
 \end{itemize}
 
-\subsubsection{Servidor Local} 
+\subsection{Servidor Local} 
 O \emph{Servidor Local} é responsável por criar uma
 camada de tradução entre dispositivos IoT de diferentes fabricantes, que muitas
 vezes utilizam diferentes protocolos de comunicação. Ele se comunica com esses
-dispositivos e traduz comandos recebidos pelos usuários para os dispositivos
-com seus respectivos protocolos, o \emph{Servidor Local} também é responsável manter
+dispositivos e traduz comandos recebidos pelos usuários do sistema para os dispositivos
+usando seus respectivos protocolos, o \emph{Servidor Local} também é responsável manter
 o que cada usuário pode acessar e controlar.
 
-\subsubsection{Servidor Remoto}
+\subsection{Servidor Remoto}
 O servidor remoto é responsável por autenticar e armazenar usuários, manter uma
 relação de todos os \emph{Servidores Locais} conectados e disponíveis e servir como uma
-ponte de acesso para um usuário acessar um \emph{Servidor Local} fora da rede local através
-da internet.
+ponte de acesso para um usuário acessar um \emph{Servidor Local}.
 
-\subsubsection{Aplicativo Móvel}
+\subsection{Aplicativo Móvel}
 O aplicativo móvel é a interface principal do usuário com o sistema, nele um usuário pode interagir
-com os dispositivos disponíveis no \emph{Servidor Local}, como por exemplo, ligar e desligar luzes, ar condicionado.
+com os dispositivos disponíveis no \emph{Servidor Local}, como por exemplo, ligar e desligar um ar condicionado.
 
-\subsubsection{Aplicativo Web}
-O aplicativo web é a interface pensado para o administrador do \emph{Servidor Local}, nele o administrador pode
+\subsection{Aplicativo Web}
+O aplicativo web é a interface pensada para o administrador do \emph{Servidor Local}, nela o administrador pode
 gerenciar os edifícios, andares e salas disponíveis para aquele \emph{Servidor Local}, além de poder adicionar 
 novos dispositivos e usuários.
 

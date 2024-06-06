@@ -31,10 +31,3 @@ def delete_user(db: Session, user: OpusUser):
     db.delete(user)
     db.commit()
     return user
-
-def change_user_role(db: Session, user: OpusUser, role: int):
-    """Change a user's role"""
-    user.role = role
-    db.commit()
-    db.refresh(user)
-    return user

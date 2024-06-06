@@ -16,8 +16,10 @@ class SingletonMeta(type):
 class DB(metaclass=SingletonMeta):
     """Database ORM"""
     def __init__(self, db_url: str):
+        print("Loading database")
         self.engine = create_engine(db_url)
         self.session_local = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+        print("Database loaded")
 
     def get_db(self):
         """Get the database session"""
@@ -29,5 +31,5 @@ class DB(metaclass=SingletonMeta):
 
     def create_all(self):
         """Create all tables"""
+        print("Creating tables if they don't already exists")
         Base.metadata.create_all(bind=self.engine)
-
