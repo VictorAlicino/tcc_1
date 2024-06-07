@@ -4,7 +4,7 @@
 O módulo de interfaces contém as implementações para comunicações externas do \emph{Opus} utilizando outros protocolos,
 alguns \emph{drivers} podem requesitar que uma ou mais interfaces específicas estejam ativadas para que ele funcione corretamente.
 O programa principal irá carregar cada interface cujo o nome do script estiver listado no arquivo de configuração, esse processo
-se dará através de uma função '\lstinline{def initialize() -> Any}' que deve ser implementada em todas as interfaces, essa função
+se dará através de uma função ``\lstinline{def initialize() -> Any}'' que deve ser implementada em todas as interfaces, essa função
 deverá retornar o objeto principal da classe desta interface, para que ele seja adicionado no ambiente de execução do \emph{Opus}.
 
 \subsection{Interface MQTT}
@@ -15,3 +15,31 @@ A interface MQTT é implementada por padrão no \emph{Opus} uma vez que a comuni
 A implementação da interface MQTT segue uma abordagem simples para um script Python, apenas uma classe feita no padrão de 
 projeto Singleton, isso não se fez tão necessário já que interfaces são carregadas para o ambiente de execução do 
 \emph{Opus} por apenas um objeto que é compartilhado entre toda a aplicação, mas foi adotado por boas práticas.
+
+Os seguintes métodos foram implementados na class MQTT:
+\begin{itemize}
+    \item \lstinline{def begin(self, config: dict) -> bool}:
+    inicializa o Client MQTT, assim que o client efetua a conexão com o servidor MQTT especificado 
+    no arquivo de configurações, ele se inscreve em um tópico raiz que é o ID do client, 
+    assim ele receberá todas as mensagens enviadas para este tópico;
+
+    \item \lstinline{def start_thread(self)},:
+    inicia a Thread do Cliente MQTT, isso é necessário para que o cliente MQTT 
+    possa receber mensagens de forma assíncrona;
+
+    \item \lstinline{def on_connect(self, client, userdata, flags, reason_code, properties)}
+
+    \item \lstinline{def on_message(self, client, userdata, msg)}
+
+    \item \lstinline{def connect(self, host: str, port: int = 1883)}
+
+    \item \lstinline{def publish(self, topic: str, payload: str)}:
+    publica o texto da variável payload no tópico especificado;
+
+    \item \lstinline{def register_callback(self, topic: str, callback)}:
+    registra uma função como callback para um tópico específico, 
+    extremamente útil para que outros módulos do \emph{Opus} possam especificar
+    o que querem receber do MQTT e onde.
+
+    \item \lstinline{def subscribe(self, topic: str)}, se inscreve no tópico especificado.
+\end{itemize}

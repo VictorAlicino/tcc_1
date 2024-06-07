@@ -1,6 +1,8 @@
 This is BibTeX, Version 0.99d
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: monografia.aux
+Reallocating 'name_of_file' (item size: 1) to 24 items.
+A level-1 auxiliary file: Conteudo/introducao.aux
 Reallocating 'name_of_file' (item size: 1) to 62 items.
 A level-1 auxiliary file: Conteudo/Comeco/RevisaoBibliografica/edificio-inteligente.aux
 Reallocating 'name_of_file' (item size: 1) to 61 items.
@@ -19,6 +21,18 @@ Reallocating 'name_of_file' (item size: 1) to 34 items.
 A level-1 auxiliary file: Conteudo/Meio/Opus/introducao.aux
 Reallocating 'name_of_file' (item size: 1) to 34 items.
 A level-1 auxiliary file: Conteudo/Meio/Opus/interfaces.aux
+Reallocating 'name_of_file' (item size: 1) to 31 items.
+A level-1 auxiliary file: Conteudo/Meio/Opus/drivers.aux
+Reallocating 'name_of_file' (item size: 1) to 30 items.
+A level-1 auxiliary file: Conteudo/Meio/Opus/nucleo.aux
+Reallocating 'name_of_file' (item size: 1) to 38 items.
+A level-1 auxiliary file: Conteudo/Meio/Opus/banco_de_dados.aux
+Reallocating 'name_of_file' (item size: 1) to 28 items.
+A level-1 auxiliary file: Conteudo/Fim/resultados.aux
+Reallocating 'name_of_file' (item size: 1) to 27 items.
+A level-1 auxiliary file: Conteudo/Fim/conclusao.aux
+Reallocating 'name_of_file' (item size: 1) to 35 items.
+A level-1 auxiliary file: Conteudo/Fim/trabalhos_futuros.aux
 Reallocating 'name_of_file' (item size: 1) to 16 items.
 Reallocating 'name_of_file' (item size: 1) to 22 items.
 Reallocating 'name_of_file' (item size: 1) to 12 items.
@@ -37,21 +51,21 @@ Database file #2: Conteudo/bibliografia.bib
 Warning--entry type for "raissa2002" isn't style-file defined
 --line 1 of file Conteudo/bibliografia.bib
 Warning--entry type for "Powell1990" isn't style-file defined
---line 59 of file Conteudo/bibliografia.bib
+--line 30 of file Conteudo/bibliografia.bib
 Warning--entry type for "Kamal2021" isn't style-file defined
---line 261 of file Conteudo/bibliografia.bib
+--line 131 of file Conteudo/bibliografia.bib
 Warning--entry type for "Berkoben2020" isn't style-file defined
---line 285 of file Conteudo/bibliografia.bib
+--line 143 of file Conteudo/bibliografia.bib
 Warning--entry type for "appliedrisk2019" isn't style-file defined
---line 301 of file Conteudo/bibliografia.bib
+--line 151 of file Conteudo/bibliografia.bib
 Warning--entry type for "Domingues2016" isn't style-file defined
---line 365 of file Conteudo/bibliografia.bib
+--line 183 of file Conteudo/bibliografia.bib
 Warning--entry type for "Nord2019" isn't style-file defined
---line 437 of file Conteudo/bibliografia.bib
+--line 219 of file Conteudo/bibliografia.bib
 Warning--entry type for "Bushby2002" isn't style-file defined
---line 525 of file Conteudo/bibliografia.bib
+--line 263 of file Conteudo/bibliografia.bib
 Warning--entry type for "tomar2011" isn't style-file defined
---line 671 of file Conteudo/bibliografia.bib
+--line 336 of file Conteudo/bibliografia.bib
 Reallocating 'singl_function' (item size: 4) to 100 items.
 Reallocating 'glb_str_end' (item size: 4) to 20 items.
 Reallocating 'glb_str_ptr' (item size: 4) to 20 items.
@@ -63,7 +77,7 @@ Reallocating 'global_strs' (item size: 1) to 4000000 items.
 +---------------------------------------------------------+
 You've used 39 entries,
             6714 wiz_defined-function locations,
-            1446 strings with 16137 characters,
+            1453 strings with 16343 characters,
 and the built_in function-call counts, 51737 in all, are:
 = -- 5965
 > -- 1004
