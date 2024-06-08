@@ -1,2 +1,21 @@
 \chapter{Resultados}
 \label{resultados}
+
+\section{Comunicação entre \emph{Opus} e \emph{Maestro}}
+\label{resultados:comunicacao}
+A comunicação entre Servidor Local (\emph{Opus}) e Servidor Remoto (\emph{Maestro}) foi implementada com sucesso.
+A troca de mensagens que utiliza o protocolo MQTT com um \emph{broker} hospedado na nuvem ocorreu como esperado,
+a monitoração entre a troca de mensagens na inicialização de um servidor \emph{Opus} pode ser vista na Figura \ref{fig:resultados1}.
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2024)]
+    {0.5}
+    {resultados1.png}
+    {Comunicação entre \emph{Opus} e \emph{Maestro}}
+    {fig:resultados1}
+\end{figure}
+O Servidor Local (\emph{Opus}) enviou no tópico \lstinline{maestro/login}, tópico onde o Servidor Remoto (\emph{Maestro}) escuta por conexões
+de Servidores Locais, os dados com o qual ele se desejava conectar, o Servidor Remoto (\emph{Maestro}) respondeu com uma mensagem de confirmação
+no tópico escolhido \emph{Opus} (\lstinline{opus-server-5be2/callback/cloud_manager}) contendo o nome do servidor \emph{Opus}, seu ID no banco de dados
+e como este servidor já estava cadastrado, o \emph{Maestro} enviou junto a lista de usuários associados a este \emph{Opus}, onde podemos ver
+usuários com ``\lstinline{role}'' 0 e 1, onde 0 é o administrador e 1 é o usuário comum. 

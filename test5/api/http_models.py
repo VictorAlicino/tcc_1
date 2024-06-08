@@ -8,6 +8,11 @@ class Role(BaseModel):
     server_id: str
     role: int
 
+class ServerUserList(BaseModel):
+    """Server User List model."""
+    server_id: str
+    users: list
+
 class Building(BaseModel):
     """Building model."""
     name: str

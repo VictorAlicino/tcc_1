@@ -10,7 +10,8 @@ from db.models import OpusUser
 import db.users as opus_users
 import db.localservers as opus_servers
 from db.database import DB
-from api.http_models import Role
+from api.http_models import Role, ServerUserList
+from api.mqtt_endpoints import send_cmd_to_server
 
 # Load YAML file
 with open("config.yaml", "r", encoding='utf-8') as stream:
@@ -140,3 +141,41 @@ async def get_server_admins(server_id: str):
             "admins": admins
         }
     return "Server not found", status.HTTP_404_NOT_FOUND
+
+@api.post("/servers/assign_users")
+async def assign_users_to_server(server_user_list: ServerUserList):
+    """Assign users to server endpoint for the server."""
+    db_session = next(db.get_db())
+    return opus_servers.assign_users_to_server(
+        db_session,
+        server_user_list.server_id,
+        server_user_list.users
+    )
+
+@api.get("/servers/users/{server_id}")
+async def get_server_users(server_id: str):
+    """Get server users endpoint for the server."""
+    db_session = next(db.get_db())
+    result =  opus_servers.get_server_users(db_session, server_id)
+    if result:
+        users = []
+        for row in result:
+            user = opus_users.get_user_by_id(db_session, row.user_id)
+            users.append((user.user_id, user.email))
+        return {
+            "server_id": server_id,
+            "users": users
+        }
+    return "Server not found", status.HTTP_404_NOT_FOUND
+
+@api.get("/users/server/{user_id}")
+async def get_user_servers(user_id: str):
+    """Get user servers endpoint for the server."""
+    db_session = next(db.get_db())
+    return opus_users.get_servers_of_user(db_session, user_id)
+
+@api.post("/cmd/{server_id}")
+async def command(server_id: str, cmd: dict):
+    """Command endpoint for the server."""
+    send_cmd_to_server(server_id, cmd)
+    return "Command sent", status.HTTP_200_OK

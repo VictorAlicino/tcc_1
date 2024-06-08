@@ -30,7 +30,7 @@ class TasmotaHVAC(OpusHVAC):
         self.temperature = 24.0
 
     def on(self) -> None:
-        """Turn the light on"""
+        """Turn the HVAC on"""
         log.info("Turning on HVAC %s @ %s", self.name, self.room_id)
         self.mqtt_link.publish(
             topic=f"cmnd/{self.mqtt_name}/IRHVAC",
@@ -46,7 +46,7 @@ class TasmotaHVAC(OpusHVAC):
 
 
     def off(self) -> None:
-        """Turn the light off"""
+        """Turn the HVAC off"""
         log.info("Turning off HVAC %s @ %s", self.name, self.room_id)
         self.mqtt_link.publish(
             topic=f"cmnd/{self.mqtt_name}/IRHVAC",

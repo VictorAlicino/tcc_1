@@ -31,7 +31,7 @@ class CloudManager:
 
         self.interfaces['mqtt<maestro>'].register_callback(
             callback_topic,
-            self.callback
+            self.login_callback
             )
 
         self.interfaces['mqtt<maestro>'].publish(
@@ -45,9 +45,12 @@ class CloudManager:
                 "callback": callback_topic
             })
         )
-        log.info("Logged in to Maestro")
 
-    def callback(self, client, userdata, msg):
+    def login_callback(self, client, userdata, msg):
         """Callback function for Maestro"""
         log.info("Callback from Maestro")
-        print(json.loads(msg.payload.decode('utf-8')))
+        payload = json.loads(msg.payload)
+        if payload['status'] == 'success':
+            log.info("Logged in to Maestro")
+        else:
+            log.error("Failed to login to Maestro")

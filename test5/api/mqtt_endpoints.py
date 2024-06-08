@@ -1,8 +1,9 @@
 """MQTT API endpoints for the server."""
+import json
 import aiomqtt
 import yaml
-import json
 import db.localservers as opus_servers
+import db.users as opus_users
 from db.models import OpusServer
 from db.database import DB
 
@@ -21,6 +22,12 @@ async def check_if_server_exists(server_name: str) -> OpusServer | bool:
     if server:
         return server
     return False
+
+async def send_cmd_to_server(server_id: str, command: dict):
+    """Send a command to a server."""
+    server = opus_servers.get_server_by_id(next(db.get_db()), server_id)
+    async with aiomqtt.Client(config['cloud_mqtt']) as client:
+        await client.publish(f"{server.mqtt_topic}/cmd", json.dumps(command))
 
 async def server_login_listener():
     """Receives Login requests from new servers."""
@@ -56,15 +63,30 @@ async def server_login_listener():
                         )
                     )
                     continue
+                # If the server already exists
+                # Ge the server users
+                db_session = next(db.get_db())
+                query = opus_servers.get_server_users(db_session, server.server_id)
+                users = []
+                for user in query:
+                    u = opus_users.get_user_by_id(db_session, user[0])
+                    users.append({
+                        "user_id": f"{u.user_id}",
+                        "name": f"{u.name}",
+                        "email": f"{u.email}",
+                        "picture": f"{u.picture}",
+                        "role": int(user[2])
+                    })
                 await client.publish(
                         message_temp['callback'],
                         json.dumps(
                             {
-                                "status": "sucess",
+                                "status": "success",
                                 "message": "Connected to Maestro",
                                 "payload": {
                                     "server_name": f"{server.name}",
-                                    "server_id": f"{server.server_id}"
+                                    "server_id": f"{server.server_id}",
+                                    "users": users
                                 }
                             }
                         )
