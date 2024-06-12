@@ -4,22 +4,20 @@ import os
 import threading
 import asyncio
 import uvicorn
-import yaml
 from db.database import DB
-from api.mqtt_endpoints import server_login_listener
+from configurations.config import OpenConfig
+from api.mqtt.mqtt_server_comms import server_login_listener
+from api.http.root import api
 
+# MQTT Async Guard
 if sys.platform.lower() == "win32" or os.name.lower() == "nt":
     from asyncio import set_event_loop_policy, WindowsSelectorEventLoopPolicy
     set_event_loop_policy(WindowsSelectorEventLoopPolicy())
 
-# Load YAML file
-with open("config.yaml", "r", encoding='utf-8') as stream:
-    try:
-        config = yaml.safe_load(stream)
-    except yaml.YAMLError as exc:
-        print(exc)
-
 def _main() -> None:
+    """Main entry point for the application."""
+    # Load the configuration
+    config = OpenConfig()
     # Start the database
     db = DB(config["database"]["url"])
     db.create_all()
@@ -33,10 +31,10 @@ def _main() -> None:
 
     # Run the server
     uvicorn.run(
-        "api.http_endpoints:api",
+        "api.http.root:api",
         host="0.0.0.0",
         port=8000,
-        log_level="debug",
+        log_level="warning",
         reload=True
     )
 

@@ -1,18 +1,14 @@
 """MQTT API endpoints for the server."""
 import json
 import aiomqtt
-import yaml
 import db.localservers as opus_servers
 import db.users as opus_users
 from db.models import OpusServer
 from db.database import DB
+from configurations.config import OpenConfig
 
 # Load YAML file
-with open("config.yaml", "r", encoding='utf-8') as stream:
-    try:
-        config = yaml.safe_load(stream)
-    except yaml.YAMLError as exc:
-        print(exc)
+config = OpenConfig()
 
 db = DB(config["database"]["url"])
 
