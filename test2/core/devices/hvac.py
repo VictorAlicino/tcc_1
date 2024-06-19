@@ -2,6 +2,7 @@
 
 from uuid import UUID
 from enum import Enum
+from abc import abstractmethod
 from .__generic import OpusDevice, DeviceType
 
 class HVACLevels(Enum):
@@ -46,8 +47,10 @@ class OpusHVAC(OpusDevice):
         self.sleep: int | None
         self.state_mode: str | None
 
+    @abstractmethod
     def on(self) -> None:
         """Turn the light on"""
 
+    @abstractmethod
     def off(self) -> None:
         """Turn the light off"""

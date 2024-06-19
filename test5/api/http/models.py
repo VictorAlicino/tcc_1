@@ -13,6 +13,11 @@ class ServerUserList(BaseModel):
     server_id: str
     users: list
 
+class ConductorLogin(BaseModel):
+    """Conductor Login Request"""
+    email: str
+    google_sub: str
+
 class Building(BaseModel):
     """Building model."""
     name: str

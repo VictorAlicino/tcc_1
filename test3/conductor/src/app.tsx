@@ -1,4 +1,4 @@
-import { Roboto_400Regular, Roboto_500Medium, Roboto_700Bold, useFonts } from "@expo-google-fonts/roboto";
+import { Roboto_100Thin, Roboto_300Light, Roboto_400Regular, Roboto_500Medium, Roboto_700Bold, useFonts } from "@expo-google-fonts/roboto";
 import { NavigationContainer } from "@react-navigation/native";
 import { registerRootComponent } from "expo";
 import { StatusBar } from "expo-status-bar";
@@ -7,14 +7,16 @@ import colors from "tailwindcss/colors";
 
 import { Loading } from "@/components/loading";
 import { Routes } from "@/routes";
+import { AuthenticationProvider } from "./contexts/authentication-context";
 
 function App() {
-
   const [fontsLoaded] = useFonts({
     Roboto_400Regular,
     Roboto_500Medium,
     Roboto_700Bold,
+    Roboto_100Thin
   });
+
 
   if (!fontsLoaded) {
     return <Loading />;
@@ -23,8 +25,10 @@ function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.zinc[900] }}>
       <NavigationContainer>
-        <Routes />
-        <StatusBar style="light" />
+        <AuthenticationProvider>
+          <Routes />
+          <StatusBar style="light" />
+        </AuthenticationProvider>
       </NavigationContainer>
     </GestureHandlerRootView>
   );

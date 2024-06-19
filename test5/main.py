@@ -33,8 +33,8 @@ def _main() -> None:
     uvicorn.run(
         "api.http.root:api",
         host="0.0.0.0",
-        port=8000,
-        log_level="warning",
+        port=9530,
+        log_level="debug",
         reload=True
     )
 

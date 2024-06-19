@@ -8,6 +8,7 @@ class DeviceType(enumerate):
     HVAC = "HVAC"
     PROJECTOR = "PROJECTOR"
     GATE_OPENER = "GATE_OPENER"
+    DOOR_LOCK = "DOOR_LOCK"
 
 
 class OpusDevice():

@@ -20,12 +20,12 @@ router = APIRouter(
 )
 
 
-@router.get("/servers")
+@router.get("/")
 async def get_all_servers():
     """Servers endpoint for the server."""
     return opus_servers.get_all_servers(next(db.get_db()))
 
-@router.delete("/servers/delete/{server_id}")
+@router.delete("/delete/{server_id}")
 async def delete_server(server_id: str):
     """Delete server endpoint for the server."""
     db_session = next(db.get_db())
@@ -34,7 +34,7 @@ async def delete_server(server_id: str):
         return opus_servers.delete_server(db_session, server)
     return "Server not found", status.HTTP_404_NOT_FOUND
 
-@router.get("/servers/admins/{server_id}")
+@router.get("/admins/{server_id}")
 async def get_server_admins(server_id: str):
     """Get server admins endpoint for the server."""
     db_session = next(db.get_db())
@@ -50,7 +50,7 @@ async def get_server_admins(server_id: str):
         }
     return "Server not found", status.HTTP_404_NOT_FOUND
 
-@router.post("/servers/assign_users")
+@router.post("/assign_users")
 async def assign_users_to_server(server_user_list: ServerUserList):
     """Assign users to server endpoint for the server."""
     db_session = next(db.get_db())
@@ -60,7 +60,7 @@ async def assign_users_to_server(server_user_list: ServerUserList):
         server_user_list.users
     )
 
-@router.get("/servers/users/{server_id}")
+@router.get("/users/{server_id}")
 async def get_server_users(server_id: str):
     """Get server users endpoint for the server."""
     db_session = next(db.get_db())

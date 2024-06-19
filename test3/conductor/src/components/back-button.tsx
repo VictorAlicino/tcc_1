@@ -1,20 +1,33 @@
-import { TouchableOpacity, View } from "react-native";
+import React from 'react';
+import { StyleSheet, View, Text } from 'react-native';
 
-import { Icon } from "@/components/icon";
-import { statusBarHeight } from "@/components/safe-area-view";
+interface CircleProps {
+  size: number;
+  text: string;
+  color: string;
+  fontSize: number;
+}
 
-export function BackButton() {
+const Circle: React.FC<CircleProps> = ({ size, text, color, fontSize }) => {
+  const styles = StyleSheet.create({
+    circle: {
+      width: size,
+      height: size,
+      borderRadius: size / 2, // borderRadius should be half of the width/height to make it a perfect circle
+      backgroundColor: color,
+      justifyContent: "center", // centers the text vertically
+      alignItems: "center", // centers the text horizontally
+    },
+    text: {
+      color: "black", // or any color you prefer
+      fontSize: fontSize, // use the fontSize prop for the text size
+      fontWeight: "bold", // optional, if you want bold text
+    },
+  });
+
   return (
-    <View
-      className="bg-zinc-800 -mx-4 p-4"
-      style={{
-        marginTop: -statusBarHeight,
-        paddingTop: statusBarHeight,
-      }}
-    >
-      <TouchableOpacity className="bg-zinc-900 p-2 rounded-full">
-        <Icon name="chevron-left" />
-      </TouchableOpacity>
+    <View style={styles.circle}>
+      <Text style={styles.text}>{text}</Text>
     </View>
   );
-}
+};

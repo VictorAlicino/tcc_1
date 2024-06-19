@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "opus-conductor",
-    "slug": "opus-conductor",
-    "version": "1.0.0",
+    "name": "Conductor",
+    "slug": "conductor",
+    "version": "0.0.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon-opus-white.png",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/opus-splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#14141c"
     },
@@ -21,12 +21,19 @@
     "android": {
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-icon-opus.png",
         "backgroundColor": "#14141c"
-      }
+      },
+      "package": "com.opus.conductor"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e1251c1b-4f43-44fa-a71c-35147a1b59d8"
+      }
+    },
+    "scheme": "debug"
   }
 }
