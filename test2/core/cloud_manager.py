@@ -48,7 +48,7 @@ class CloudManager:
 
     def login_callback(self, client, userdata, msg):
         """Callback function for Maestro"""
-        log.info("Callback from Maestro")
+        log.debug("Callback from Maestro")
         payload = json.loads(msg.payload)
         if payload['status'] == 'success':
             log.info("Logged in to Maestro")

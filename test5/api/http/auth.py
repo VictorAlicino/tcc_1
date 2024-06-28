@@ -1,18 +1,20 @@
 """HTTP API Authentications Endpoints"""
+import logging
 from fastapi import APIRouter, status, Response
+from fastapi.responses import RedirectResponse
 from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth
 from jose import JWTError, jwt
 
-from configurations.config import OpenConfig
+from configurations.config import CONFIG
 from db.database import DB
 import db.users as opus_users
 from db.models import OpusUser
 
-from api.http.models import ConductorLogin
+from api.http.models import ConductorLogin, User
 
-config = OpenConfig()
-db = DB(config["database"]["url"])
+log = logging.getLogger(__name__)
+db = DB(CONFIG["database"]["url"])
 
 router = APIRouter(
     prefix="/auth",
@@ -24,31 +26,34 @@ oauth = OAuth()
 oauth.register(
     name = 'google',
     server_metadata_url = 'https://accounts.google.com/.well-known/openid-configuration',
-    client_id = config['google-api']['client_id'],
-    client_secret = config['google-api']['client_secret'],
+    client_id = CONFIG['google-api']['client_id'],
+    client_secret = CONFIG['google-api']['client_secret'],
     client_kwargs = {
         'scope': 'openid email profile',
         'redirect_uri': 'http://localhost:8000/auth'
     }
 )
 
-@router.post("/request")
+@router.post("/conductor_request")
 async def conductor_login(request: ConductorLogin):
     """Conductor login endpoint for the server."""
     print(request)
     db_session = next(db.get_db())
     user = opus_users.get_user_by_google_sub(db_session, request.google_sub)
-    print(f'{user.name} has logged in via Conductor')
+    log.debug(f'{user.name} has logged in via Conductor')
     if user:
-        return user
-    return "User not found", status.HTTP_404_NOT_FOUND
+        return RedirectResponse(url="/login")
+    return RedirectResponse(url="new_user")
 
 @router.get("/login")
-async def login(request: Request):
+async def login(user: User):
     """Login endpoint for the server."""
     # Print the request
-    redirect_uri = request.url_for('auth')
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    print(user)
+    return Response(
+        content="You have logged in",
+        status_code=status.HTTP_200_OK
+    )
 
 @router.get("/logout")
 async def logout(request: Request):

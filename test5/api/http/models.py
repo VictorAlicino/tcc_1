@@ -1,5 +1,6 @@
 """Models for API endpoints."""
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
+from uuid import UUID
 
 # Server Requests
 class Role(BaseModel):
@@ -17,6 +18,16 @@ class ConductorLogin(BaseModel):
     """Conductor Login Request"""
     email: str
     google_sub: str
+
+class User(BaseModel):
+    """User model."""
+    user_id: UUID
+    google_sub: str
+    email: str
+    name: str
+    given_name: str
+    family_name: str
+    picture: str
 
 class Building(BaseModel):
     """Building model."""

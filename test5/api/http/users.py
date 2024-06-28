@@ -8,11 +8,10 @@ from db.models import OpusUser
 import db.users as opus_users
 import db.localservers as opus_servers
 from db.database import DB
-from configurations.config import OpenConfig
+from configurations.config import CONFIG
 from api.http.models import Role
 
-config = OpenConfig()
-db = DB(config["database"]["url"])
+db = DB(CONFIG["database"]["url"])
 
 router = APIRouter(
     prefix="/users",

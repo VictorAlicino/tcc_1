@@ -2,14 +2,17 @@
 from fastapi import FastAPI, status, Response
 from fastapi.responses import HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
-from configurations.config import OpenConfig
+from configurations.config import CONFIG
+import logging
 
 from api.http.users import router as user_router
 from api.http.localservers import router as server_router
 from api.http.auth import router as auth_router
 
 from api.http.index import index_home_page
-config = OpenConfig()
+
+# Logger
+log = logging.getLogger(__name__)
 
 # Tag Metadata
 tags_metadata = [

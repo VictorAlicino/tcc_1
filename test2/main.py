@@ -60,7 +60,7 @@ async def main() -> None:
 if __name__ == "__main__":
     exit_code: int = 0
 
-    initializers.define_log(DIRS, log_level="INFO")
+    initializers.define_log(DIRS, log_level="DEBUG")
     initializers.check_python(REQUIRED_PYTHON_VER)
     initializers.check_os(SUPPORTED_OS)
     initializers.check_directories(DIRS)
@@ -95,6 +95,8 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt as e:
-        INTERFACES['mqtt'].stop_thread()
+        INTERFACES['mqtt<local>'].stop_thread()
+        INTERFACES['mqtt<maestro>'].stop_thread()
         print(e)
-    sys.exit(exit_code)
+    finally:
+        sys.exit(exit_code)

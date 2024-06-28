@@ -57,15 +57,17 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
       console.log(loginResponse);
       setError(null);
       // Request login to the server
-      await fetch('http://192.168.15.87:9530/auth/request', {
+      const request = JSON.stringify({
+        'email': loginResponse.user.email,
+        'google_sub': loginResponse.user.id
+      })
+      console.log(request)
+      await fetch('http://192.168.15.87:9530/auth/conductor_request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          'email': loginResponse.user.email,
-          'google_sub': loginResponse.user.id
-        })
+        body: request
       }).then(async (response) => {
         if (response.status === 200) {
           console.log(response.body);

@@ -6,6 +6,7 @@ import asyncio
 import uvicorn
 from db.database import DB
 from configurations.config import OpenConfig
+from initializers import define_log
 from api.mqtt.mqtt_server_comms import server_login_listener
 from api.http.root import api
 
@@ -16,6 +17,8 @@ if sys.platform.lower() == "win32" or os.name.lower() == "nt":
 
 def _main() -> None:
     """Main entry point for the application."""
+    # Logging
+    log = define_log(log_level="DEBUG")
     # Load the configuration
     config = OpenConfig()
     # Start the database
@@ -34,7 +37,7 @@ def _main() -> None:
         "api.http.root:api",
         host="0.0.0.0",
         port=9530,
-        log_level="debug",
+        log_config=log,
         reload=True
     )
 

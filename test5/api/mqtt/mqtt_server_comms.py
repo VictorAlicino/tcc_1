@@ -1,11 +1,15 @@
 """MQTT API endpoints for the server."""
 import json
 import aiomqtt
+import logging
 import db.localservers as opus_servers
 import db.users as opus_users
 from db.models import OpusServer
 from db.database import DB
 from configurations.config import OpenConfig
+
+# Logger
+log = logging.getLogger(__name__)
 
 # Load YAML file
 config = OpenConfig()
@@ -27,16 +31,16 @@ async def send_cmd_to_server(server_id: str, command: dict):
 
 async def server_login_listener():
     """Receives Login requests from new servers."""
-    print("Listening on mqtt (maestro/login) for new servers.")
+    log.info("Listening on mqtt (maestro/login) for new servers.")
     async with aiomqtt.Client("168.75.84.130") as client:
         await client.subscribe("maestro/login")
         while True: # Change this for a more deterministic way to stop the listener
             async for message in client.messages:
                 message_temp = json.loads(message.payload.decode())
-                print("New server login request received.")
+                log.debug("New server login request received.")
                 server = await check_if_server_exists(message_temp['client_id'])
                 if server is False:
-                    print("New server requested to connect to Maestro.")
+                    log.info("New server requested to connect to Maestro.")
                     new_server = opus_servers.create_server(
                         next(db.get_db()),
                         OpusServer(
@@ -59,32 +63,4 @@ async def server_login_listener():
                         )
                     )
                     continue
-                # If the server already exists
-                # Ge the server users
-                db_session = next(db.get_db())
-                query = opus_servers.get_server_users(db_session, server.server_id)
-                users = []
-                for user in query:
-                    u = opus_users.get_user_by_id(db_session, user[0])
-                    users.append({
-                        "user_id": f"{u.user_id}",
-                        "name": f"{u.name}",
-                        "email": f"{u.email}",
-                        "picture": f"{u.picture}",
-                        "role": int(user[2])
-                    })
-                await client.publish(
-                        message_temp['callback'],
-                        json.dumps(
-                            {
-                                "status": "success",
-                                "message": "Connected to Maestro",
-                                "payload": {
-                                    "server_name": f"{server.name}",
-                                    "server_id": f"{server.server_id}",
-                                    "users": users
-                                }
-                            }
-                        )
-                    )
-                print(f"{server.name} connected to Maestro.")
+                log.info(f"{server.name} connected to Maestro.")

@@ -12,7 +12,9 @@ class OpenConfig(metaclass=SingletonMeta):
             except yaml.YAMLError as exc:
                 print(exc)
                 self.config = None
-        print(f"Starting Config at {self}")
 
     def __getitem__(self, key: str):
         return self.config[key]
+    
+CONFIG = OpenConfig()
+

@@ -12,7 +12,6 @@ from core.location_manager import LocationManager
 from core.cloud_manager import CloudManager
 from db.db import OpusDB
 
-
 class LevelFilter(logging.Filter):
     """Log Level Filter"""
     def __init__(self, level):
@@ -28,7 +27,9 @@ def define_log(dirs: dict, log_level: str) -> None:
     log_filename = f"{dirs['LOGS']}/opus-server-{datetime.now().strftime('%Y%m%d-%H%M%S')}.log"
 
     # Define the format for the log messages
-    log_format = '[%(levelname)s][%(asctime)s][%(filename)s:%(lineno)d][%(name)s] %(message)s'
+    # log_format = '[%(levelname)s][%(asctime)s][%(filename)s:%(lineno)d][%(name)s] %(message)s'
+    #log_format = '[%(asctime)s] [%(filename)-20s->%(lineno)4d/%(levelname)5s]: %(message)s'
+    log_format = '[%(asctime)s][%(msecs)-3d] %(levelname)5s: %(message)s'
 
     # Define the color log format
     color_log_format = '%(log_color)s' + log_format
