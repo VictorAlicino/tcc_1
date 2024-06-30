@@ -63,7 +63,7 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
         'email': loginResponse.email,
         'google_sub': loginResponse.id
       })
-      await fetch('http://192.168.15.87:9530/auth/conductor_request', {
+      await fetch('http://192.168.15.87:9530/auth/conductor/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

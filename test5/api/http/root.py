@@ -17,6 +17,10 @@ log = logging.getLogger(__name__)
 # Tag Metadata
 tags_metadata = [
     {
+        "name": "Authentications",
+        "description": "Operations with authentications. The `/auth` endpoint returns a list of all authentications.",
+    },
+    {
         "name": "Users",
         "description": "Operations with users. The `/users` endpoint returns a list of all users.",
     },
@@ -28,7 +32,7 @@ tags_metadata = [
     {
         "name": "Root",
         "description": "Root endpoint for the server."
-    }
+    },
 ]
 
 # FASTAPI instance
@@ -45,7 +49,8 @@ api: FastAPI = FastAPI(
     license_info={
         "name": "Apache 2.0",
         "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
-    }
+    },
+    openapi_tags=tags_metadata
 )
 
 api.add_middleware(SessionMiddleware, secret_key="your-secret")

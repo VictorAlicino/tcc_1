@@ -35,7 +35,7 @@ oauth.register(
     }
 )
 
-@router.post("/conductor_request")
+@router.post("/conductor/login")
 async def conductor_login(request: ConductorLogin):
     """Conductor login endpoint for the server."""
     print(request)
