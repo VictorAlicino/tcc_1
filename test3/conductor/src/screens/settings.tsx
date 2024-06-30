@@ -16,11 +16,11 @@ export function Settings() {
         flex:1,
       }}>
         <TouchableOpacity
-          className="bg-zinc-800 flex-row items-center space-x-2 mt-5 p-1 rounded-full"
+          className="bg-zinc-800 flex-row items-center space-x-2 mt-5 p-2 rounded-full"
           activeOpacity={0.7}
         >
           <Image
-            style={{width: 70, height: 70, borderRadius: 50}}
+            style={{width: 45, height: 45, borderRadius: 50}}
             source={{uri: user?.photo ?? ''}}
           />
           <Text className="text-xl font-700 px-2">Olá, {user?.name}!</Text>
@@ -30,18 +30,19 @@ export function Settings() {
         </View>
 
         <TouchableOpacity
-          className="bg-red-800 flex-row space-x-2 mt-4 p-1 rounded-t-full"
+          className="bg-red-800 flex-row space-x-1 p-3 rounded-t-xl"
           activeOpacity={0.7}
         >
           <View style={{flex:2,flexDirection:"row",justifyContent:'space-between',padding:0}}>
           </View>
-          <TouchableOpacity style={{flex:1,flexDirection:'row',padding:0}} onPress={signOut} activeOpacity={0.7}>
-            <Icon name="logout" size={24} />
-            <Text className="text-xl font-400">Sair</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={{flex:1,flexDirection:'row',padding:0}} onPress={signOut} activeOpacity={0.7}>
+              <Icon name="logout" size={24} />
+              <Text className="text-xl font-400">Sair</Text>
+            </TouchableOpacity>
           <View style={{flex:2,flexDirection:"row",justifyContent:'space-between',padding:0}}>
-        </View>
+          </View>
         </TouchableOpacity>
+
       </View>
     </SafeAreaView>
   );

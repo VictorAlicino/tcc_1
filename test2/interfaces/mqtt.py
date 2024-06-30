@@ -68,6 +68,7 @@ class MQTTClient():
 
     def stop_thread(self):
         """Stop the MQTT Client Thread"""
+        self.thread.join()
         self.client.loop_stop()
 
     def on_connect(self, client, userdata, flags, reason_code, properties): # pylint: disable=unused-argument

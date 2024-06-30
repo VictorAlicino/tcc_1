@@ -92,11 +92,14 @@ if __name__ == "__main__":
     # TODO: Connect to database
     # TODO: Start event manager
     # TODO: Start task manager
+    a: asyncio.AbstractEventLoop
     try:
-        asyncio.run(main())
+        a = asyncio.run(main())
     except KeyboardInterrupt as e:
+        sys.exit(127)
         INTERFACES['mqtt<local>'].stop_thread()
         INTERFACES['mqtt<maestro>'].stop_thread()
+        a.stop()
         print(e)
     finally:
         sys.exit(exit_code)

@@ -23,7 +23,6 @@ class CloudManager:
         self.login_to_maestro()
         log.info('Cloud Manager initialized.')
 
-
     def login_to_maestro(self):
         """Login to Maestro"""
         log.debug("Reaching Maestro Server")

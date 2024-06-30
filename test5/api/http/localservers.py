@@ -19,7 +19,6 @@ router = APIRouter(
     tags=["Opus Server"],
 )
 
-
 @router.get("/")
 async def get_all_servers():
     """Servers endpoint for the server."""

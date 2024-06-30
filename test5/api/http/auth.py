@@ -1,6 +1,7 @@
 """HTTP API Authentications Endpoints"""
+import datetime
 import logging
-from fastapi import APIRouter, status, Response
+from fastapi import APIRouter, HTTPException, status, Response
 from fastapi.responses import RedirectResponse
 from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth
@@ -40,10 +41,27 @@ async def conductor_login(request: ConductorLogin):
     print(request)
     db_session = next(db.get_db())
     user = opus_users.get_user_by_google_sub(db_session, request.google_sub)
-    log.debug(f'{user.name} has logged in via Conductor')
-    if user:
-        return RedirectResponse(url="/login")
-    return RedirectResponse(url="new_user")
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found"
+        )
+    log.debug(f'{user.name} has logged in via Conductor')    
+    exp = datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
+
+    # Create a JWT token
+    payload = {
+        'sub': user.google_sub,
+        'exp': exp
+    }
+
+    access_token = jwt.encode(payload, CONFIG['api-secrets']['secret_key'], algorithm='HS256')
+
+    return {
+        'access_token': access_token,
+        'exp': exp,
+        'token_type': 'bearer'
+    }
 
 @router.get("/login")
 async def login(user: User):

@@ -8,21 +8,28 @@ interface AuthenticationContextData {
   isAuthenticated: boolean;
   googleSignIn: () => Promise<void>;
   signOut: () => void;
-  getCurrentUser: () => GoogleUser | null;
+  getCurrentUser: () => conductorUser | null;
 }
 
 interface AuthenticationProviderProps {
   children: React.ReactNode;
 }
 
-interface GoogleUser {6
+interface conductorToken{
+  access_token?: string | null;
+  exp: Date | null;
+}
+
+interface conductorUser {
   id: string | null;
   email: string | null;
   name: string | null;
   givenName: string | null;
   familyName: string | null;
   photo: string | null;
+  conductorToken?: conductorToken;
 }
+const AuthenticationContext = createContext({} as AuthenticationContextData);
 
 async function storeToken(token: string): Promise<void> {
   await SecureStore.setItemAsync('googleAccessToken', token);
@@ -32,63 +39,57 @@ async function getStoredToken(): Promise<string | null> {
   return await SecureStore.getItemAsync('googleAccessToken');
 }
 
-const AuthenticationContext = createContext({} as AuthenticationContextData);
-
 export function AuthenticationProvider({ children }: AuthenticationProviderProps) {
   const [error, setError] = useState();
-  const [googleUser, setGoogleUser] = useState<GoogleUser | null>(null);
+  const [conductorUser, setConductorUser] = useState<conductorUser | null>(null);
   useEffect(() => {
     GoogleSignin.configure({
       // Adicione sua configuração aqui, se necessário
     });
   }, []);
 
-  const isAuthenticated = !!googleUser;
+  const isAuthenticated = !!conductorUser?.conductorToken;
 
-  function getCurrentUser(): GoogleUser | null {
-    return googleUser;
+  function getCurrentUser(): conductorUser | null {
+    return conductorUser;
   }
 
   async function googleSignIn(): Promise<void> {
     try {
       await GoogleSignin.hasPlayServices();
-      const loginResponse = await GoogleSignin.signIn();
-      setGoogleUser(loginResponse.user);
-      console.log(loginResponse);
-      setError(null);
+      let loginResponse: conductorUser = (await GoogleSignin.signIn()).user;
       // Request login to the server
       const request = JSON.stringify({
-        'email': loginResponse.user.email,
-        'google_sub': loginResponse.user.id
+        'email': loginResponse.email,
+        'google_sub': loginResponse.id
       })
-      console.log(request)
       await fetch('http://192.168.15.87:9530/auth/conductor_request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: request
-      }).then(async (response) => {
-        if (response.status === 200) {
-          console.log(response.body);
-          const token = response.headers.get('Authorization');
-          if (token) {
-            await storeToken(token);
-          }
+      })
+      .then(response => response.json())
+      .then(data => {
+        loginResponse.conductorToken = {
+          access_token: data.access_token,
+          exp: data.exp
         }
+        setConductorUser(loginResponse);
       });
+      console.log(loginResponse);
 
-    } catch (error) {
+    } catch (error: any) {
       setError(error.message);
-      setGoogleUser(null);
+      setConductorUser(null);
     }
   }
-
 
   function signOut() {
     console.log('signOut');
     GoogleSignin.signOut();
-    setGoogleUser(null);
+    setConductorUser(null);
   }
 
   return (
