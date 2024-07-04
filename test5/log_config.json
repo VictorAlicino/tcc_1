@@ -1,0 +1,64 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "default": {
+            "format": "[%(asctime)s] %(levelname)5s: %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S"
+        },
+        "color": {
+            "format": "%(log_color)s[%(asctime)s] %(levelname)5s: %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+            "()": "colorlog.ColoredFormatter",
+            "log_colors": {
+                "DEBUG": "white",
+                "INFO": "cyan",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "bold_red"
+            }
+        }
+    },
+    "handlers": {
+        "file": {
+            "class": "logging.FileHandler",
+            "level": "DEBUG",
+            "formatter": "default",
+            "filename": "logs/maestro.log",
+            "encoding": "utf-8"
+        },
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "color",
+            "filters": ["level_filter"]
+        }
+    },
+    "filters": {
+        "level_filter": {
+            "()": "LevelFilter",
+            "level": "DEBUG"
+        }
+    },
+    "loggers": {
+        "": {
+            "handlers": ["file", "console"],
+            "level": "DEBUG"
+        },
+        "uvicorn": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": false
+        },
+        "uvicorn.error": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": false
+        },
+        "uvicorn.access": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": false
+        }
+    }
+}

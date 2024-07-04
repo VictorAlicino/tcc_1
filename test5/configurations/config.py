@@ -6,7 +6,7 @@ from configurations.singleton_metaclass import SingletonMeta
 class OpenConfig(metaclass=SingletonMeta):
     """Config class for the application."""
     def __init__(self):
-        with open("configurations/config.yaml", "r", encoding='utf-8') as stream:
+        with open("config.yaml", "r", encoding='utf-8') as stream:
             try:
                 self.config = yaml.safe_load(stream)
             except yaml.YAMLError as exc:

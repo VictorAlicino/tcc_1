@@ -103,3 +103,4 @@ def define_log(log_level: str) -> None:
 
     dictConfig(logging_config)
     return logging_config
+

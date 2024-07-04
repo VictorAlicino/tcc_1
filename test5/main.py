@@ -1,9 +1,12 @@
 """Main entry point for the application."""
+import logging.config
 import sys
 import os
 import threading
+import json
 import asyncio
 import uvicorn
+import logging
 from db.database import DB
 from configurations.config import OpenConfig
 from logs.logger import define_log
@@ -18,9 +21,14 @@ if sys.platform.lower() == "win32" or os.name.lower() == "nt":
 def _main() -> None:
     """Main entry point for the application."""
     # Logging
+    # log_config: str = None
+    # with open("configurations/log_config.json", "r") as l: 
+    #     log_config = json.load(l)
+    # logging.config.dictConfig(log_config)
     log = define_log(log_level="DEBUG")
     # Load the configuration
     config = OpenConfig()
+
     # Start the database
     db = DB(config["database"]["url"])
     db.create_all()
