@@ -75,6 +75,13 @@ async def get_server_users(server_id: str):
         }
     return "Server not found", status.HTTP_404_NOT_FOUND
 
+@router.get("/user/devices")
+async def get_user_devices(server_id: str):
+    """Get all user devices from the server provided."""
+    # This will only work with the user on the provided JWT Token
+    # The user will be the one that is logged in
+    # TODO: Implement this
+
 @router.post("/cmd/{server_id}")
 async def command(server_id: str, cmd: dict):
     """Command endpoint for the server."""

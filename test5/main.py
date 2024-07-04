@@ -6,7 +6,7 @@ import asyncio
 import uvicorn
 from db.database import DB
 from configurations.config import OpenConfig
-from initializers import define_log
+from logs.logger import define_log
 from api.mqtt.mqtt_server_comms import server_login_listener
 from api.http.root import api
 

@@ -18,7 +18,7 @@ def define_log(log_level: str) -> None:
     log_filename = f"logs/opus-server-{datetime.now().strftime('%Y%m%d-%H%M%S')}.log"
 
     # Define the format for the log messages
-    log_format = '[%(asctime)s][%(msecs)-3d] %(levelname)5s: %(message)s'
+    log_format = '[%(asctime)s] %(levelname)5s: %(message)s'
 
     # Define the color log format
     color_log_format = '%(log_color)s' + log_format

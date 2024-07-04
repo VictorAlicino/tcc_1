@@ -1,6 +1,6 @@
 """Models for the ORM"""
 import uuid
-from sqlalchemy import Column, String, ForeignKey, Table, SmallInteger
+from sqlalchemy import Column, String, ForeignKey, Table, SmallInteger, BLOB
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -12,12 +12,13 @@ class OpusUser(Base):
     __tablename__ = 'opus_user'
 
     user_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    google_sub = Column(String)
     email = Column(String)
     name = Column(String)
     given_name = Column(String)
     family_name = Column(String)
-    picture = Column(String)
+    google_sub = Column(String)
+    picture_url = Column(String)
+    picture = Column(BLOB)
 
 # Local Server (Opus) Model
 class OpusServer(Base):
