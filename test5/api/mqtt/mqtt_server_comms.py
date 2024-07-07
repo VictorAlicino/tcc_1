@@ -64,3 +64,7 @@ async def server_login_listener():
                     )
                     continue
                 log.info(f"{server.name} connected to Maestro.")
+                await client.publish(
+                    message_temp['callback'],
+                    json.dumps({"status": "success"})
+                    )

@@ -53,3 +53,11 @@ class CloudManager:
             log.info("Logged in to Maestro")
         else:
             log.error("Failed to login to Maestro")
+
+    def maestro_ping_resp(self, client, userdata, msg):
+        """Answers the Ping from Maestro"""
+        log.debug("Ping Request from Maestro")
+        self.interfaces['mqtt<maestro>'].publish(
+            topic=f'{self.interfaces['mqtt<maestro>'].client_id}/ping'
+        )
+        
