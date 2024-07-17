@@ -5,6 +5,7 @@ import os
 import threading
 import json
 import asyncio
+from decouple import config
 import uvicorn
 import logging
 from db.database import DB
@@ -30,7 +31,7 @@ def _main() -> None:
     config = OpenConfig()
 
     # Start the database
-    db = DB(config["database"]["url"])
+    db = DB(DB_URL)
     db.create_all()
 
     # Start the MQTT client
