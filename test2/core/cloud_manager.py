@@ -59,5 +59,6 @@ class CloudManager:
         log.debug("Ping Request from Maestro")
         self.interfaces['mqtt<maestro>'].publish(
             topic=f'{self.interfaces['mqtt<maestro>'].client_id}/ping'
+            
         )
         

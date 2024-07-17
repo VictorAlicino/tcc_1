@@ -6,7 +6,7 @@ import qrcode.image.svg
 
 def _main() -> int:
     qr = qrcode.QRCode(image_factory=qrcode.image.svg.SvgPathImage)
-    qr.add_data('Some data')
+    qr.add_data('https://youtu.be/-Hql19eKKoU')
     qr.make(fit=True)
 
     img = qr.make_image(attrib={'class': 'some-css-class'})
