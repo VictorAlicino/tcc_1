@@ -43,8 +43,10 @@ class MQTTClient():
         self.client.on_message = self.on_message
 
         log.info("Connecting to %s:%s as %s", config['host'], config['port'], self.client_id)
+        log.info("Please wait...")
         try:
             self.client.connect(config['host'], config['port'])
+            log.info("Connected.")
             self.subscribe(f'{self.client_id}/#')
             return True
         except TimeoutError as exp:

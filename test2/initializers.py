@@ -20,7 +20,7 @@ class LevelFilter(logging.Filter):
     def filter(self, record):
         return record.levelno >= self.level
 
-def define_log(dirs: dict, log_level: str) -> None:
+def define_log(dirs: dict, log_level: str = "DEBUG") -> None:
     """Logging System"""
 
     # Create a new log file with a timestamp in its name

@@ -1,3 +1,6 @@
+# Basic Configs
+name: opus-server
+
 # Interfaces
 interfaces: # Interfaces are expected to be configurable, so don't forget the colon at the end of the line
   - mqtt<local>: 

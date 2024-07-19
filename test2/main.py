@@ -59,8 +59,11 @@ async def main() -> None:
 
 if __name__ == "__main__":
     exit_code: int = 0
-
-    initializers.define_log(DIRS, log_level="DEBUG")
+    if len(sys.argv) >= 2:
+        log_level = sys.argv[1]
+    else:
+        log_level = "INFO"
+    initializers.define_log(DIRS, log_level= log_level)
     initializers.check_python(REQUIRED_PYTHON_VER)
     initializers.check_os(SUPPORTED_OS)
     initializers.check_directories(DIRS)
