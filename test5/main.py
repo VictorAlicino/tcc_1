@@ -22,12 +22,8 @@ if sys.platform.lower() == "win32" or os.name.lower() == "nt":
 def _main() -> None:
     """Main entry point for the application."""
     # Logging
-    # log_config: str = None
-    # with open("configurations/log_config.json", "r") as l: 
-    #     log_config = json.load(l)
-    # logging.config.dictConfig(log_config)
     log = define_log(log_level="DEBUG")
-    
+
     # Start the database
     db = DB(env('DB_URL'))
     db.create_all()

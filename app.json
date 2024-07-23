@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "tcc_1",
+    "slug": "tcc_1",
+    "version": "1.0.0",
+    "sdkVersion": "51.0.0",
+    "platforms": [],
+    "android": {
+      "package": "com.opus.maestro"
+    }
+  }
+}

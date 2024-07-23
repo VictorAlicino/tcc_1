@@ -1,0 +1,1 @@
+ C:\\Users\\victo\\Documents\\TCC\\test1\\.dart_tool\\flutter_build\\d87cd8a1acdd8b71ad468b185471d4f5\\native_assets.yaml: 
