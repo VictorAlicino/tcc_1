@@ -5,7 +5,7 @@ import os
 import threading
 import json
 import asyncio
-from decouple import config
+from decouple import config as env
 import uvicorn
 import logging
 from db.database import DB
@@ -27,11 +27,9 @@ def _main() -> None:
     #     log_config = json.load(l)
     # logging.config.dictConfig(log_config)
     log = define_log(log_level="DEBUG")
-    # Load the configuration
-    config = OpenConfig()
-
+    
     # Start the database
-    db = DB(DB_URL)
+    db = DB(env('DB_URL'))
     db.create_all()
 
     # Start the MQTT client
