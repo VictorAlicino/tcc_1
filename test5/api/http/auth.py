@@ -10,12 +10,12 @@ from jose import JWTError, jwt
 from configurations.config import CONFIG
 from db.database import DB
 import db.users as opus_users
-from db.models import OpusUser
+from db.models import MaestroUser
 
 from api.http.models import ConductorLogin, User
 
 log = logging.getLogger(__name__)
-db = DB(CONFIG["database"]["url"])
+db = DB()
 
 router = APIRouter(
     prefix="/auth",
@@ -92,7 +92,7 @@ async def auth(request: Request):
     print(token)
     if opus_users.get_user_by_google_sub(next(db.get_db()), token['userinfo']['sub']):
         return "User already exists"
-    user = OpusUser(
+    user = MaestroUser(
         google_sub = token['userinfo']['sub'],
         email = token['userinfo']['email'],
         name = token['userinfo']['name'],

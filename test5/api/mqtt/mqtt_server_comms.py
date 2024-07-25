@@ -6,15 +6,11 @@ import db.localservers as opus_servers
 import db.users as opus_users
 from db.models import OpusServer
 from db.database import DB
-from configurations.config import OpenConfig
+from decouple import config as env
 
 # Logger
 log = logging.getLogger(__name__)
-
-# Load YAML file
-config = OpenConfig()
-
-db = DB(config["database"]["url"])
+db = DB()
 
 async def check_if_server_exists(server_name: str) -> OpusServer | bool:
     """Check if a server exists."""
@@ -26,7 +22,7 @@ async def check_if_server_exists(server_name: str) -> OpusServer | bool:
 async def send_cmd_to_server(server_id: str, command: dict):
     """Send a command to a server."""
     server = opus_servers.get_server_by_id(next(db.get_db()), server_id)
-    async with aiomqtt.Client(config['cloud_mqtt']) as client:
+    async with aiomqtt.Client(env('CLOUD-MQTT')) as client:
         await client.publish(f"{server.mqtt_topic}/cmd", json.dumps(command))
 
 async def server_login_listener():

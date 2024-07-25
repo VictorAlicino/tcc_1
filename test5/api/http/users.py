@@ -4,14 +4,14 @@ from fastapi.responses import HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 from authlib.integrations.starlette_client import OAuth
 from starlette.requests import Request
-from db.models import OpusUser
+from db.models import MaestroUser
 import db.users as opus_users
 import db.localservers as opus_servers
 from db.database import DB
 from configurations.config import CONFIG
 from api.http.models import Role
 
-db = DB(CONFIG["database"]["url"])
+db = DB()
 
 router = APIRouter(
     prefix="/users",

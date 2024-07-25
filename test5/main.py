@@ -25,7 +25,7 @@ def _main() -> None:
     log = define_log(log_level="DEBUG")
 
     # Start the database
-    db = DB(env('DB_URL'))
+    db = DB()
     db.create_all()
 
     # Start the MQTT client

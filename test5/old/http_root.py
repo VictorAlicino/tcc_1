@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 from authlib.integrations.starlette_client import OAuth
 from starlette.requests import Request
-from db.models import OpusUser
+from db.models import MaestroUser
 import db.users as opus_users
 import db.localservers as opus_servers
 from api.http_models import Role
@@ -50,7 +50,7 @@ api: FastAPI = FastAPI(
 api.add_middleware(SessionMiddleware, secret_key="your-secret")
 oauth = OAuth()
 config = OpenConfig()
-db = DB(config["database"]["url"])
+db = DB()
 oauth.register(
     name = 'google',
     server_metadata_url = 'https://accounts.google.com/.well-known/openid-configuration',
@@ -159,7 +159,7 @@ async def auth(request: Request):
     print(token)
     if opus_users.get_user_by_google_sub(next(db.get_db()), token['userinfo']['sub']):
         return "User already exists"
-    user = OpusUser(
+    user = MaestroUser(
         google_sub = token['userinfo']['sub'],
         email = token['userinfo']['email'],
         name = token['userinfo']['name'],
