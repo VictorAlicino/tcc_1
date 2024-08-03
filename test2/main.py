@@ -104,5 +104,7 @@ if __name__ == "__main__":
         INTERFACES['mqtt<maestro>'].stop_thread()
         a.stop()
         print(e)
+    except Exception as e:
+        print(e)
     finally:
         sys.exit(exit_code)

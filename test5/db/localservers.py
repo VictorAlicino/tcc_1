@@ -7,7 +7,6 @@ def create_server(db: Session, server: OpusServer) -> OpusServer:
     db.add(server)
     db.commit()
     db.refresh(server)
-    print(f'Server created: {server.name}')
     return server
 
 def get_server_by_id(db: Session, server_id: str) -> OpusServer:

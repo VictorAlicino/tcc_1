@@ -13,7 +13,7 @@ interfaces: # Interfaces are expected to be configurable, so don't forget the co
 
   - mqtt<maestro>:
       log_id: "mqtt<maestro>"
-      host: "168.75.84.130"
+      host: "144.22.195.55"
       port: 1883
       username: ""
       password: ""

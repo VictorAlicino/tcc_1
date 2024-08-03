@@ -28,7 +28,7 @@ async def send_cmd_to_server(server_id: str, command: dict):
 async def server_login_listener():
     """Receives Login requests from new servers."""
     log.info("Listening on mqtt (maestro/login) for new servers.")
-    async with aiomqtt.Client("168.75.84.130") as client:
+    async with aiomqtt.Client(env('CLOUD-MQTT')) as client:
         await client.subscribe("maestro/login")
         while True: # Change this for a more deterministic way to stop the listener
             async for message in client.messages:
@@ -58,9 +58,12 @@ async def server_login_listener():
                             }
                         )
                     )
-                    continue
-                log.info(f"{server.name} connected to Maestro.")
-                await client.publish(
+                    server = new_server;
+                    log.info(f"{server.name} registered and connected to Maestro.")
+                else:
+                    await client.publish(
                     message_temp['callback'],
                     json.dumps({"status": "success"})
                     )
+                    log.info(f"{server.name} connected to Maestro.")
+                

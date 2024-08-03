@@ -1,3 +1,3 @@
-env\Scripts\python.exe main.py
+env\Scripts\python.exe main.py DEBUG
 pause
 cls
