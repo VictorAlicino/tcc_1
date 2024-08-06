@@ -1,5 +1,5 @@
 """MQTT Interface"""
-from threading import Lock, Thread
+from threading import Lock, Thread, Event
 import logging
 import socket
 import paho.mqtt.client as mqtt
@@ -34,6 +34,7 @@ class MQTTClient():
         )
         self.thread: Thread
         self.log_id = None
+        self.critical_error = Event()
         log.info("MQTT Initialized")
 
     def begin(self, config: dict) -> bool:
@@ -65,12 +66,10 @@ class MQTTClient():
 
     def start_thread(self):
         """Start the MQTT Client Thread"""
-        self.thread = Thread(target=self.client.loop_forever)
-        self.thread.start()
+        self.client.loop_start()
 
     def stop_thread(self):
         """Stop the MQTT Client Thread"""
-        self.thread.join()
         self.client.loop_stop()
 
     def on_connect(self, client, userdata, flags, reason_code, properties): # pylint: disable=unused-argument

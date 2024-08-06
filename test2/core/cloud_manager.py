@@ -1,7 +1,7 @@
 """Cloud Manager to access Maestro"""
 import os
 import time
-from threading import Thread
+import threading
 import sys
 import json
 import logging
@@ -19,7 +19,6 @@ class CloudManager:
                  drivers: dict
                 ):
         log.debug('Initializing Cloud Manager.')
-        self.watchdog_flag: bool = False;
 
         self.dirs = dirs
         self.interfaces = interfaces
@@ -27,22 +26,6 @@ class CloudManager:
         self.drivers = drivers
         self.login_to_maestro()
         log.info('Cloud Manager initialized.')
-
-    def cloud_watchdog(self, timeout_s: float = 10.0, fail_reason: str = "Watchdog timeout"):
-        """Raise an exception if timeout exceeds the value on timeout"""
-        target_time = time.time() + timeout_s;
-        print(self.cloud_watchdog)
-        def timer():
-            print(self.cloud_watchdog)
-            while self.watchdog_flag is False:
-                print(self.cloud_watchdog)
-                if time.time() >= target_time:
-                    log.critical(fail_reason)
-                    raise RuntimeError(fail_reason)
-                time.sleep(0.1)  # Pequeno intervalo para evitar loop apertado
-            self.watchdog_flag = False
-        temp_thread = Thread(target=timer)
-        temp_thread.start()
 
     def login_to_maestro(self):
         """Login to Maestro"""
@@ -66,7 +49,15 @@ class CloudManager:
             })
         )
         log.debug("Connecting to Maestro Server")
-        self.cloud_watchdog(timeout_s=10, fail_reason="Maestro Server is not accessible")
+        # Set a watchdog to closes the program in case the MQTT does not receive the callback
+        # Start a timeout timer
+        self.timeout_timer = threading.Timer(10.0, self.handle_timeout)  # Timeout in seconds
+        self.timeout_timer.start()
+
+    def handle_timeout(self):
+        """Handle timeout for Maestro login"""
+        log.critical("Login to Maestro timed out")
+        sys.exit(1)
 
     def login_callback(self, client, userdata, msg):
         """Callback function for Maestro"""
@@ -74,10 +65,10 @@ class CloudManager:
         payload = json.loads(msg.payload)
         if payload['status'] == 'success':
             log.info("Logged in to Maestro")
-            self.cloud_watchdog = True
+            self.timeout_timer.cancel()  # Cancel the timeout timer since we got a response
         else:
-            log.error("Failed to login to Maestro")
-            sys.exit(1);
+            log.critical("Failed to login to Maestro")
+            sys.exit(1)
 
     def maestro_ping_resp(self, client, userdata, msg):
         """Answers the Ping from Maestro"""
