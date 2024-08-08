@@ -12,7 +12,7 @@ from db.database import DB
 from configurations.config import OpenConfig
 from logs.logger import define_log
 from api.mqtt.mqtt_server_comms import server_login_listener
-from api.http.root import api
+from api.rest.root import api
 
 # MQTT Async Guard
 if sys.platform.lower() == "win32" or os.name.lower() == "nt":
@@ -37,7 +37,7 @@ def _main() -> None:
 
     # Run the server
     uvicorn.run(
-        "api.http.root:api",
+        "api.rest.root:api",
         host="0.0.0.0",
         port=9530,
         log_config=log,

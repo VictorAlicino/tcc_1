@@ -5,11 +5,11 @@ from starlette.middleware.sessions import SessionMiddleware
 from configurations.config import CONFIG
 import logging
 
-from api.http.users import router as user_router
-from api.http.localservers import router as server_router
-from api.http.auth import router as auth_router
+from api.rest.users import router as user_router
+from api.rest.localservers import router as server_router
+from api.rest.auth import router as auth_router
 
-from api.http.index import index_home_page
+from api.rest.index import index_home_page
 
 # Logger
 log = logging.getLogger(__name__)

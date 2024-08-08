@@ -12,7 +12,7 @@ from db.database import DB
 import db.users as opus_users
 from db.models import MaestroUser
 
-from api.http.models import ConductorLogin, User
+from api.rest.models import ConductorLogin, ConductorRegister, User
 
 log = logging.getLogger(__name__)
 db = DB()
@@ -35,13 +35,21 @@ oauth.register(
     }
 )
 
+# Conductor Auth -----------------------------
+
+@router.post("/conductor/register")
+async def conductor_register(request: ConductorRegister):
+    """Conductor register endpoint for the server"""
+    print(request)
+    return status.HTTP_200_OK
+
 @router.post("/conductor/login")
 async def conductor_login(request: ConductorLogin):
     """Conductor login endpoint for the server."""
-    print(request)
     db_session = next(db.get_db())
     user = opus_users.get_user_by_google_sub(db_session, request.google_sub)
     if user is None:
+        log.warning(f"{request.email} tried to login but is not authorized")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found"

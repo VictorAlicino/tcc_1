@@ -9,7 +9,7 @@ import db.users as opus_users
 import db.localservers as opus_servers
 from db.database import DB
 from configurations.config import OpenConfig
-from api.http.models import ServerUserList
+from api.rest.models import ServerUserList
 
 config = OpenConfig()
 db = DB()

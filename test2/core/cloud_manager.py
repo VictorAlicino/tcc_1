@@ -77,4 +77,3 @@ class CloudManager:
             topic=f'{self.interfaces['mqtt<maestro>'].client_id}/ping'
             
         )
-        

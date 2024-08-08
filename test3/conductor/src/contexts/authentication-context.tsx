@@ -44,7 +44,6 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
   const [conductorUser, setConductorUser] = useState<conductorUser | null>(null);
   useEffect(() => {
     GoogleSignin.configure({
-      // Adicione sua configuração aqui, se necessário
     });
   }, []);
 
@@ -66,19 +65,30 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
       await fetch('http://192.168.15.87:9530/auth/conductor/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+            'Content-Type': 'application/json'
         },
         body: request
       })
-      .then(response => response.json())
+      .then(response => {
+          if (response.status === 401) {
+              // Trate o erro 401 aqui
+              throw new Error('Unauthorized: Invalid credentials or session expired.');
+          }
+          
+          return response.json();
+      })
       .then(data => {
-        loginResponse.conductorToken = {
-          access_token: data.access_token,
-          exp: data.exp
-        }
-        setConductorUser(loginResponse);
+          loginResponse.conductorToken = {
+              access_token: data.access_token,
+              exp: data.exp
+          };
+          setConductorUser(loginResponse);
+      })
+      .catch(error => {
+          console.error('Error:', error.message);
+          // Faça algo adicional com o erro, como mostrar uma mensagem para o usuário
       });
-      console.log(loginResponse);
+        console.log(loginResponse);
 
     } catch (error: any) {
       setError(error.message);

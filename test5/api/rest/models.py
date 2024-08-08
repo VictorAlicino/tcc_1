@@ -19,6 +19,11 @@ class ConductorLogin(BaseModel):
     email: str
     google_sub: str
 
+class ConductorRegister(BaseModel):
+    """Conductor Register Request"""
+    email: str
+    google_sub: str
+
 class User(BaseModel):
     """User model."""
     user_id: UUID
