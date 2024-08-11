@@ -8,3 +8,6 @@
 
     * Set access level to a device
         - /opus_server/{server_id}/{device_id}/clearance
+
+
+# Endpoints available:
