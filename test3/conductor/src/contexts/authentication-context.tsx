@@ -62,16 +62,19 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
         'email': loginResponse.email,
         'google_sub': loginResponse.id
       })
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
       await fetch('http://192.168.15.87:9530/auth/conductor/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: request
+        body: request,
+        signal: controller.signal
       })
       .then(response => {
+          clearTimeout(timeoutId);
           if (response.status === 401) {
-              // Trate o erro 401 aqui
               throw new Error('Unauthorized: Invalid credentials or session expired.');
           }
           
@@ -85,8 +88,15 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
           setConductorUser(loginResponse);
       })
       .catch(error => {
-          console.error('Error:', error.message);
-          // Faça algo adicional com o erro, como mostrar uma mensagem para o usuário
+          switch (error.name) {
+            case 'AbortError':
+              console.log("Server out of reach!")
+              break;
+          
+            default:
+              console.error('Error:', error.message);
+              break;
+          }
       });
         console.log(loginResponse);
 

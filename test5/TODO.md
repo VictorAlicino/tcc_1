@@ -1,5 +1,6 @@
 # TODO List Endpoints:
 
+## REST (User to Cloud)
     * Add user to server:
         - /opus_server/add_user
 
@@ -9,5 +10,5 @@
     * Set access level to a device
         - /opus_server/{server_id}/{device_id}/clearance
 
-
-# Endpoints available:
+## MQTT (Local to Cloud)
+    * Get all users registered onto this server
