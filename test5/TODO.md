@@ -12,3 +12,6 @@
 
 ## MQTT (Local to Cloud)
     * Get all users registered onto this server
+        - /users/get/all
+    
+    *
