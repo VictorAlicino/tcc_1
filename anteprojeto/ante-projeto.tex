@@ -1,0 +1,284 @@
+%-----------------------------------------------------------------
+% UNIOESTE - Ciência da Computação
+% 4o. ano - Trabalho de Conclusão de Curso
+% Profa. Teresinha Arnauts Hachisuca 
+%-----------------------------------------------------------------
+%DECLARAÇÃO DO TIPO DE DOCUMENTO, TAMANHO DA FOLHA E FONTE
+%-----------------------------------------------------------------
+\documentclass[
+	% -- opções da classe memoir --
+	12pt,				% tamanho da fonte
+% 	twoside,			% para impressão em verso e anverso. Oposto a oneside
+	a4paper,			% tamanho do papel. 
+	% -- opções da classe abntex2 --
+	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	english,			% idioma adicional para hifenização
+	brazil,				% o último idioma é o principal do documento
+	]{article}
+	
+%-----------------------------------------------------------------
+%DEFINIÇÕES DOS PACOTES UTILIZADOS
+%-----------------------------------------------------------------
+\usepackage{cmap}				% Mapear caracteres especiais no PDF
+\usepackage{lmodern}			% Usa a fonte Latin Modern			
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+\usepackage{lastpage}			% Usado pela Ficha catalográfica
+%\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{color}				% Controle das cores
+\usepackage{graphicx}			% Inclusão de gráficos
+
+\usepackage[brazil]{babel}      % Permite traduzir termos do LateX para português Brasil.
+\usepackage{hyperref}           % Permite ativar hyperlinks
+\usepackage{algorithm}          % pacote que de suporte a representação de algoritmos.
+
+\usepackage{algorithmic}
+\usepackage[pdftex]{geometry}
+\usepackage{multirow}
+\graphicspath{ {./images/} }
+\usepackage[center]{caption}
+
+\usepackage[resetlabels,labeled]{multibib}
+
+% ---
+% Pacotes de citações
+% ---
+\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
+\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+%\citebrackets[]
+
+% --- 
+% CONFIGURAÇÕES DE PACOTES
+% --- 
+
+% ---
+% Configurações do pacote backref
+% Usado sem a opção hyperpageref de backref
+\renewcommand{\backrefpagesname}{Citado na(s) página(s):~}
+
+% Texto padrão antes do número das páginas
+\renewcommand{\backref}{}
+
+% Define os textos da citação
+\renewcommand*{\backrefalt}[4]{
+	\ifcase #1 %
+		Nenhuma citação no texto.%
+	\or
+		Citado na página #2.%
+	\else
+		Citado #1 vezes nas páginas #2.%
+	\fi}%
+% ---
+
+%-----------------------------------------------------------------
+%               INICIO DO DOCUMENTO - CAPA
+%-----------------------------------------------------------------
+\begin{document}
+
+
+\begin{center}
+
+	\textsc{
+		\large
+			\\universidade estadual do oeste do paraná
+			\\unioeste - campus de foz do iguaçu
+			\\centro de engenharias e ciências exatas
+			\\curso de ciência da computação
+			\\[1 cm]tcc - trabalho de conclusão de curso
+	}
+	\\
+	[4 cm]
+	\large Proposta de Trabalho de Conclusão de Curso
+    \\
+	\textbf{
+	    \textsc{Desenvolvimento de um sistema multiusuários para edifícios inteligentes}
+    }
+	\\[5 cm]Victor Hugo de Almeida Alicino
+    \\Orientador(a): Antonio Marcos Massao Hachisuca
+    \\[2 cm]Foz do Iguaçu, 12 de agosto de 2024
+    
+\end{center}
+
+\thispagestyle{empty}
+
+%-----------------------------------------------------------------
+%               IDENTIFICAÇÃO DO PROJETO
+%-----------------------------------------------------------------
+\section{Identificação}
+    
+    \subsection{Área e Linha de Pesquisa} 
+        \noindent Grande Área: Ciência da Computação
+        \\Código: 1.03.00.00-7
+    	\\[1 cm]Linha de Pesquisa: Sistemas de Computação  
+    	\\Código: 1.03.04.00-2
+    	\\[1 cm]Especialidade: Software Básico
+    	\\Código: 1.03.04.03-7
+    	
+    	
+    \subsection{Palavras-chave}
+
+        \begin{enumerate}
+        	\item Edifício inteligente
+        	\item Cidade inteligente
+        	\item Internet das Coisas
+        \end{enumerate}
+
+
+
+%-----------------------------------------------------------------
+%               INTRODUÇÃO E JUSTIFICATIVA
+%-----------------------------------------------------------------
+\section{Introdução e Justificativa}
+
+O tema cidades inteligente vem ganhando muita atenção nos últimos anos, tais cidades tem por estratégia gerar uma melhor 
+qualidade de vida para o cidadão e um desenvolvimento econômico e social mais sustentável através do uso de tecnologias da 
+informação e comunicação \cite{cetic}, um membro das cidades inteligente são os edifícios inteligentes. Indivíduos passam grande 
+parte da sua vida dentro de edifícios, crescem, estudam e se desenvolvem neles \cite{art1} \cite{noauthor_how_nodate}, ao levar 
+em conta a importância que essas estruturas têm no cotidiano, fica claro seu papel nas cidades inteligentes. 
+Desta forma, um dos passos para a realização das cidades inteligentes é a modernização dos edifícios, alinhá-los com as propostas
+estabelecidas de melhorar a qualidade de vida do ocupante e contribuir com um desenvolvimento sustentável.
+
+Um edifício se torna inteligente através da adição de uma série de dispositivos com a finalidade de monitorar e controlar o ambiente,
+podem ser citados os seguintes dispositivos:
+\begin{itemize}
+    \item Sensores;
+    \item Atuadores;
+    \item Controladores;
+    \item Unidade Central;
+    \item Interface;
+    \item Rede;
+    \item Medidor inteligente.
+\end{itemize}
+\cite{Morvaj2011} Suas finalidades são de operar em conjunto para a realização de tomadas de decisões, sejam elas automatizadas ou 
+com interferência humana.
+Tais dispositivos precisam ser gerenciados por um sistema central que atende as demandas que tornam um edifício inteligente. 
+
+Quando o assunto são casas inteligentes, sistemas como este já são realidade e estão consolidados no mercado; Segundo a plataforma
+Statista, aproximadamente 91 milhões de \emph{Smart Speakers} {(}do inglês, caixa de som inteligente, dispositivos que atuam 
+duplamente como caixas de som e também como interface de interação humana com algum assistente virtual{)} foram instalados nos 
+Estados Unidos no ano de 2021 \cite{statista1}, dos quais desde 2020, 60\% dos \emph{Smart Speakers} já se conectavam a plataforma
+Amazon Alexa \cite{statista2}, essa porcentagem continua aumentando com 64\% dos dispositivos em 2024 \cite{statista3}.
+A plataforma Amazon Alexa provê ao usuário uma maneira fácil de se conectar a vários dispositivos de
+casa inteligente e controlar-los todos através de um só lugar, assim como a plataforma de código aberto Home Assistant, um sistema de
+automação residencial \cite{assistant_home_nodate} que oferece várias opções de configurações e personalização e possui atualmente
+mais de 350 mil instalações ativas \cite{home_assistant1}. Ambos os softwares foram criados com o indivíduo e uso individual em mente, não sendo
+boas opções para o uso em edifício inteligentes onde mais de um indivíduo pode querer interagir com o sistema do edifício.
+
+O objetivo deste trabalho é desenvolver um pedaço de uma alternativa viável para um edifício inteligente, que leve em consideração a interação
+de vários indivíduos com sistema.
+
+
+%-----------------------------------------------------------------
+%                       OBJETIVO
+%-----------------------------------------------------------------	
+\section{Objetivos}
+%-------------------------------------------------------------------------------
+\subsection{Objetivo Geral}
+
+Este trabalho visa desenvolver um sistema básico que demonstre a viabilidade de múltiplos usuários operarem simultaneamente 
+um sistema de edifício inteligente.
+
+%------------------------------------------------------------------------------
+
+\subsection{Objetivos Específicos}
+
+Para alcançar o objetivo do trabalho, é proposto uma aplicação simplificada que permita entender a viabilidade do uso de um 
+sistema de edifício inteligente por diversos usuários, focando no controle das unidades de climatização.
+
+
+{\bf Dentre os principais objetivos específicos destacam-se: }
+
+\begin{itemize}
+    \item Realizar uma pesquisa bibliográfica sobre edifícios inteligentes e suas demandas;
+    \item Estudar sobre as aplicações da internet das coisas em um edifício inteligente;
+    \item Definir requisitos para um sistema de gerenciamento de um edifício inteligente;
+    \item Propor e implementar um sistema de gerenciamento para edifícios inteligentes;
+\end{itemize}
+%-------------------------------------------------------------------------------
+
+
+%-----------------------------------------------------------------
+%           PLANO DE TRABALHO E CRONOGRAMA DE EXECUÇÃO
+%-----------------------------------------------------------------	
+\section{Plano de Trabalho e Cronograma de Execução}
+    \begin{enumerate}
+        \item \textbf{Implementação do Sistema Principal}; \label{a4}
+        
+        \item \textbf{Testes com o Hardware}; \label{a5}
+        
+        \item \textbf{Testes e Validação}: Testes no sistema sobre os requisitos elicitados; \label{a6}
+        
+        \item \textbf{Desenvolvimento da monografia}: Desenvolvimento da monografia para apresentação \label{a7}
+        
+        \item \textbf{Desenvolvimento da apresentação}: Desenvolvimento do material para apresentação final  \label{a8}
+
+    \end{enumerate}
+
+    Na Tabela \ref{tabela:cronograma1} é apresentado o cronograma das atividades.
+ 
+\begin{table}[ht]
+    \scriptsize
+    \centering
+    \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|}
+        \hline &  \multicolumn{9}{|c|}
+        {\textbf{Período}} \\ \cline{2-10}
+        \textbf{Atividades}                             &Ago      &Set      &Out      &Nov      &Dez      &Jan      &Fev      &Mar      &Abr        \\ \hline \hline
+        \ref{a4} - Implementação do Sistema Principal   &$\bullet$&$\bullet$&$\bullet$&$\bullet$&$\bullet$&$\bullet$&         &         &           \\ \hline
+        \ref{a5} - Testes com o Hardware                &         &         &$\bullet$&$\bullet$&$\bullet$&$\bullet$&         &         &           \\ \hline
+        \ref{a6} - Testes e Validação                   &         &         &         &         &         &$\bullet$&$\bullet$&         &           \\ \hline
+        \ref{a7} - Desenvolvimento da monografia        &$\bullet$&$\bullet$&$\bullet$&$\bullet$&$\bullet$&$\bullet$&$\bullet$&$\bullet$&           \\ \hline
+        \ref{a8} - Desenvolvimento da apresentação      &         &         &         &         &         &         &         &$\bullet$&           \\ \hline
+    \end{tabular}
+     \caption{Cronograma das Atividades}
+    \label{tabela:cronograma1}
+\end{table}
+%-----------------------------------------------------------------
+%                   MATERIAL E MÉTODO
+%----------------------------------------------------------------- 
+
+\section{Material e Método}
+Para o desenvolvimento do sistema será usada a linguagem de programação Python; Para a aplicação do usuário será utilizado o framework JavaScript React Native;
+Para o hardware, é esperado utilizar o firmware Tasmota em um microcontrolador Espressif ESP32, em caso de ser necessário fazer testes com outros microcontroladores
+que não suportem o firmware Tasmota, firmwares substitutos de código aberto podem ser utilizados, como OpenBeken.
+
+As máquinas que serão usadas para realizar o trabalho tanto na parte prática quanto na teórica serão:
+\begin{itemize}
+    \item Laptop HP Omen 2017 - I7 7700HQ, 8GB de RAM, GTX 1050;
+    \item Desktop - I7 3770, 32GB de RAM, GTX 1650.
+    \item Máquina Virtual na Oracle Cloud Infrastructure - 1 Núcleo, 1 GB de RAM
+\end{itemize}
+
+%-----------------------------------------------------------------
+%               CRITÉRIOS DE AVALIAÇÃO
+%-----------------------------------------------------------------
+\section{Critérios de Avaliação} 
+     
+O sistema será considerado satisfatório se cumprir com as funcionalidades levantadas na elicitação de requisitos e produzir dados para resolver a pergunta do problema
+inicial {(se é ou não é viável a utilização de múltiplos usuários simultâneos em um sistema de edifício inteligente)}.
+    
+%-----------------------------------------------------------------
+%                       REFERÊNCIAS
+%----------------------------------------------------------------- 
+
+\renewcommand\refname{}
+\section{Referências}
+
+%Referencias bibliográficas que foram utilizadas para desenvolver a proposta de TCC.
+    \vspace{-4.3em}
+    \bibliography{referencias}
+    
+%-----------------------------------------------------------------
+%                   SÍNTESE BIBLIOGRÁFICA
+%----------------------------------------------------------------- 
+\section{Síntese Bibliográfica}
+
+%Referencias bibliográficas que se pretende utilizar para o desenvolvimento do trabalho.
+    \vspace{-3.5em}
+    \input{sintese}
+
+ 
+\end{document}
