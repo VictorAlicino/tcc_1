@@ -1,21 +1,23 @@
 """HTTP API Local Servers (Opus) Endpoints"""
 from fastapi import APIRouter, status, Response
+from fastapi.responses import JSONResponse
+from sqlalchemy.dialects.postgresql import UUID
 from fastapi.responses import HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 from authlib.integrations.starlette_client import OAuth
 from starlette.requests import Request
 from db.models import MaestroUser
-import db.users as opus_users
+import db.users as maestro_users
 import db.localservers as opus_servers
 from db.database import DB
 from configurations.config import OpenConfig
-from api.rest.models import ServerUserList
+from api.rest.api_models import UserRole
 
 config = OpenConfig()
 db = DB()
 
 router = APIRouter(
-    prefix="/server",
+    prefix="/opus_server",
     tags=["Opus Server"],
 )
 
@@ -41,7 +43,7 @@ async def get_server_admins(server_id: str):
     if result:
         admins = []
         for row in result:
-            user = opus_users.get_user_by_id(db_session, row.user_id)
+            user = maestro_users.get_user_by_id(db_session, row.user_id)
             admins.append((user.user_id, user.email))
         return {
             "server_id": server_id,
@@ -49,15 +51,21 @@ async def get_server_admins(server_id: str):
         }
     return "Server not found", status.HTTP_404_NOT_FOUND
 
-@router.post("/assign_users")
-async def assign_users_to_server(server_user_list: ServerUserList):
-    """Assign users to server endpoint for the server."""
+@router.post("/assign_users/{server_id}")
+async def assign_users_to_server(server_id: str, server_user_list: list[UserRole]):
+    """Assign a new server to an user.."""
     db_session = next(db.get_db())
-    return opus_servers.assign_users_to_server(
-        db_session,
-        server_user_list.server_id,
-        server_user_list.users
-    )
+    print(f"ASSIGN USERS CALLED FOR SERVER {server_id}")
+    print("Assigning the following users")
+    for user in server_user_list:
+        # Check in the db if users even exists in Maestro
+        if maestro_users.get_user_by_id(db_session, user.user_id) is None:
+            return JSONResponse(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                content=f"User {user.user_id} is not registered on Maestro"
+            )
+
+    return status.HTTP_501_NOT_IMPLEMENTED
 
 @router.get("/users/{server_id}")
 async def get_server_users(server_id: str):
@@ -67,7 +75,7 @@ async def get_server_users(server_id: str):
     if result:
         users = []
         for row in result:
-            user = opus_users.get_user_by_id(db_session, row.user_id)
+            user = maestro_users.get_user_by_id(db_session, row.user_id)
             users.append((user.user_id, user.email))
         return {
             "server_id": server_id,

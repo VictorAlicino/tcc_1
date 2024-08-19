@@ -5,7 +5,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from authlib.integrations.starlette_client import OAuth
 from starlette.requests import Request
 from db.models import MaestroUser
-import db.users as opus_users
+import db.users as maestro_users
 import db.localservers as opus_servers
 from api.http_models import Role
 from db.database import DB
@@ -91,7 +91,7 @@ async def get_server_admins(server_id: str):
     if result:
         admins = []
         for row in result:
-            user = opus_users.get_user_by_id(db_session, row.user_id)
+            user = maestro_users.get_user_by_id(db_session, row.user_id)
             admins.append((user.user_id, user.email))
         return {
             "server_id": server_id,
@@ -117,7 +117,7 @@ async def get_server_users(server_id: str):
     if result:
         users = []
         for row in result:
-            user = opus_users.get_user_by_id(db_session, row.user_id)
+            user = maestro_users.get_user_by_id(db_session, row.user_id)
             users.append((user.user_id, user.email))
         return {
             "server_id": server_id,
@@ -157,7 +157,7 @@ async def auth(request: Request):
 
     # Check if the user is authenticated
     print(token)
-    if opus_users.get_user_by_google_sub(next(db.get_db()), token['userinfo']['sub']):
+    if maestro_users.get_user_by_google_sub(next(db.get_db()), token['userinfo']['sub']):
         return "User already exists"
     user = MaestroUser(
         google_sub = token['userinfo']['sub'],
@@ -167,22 +167,22 @@ async def auth(request: Request):
         family_name = token['userinfo']['family_name'],
         picture = token['userinfo']['picture']
     )
-    opus_users.create_user(next(db.get_db()), user)
+    maestro_users.create_user(next(db.get_db()), user)
     return (f"Mr(s). {user.given_name} {user.family_name} "
             f"has been created with the email {user.email}")
 
 @api.get("/users", tags=["Users"])
 async def get_all_users():
     """Users endpoint for the server."""
-    return opus_users.get_all_users(next(db.get_db()))
+    return maestro_users.get_all_users(next(db.get_db()))
 
 @api.delete("/users/delete/{user_id}", tags=["Users"])
 async def delete_user(user_id: str):
     """Delete user endpoint for the server."""
     db_session = next(db.get_db())
-    user = opus_users.get_user_by_id(db_session, user_id)
+    user = maestro_users.get_user_by_id(db_session, user_id)
     if user:
-        return opus_users.delete_user(db_session, user)
+        return maestro_users.delete_user(db_session, user)
     return "User not found", status.HTTP_404_NOT_FOUND
 
 @api.post("/users/set_role", tags=["Users"])
@@ -200,4 +200,4 @@ async def set_user_role(role: Role):
 async def get_user_servers(user_id: str):
     """Get user servers endpoint for the server."""
     db_session = next(db.get_db())
-    return opus_users.get_servers_of_user(db_session, user_id)
+    return maestro_users.get_servers_of_user(db_session, user_id)

@@ -3,16 +3,17 @@ from pydantic import BaseModel, validator
 from uuid import UUID
 
 # Server Requests
-class Role(BaseModel):
+class UserRole(BaseModel):
     """Role model."""
-    user_id: str
-    server_id: str
+    user_id: str # User ID
     role: int
 
-class ServerUserList(BaseModel):
-    """Server User List model."""
-    server_id: str
-    users: list
+    @validator('user_id')
+    def validate_uuid(cls, v):
+        try:
+            return str(UUID(v))  # Tenta converter a string para UUID
+        except ValueError:
+            raise ValueError('Invalid UUID format')
 
 class ConductorLogin(BaseModel):
     """Conductor Login Request"""

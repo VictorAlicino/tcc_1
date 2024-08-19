@@ -3,7 +3,7 @@ import json
 import aiomqtt
 import logging
 import db.localservers as opus_servers
-import db.users as opus_users
+import db.users as maestro_users
 from db.models import OpusServer
 from db.database import DB
 from decouple import config as env

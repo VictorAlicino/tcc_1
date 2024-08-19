@@ -9,10 +9,10 @@ from jose import JWTError, jwt
 
 from configurations.config import CONFIG
 from db.database import DB
-import db.users as opus_users
+import db.users as maestro_users
 from db.models import MaestroUser
 
-from api.rest.models import ConductorLogin, ConductorRegister, User
+from api.rest.api_models import ConductorLogin, ConductorRegister, User
 
 log = logging.getLogger(__name__)
 db = DB()
@@ -47,7 +47,7 @@ async def conductor_register(request: ConductorRegister):
 async def conductor_login(request: ConductorLogin):
     """Conductor login endpoint for the server."""
     db_session = next(db.get_db())
-    user = opus_users.get_user_by_google_sub(db_session, request.google_sub)
+    user = maestro_users.get_user_by_google_sub(db_session, request.google_sub)
     if user is None:
         log.warning(f"{request.email} tried to login but is not authorized")
         raise HTTPException(
@@ -98,7 +98,7 @@ async def auth(request: Request):
 
     # Check if the user is authenticated
     print(token)
-    if opus_users.get_user_by_google_sub(next(db.get_db()), token['userinfo']['sub']):
+    if maestro_users.get_user_by_google_sub(next(db.get_db()), token['userinfo']['sub']):
         return "User already exists"
     user = MaestroUser(
         google_sub = token['userinfo']['sub'],
@@ -108,7 +108,7 @@ async def auth(request: Request):
         family_name = token['userinfo']['family_name'],
         picture = token['userinfo']['picture']
     )
-    opus_users.create_user(next(db.get_db()), user)
+    maestro_users.create_user(next(db.get_db()), user)
     return (f"Mr(s). {user.given_name} {user.family_name} "
             f"has been created with the email {user.email}")
 
