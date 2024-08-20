@@ -10,6 +10,7 @@ import colorlog
 from core.device_manager import DeviceManager
 from core.location_manager import LocationManager
 from core.cloud_manager import CloudManager
+from core.user_manager import UserManager
 from db.db import OpusDB
 
 class LevelFilter(logging.Filter):
@@ -154,16 +155,21 @@ def load_db(dirs: dict, interfaces: dict) -> None:
 def load_managers(dirs: dict, managers: dict, interfaces: dict, drivers: dict) -> None:
     """This function loads the managers."""
     logging.debug("Loading managers...")
-    managers["locations"] = LocationManager(interfaces)
+    managers["maestro"] = CloudManager(dirs,
+                                       interfaces,
+                                       managers,
+                                       drivers
+                                    )
     managers["devices"] = DeviceManager(dirs,
                                     interfaces,
                                     drivers,
                                     managers["locations"]
                                     )
-    managers["maestro"] = CloudManager(dirs,
-                                       interfaces,
-                                       managers,
-                                       drivers
+    managers["locations"] = LocationManager(interfaces)
+    managers["users"] = UserManager(dirs,
+                                    interfaces,
+                                    managers,
+                                    drivers
                                     )
 
 def load_interfaces(config: dict, dirs: dict, interfaces: dict) -> None:

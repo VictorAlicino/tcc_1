@@ -68,6 +68,9 @@ if __name__ == "__main__":
     initializers.check_os(SUPPORTED_OS)
     initializers.check_directories(DIRS)
     CONFIG = initializers.load_configurations()
+    # The initalizers order is: Database -> Interfaces -> Managers -> Drivers
+    # DO NOT! load the initalizers in a different order unless you want to
+    # see some nasty exceptions
     initializers.load_db(DIRS, INTERFACES)
     initializers.load_interfaces(
         config=CONFIG,

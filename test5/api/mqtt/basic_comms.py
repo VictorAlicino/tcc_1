@@ -66,4 +66,3 @@ async def server_login_listener():
                     json.dumps({"status": "success"})
                     )
                     log.info(f"{server.name} connected to Maestro.")
-                

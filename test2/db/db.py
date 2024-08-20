@@ -2,7 +2,8 @@
 import logging
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
+
 from db import models
 
 log = logging.getLogger(__name__)
@@ -23,7 +24,7 @@ class OpusDB:
 
     def get_db(self):
         """Get database session"""
-        db = self.session_local()
+        db: Session = self.session_local()
         try:
             yield db
         finally:

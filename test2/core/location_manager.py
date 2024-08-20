@@ -181,7 +181,6 @@ class LocationManager:
     def _load_buildings_from_db(self) -> None:
         """Load buildings from the database"""
         db = next(self.opus_db.get_db())
-        db.query(models.Building).all()
         for building in db.query(models.Building).all():
             new_building = Building()
             new_building.id = building.building_pk
@@ -192,7 +191,6 @@ class LocationManager:
     def _load_spaces_from_db(self) -> None:
         """Load spaces from the database"""
         db = next(self.opus_db.get_db())
-        db.query(models.BuildingSpace).all()
         for space in db.query(models.BuildingSpace).all():
             new_space = Space()
             new_space.id = space.building_space_pk
@@ -204,7 +202,6 @@ class LocationManager:
     def _load_rooms_from_db(self) -> None:
         """Load rooms from the database"""
         db = next(self.opus_db.get_db())
-        db.query(models.BuildingRoom).all()
         for room in db.query(models.BuildingRoom).all():
             new_room = Room()
             new_room.id = room.building_room_pk

@@ -1,4 +1,5 @@
 """HTTP API Local Servers (Opus) Endpoints"""
+import logging
 from fastapi import APIRouter, status, Response
 from fastapi.responses import JSONResponse
 from sqlalchemy.dialects.postgresql import UUID
@@ -10,9 +11,11 @@ from db.models import MaestroUser
 import db.users as maestro_users
 import db.localservers as opus_servers
 from db.database import DB
+from db.models import OpusServer
 from configurations.config import OpenConfig
 from api.rest.api_models import UserRole
 
+log = logging.getLogger(__name__)
 config = OpenConfig()
 db = DB()
 
@@ -55,16 +58,17 @@ async def get_server_admins(server_id: str):
 async def assign_users_to_server(server_id: str, server_user_list: list[UserRole]):
     """Assign a new server to an user.."""
     db_session = next(db.get_db())
-    print(f"ASSIGN USERS CALLED FOR SERVER {server_id}")
-    print("Assigning the following users")
+    local_server: OpusServer = opus_servers.get_server_by_id(db_session, server_id)
     for user in server_user_list:
         # Check in the db if users even exists in Maestro
         if maestro_users.get_user_by_id(db_session, user.user_id) is None:
+            log.warn('BAD REQUEST -> User %s cannot be assigned to server %s - not available', 
+                    user.user_id, local_server.name)
             return JSONResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 content=f"User {user.user_id} is not registered on Maestro"
             )
-
+    # TODO: Sent the the request to the appropriate server
     return status.HTTP_501_NOT_IMPLEMENTED
 
 @router.get("/users/{server_id}")
