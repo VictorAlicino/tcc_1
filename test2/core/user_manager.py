@@ -1,5 +1,7 @@
 """User manager to handle permissions"""
 import logging
+from datetime import datetime
+from hashlib import sha3_256
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func, text
 from db.models import User
@@ -21,27 +23,12 @@ class UserManager:
         self.managers = managers
         self.drivers = drivers
         
-        #self.db_checksum: str = self._generate_db_checksum()
+        log.info("Check in for updates on database, this may take a while...")
+        self.db_hash: str = self._generate_db_hash()
+        log.info("Database up to date!")
         log.info('User Manager initialized.')
 
-    def _generate_db_checksum(self) -> str:
-        """Reads the user database and generate a checksum"""
-        log.info("Check in for updates on database, this may take a while...")
-        db: Session = next(self.opus_db.get_db())
-        columns = ', '.join(
-            [f"COALESCE(CAST({column.name} AS CHAR), '')" for column in User.__table__.columns]
-            )
-        print(columns)
-        query = select(
-            [func.md5(
-                func.group_concat(
-                    text(
-                        f"CONCAT_WS(',', {columns}) ORDER BY id"
-                        )
-                    )
-                )
-            ]).select_from(User.__table__)
-        result = db.execute(query)
-        print(result)
-        log.info("Database up to date!")
-        return result
+    def _generate_db_hash(self) -> str:
+        """Generates a DB Hash according to specification"""
+        hash = sha3_256(str(datetime.timestamp(datetime.now())).encode('utf-8'))
+        return hash

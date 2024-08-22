@@ -152,20 +152,27 @@ def load_db(dirs: dict, interfaces: dict) -> None:
     interfaces['opus_db'] = OpusDB(dirs["DATABASES"])
     logging.info("DB Initialized.")
 
-def load_managers(dirs: dict, managers: dict, interfaces: dict, drivers: dict) -> None:
+def load_managers(
+        dirs: dict,
+        managers: dict,
+        interfaces: dict,
+        drivers: dict
+        ) -> None:
     """This function loads the managers."""
     logging.debug("Loading managers...")
-    managers["maestro"] = CloudManager(dirs,
-                                       interfaces,
-                                       managers,
-                                       drivers
-                                    )
+    # Please follow this order:
+    # Location -> Devices -> Maestro -> Users
+    managers["locations"] = LocationManager(interfaces)
     managers["devices"] = DeviceManager(dirs,
                                     interfaces,
                                     drivers,
                                     managers["locations"]
                                     )
-    managers["locations"] = LocationManager(interfaces)
+    managers["maestro"] = CloudManager(dirs,
+                                       interfaces,
+                                       managers,
+                                       drivers
+                                    )
     managers["users"] = UserManager(dirs,
                                     interfaces,
                                     managers,
