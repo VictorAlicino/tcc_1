@@ -63,7 +63,7 @@ async def assign_users_to_server(server_id: str, server_user_list: list[UserRole
     for entry in server_user_list:
         # Check in the db if users even exists in Maestro
         user: MaestroUser = maestro_users.get_user_by_id(db_session, entry.user_id)
-        if user is None:
+        if user is None: #TODO: We need to fix this, this line is unreacheble
             log.warn('BAD REQUEST -> User %s cannot be assigned to server %s - not available', 
                     user.user_id, local_server.name)
             return JSONResponse(
