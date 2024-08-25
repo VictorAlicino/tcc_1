@@ -21,8 +21,18 @@ async def check_if_server_exists(server_name: str) -> OpusServer | bool:
         return server
     return False
 
-async def register_new_user(local_server: OpusServer, user: MaestroUser) -> None:
+async def register_new_user(local_server: OpusServer, user: tuple[MaestroUser, int]) -> None:
     """Register an Maestro User into the Local Server"""
-    log.debug("Registering %s into %s", user.given_name, local_server.name)
-    print("enviando uma batatinha pro servidor local")
-    await send_msg_to_server(local_server, "receitas/batatas", {"BATATINHA_FRITA": "123"})
+    data: dict = {
+        str(user[0].user_id): {
+            "name": user[0].name,
+            "email": user[0].email,
+            "role": user[1]
+        }
+    }
+    log.debug("Registering %s with role [%s] into %s", user[0].name, user[1], local_server.name)
+    await send_msg_to_server(
+        local_server,
+        "users/add",
+        data
+        )
