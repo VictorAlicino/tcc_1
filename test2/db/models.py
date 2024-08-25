@@ -54,8 +54,9 @@ class User(Base):
     """User model"""
     __tablename__ = "users"
     user_pk = Column(UUID, primary_key=True, nullable=False)
-    username = Column(String, nullable=False, unique=True)
-    full_name = Column(String, nullable=False)
+    #username = Column(String, nullable=False, unique=True)
+    #full_name = Column(String, nullable=False)
+    given_name = Column(String, nullable=False)
     email = Column(String, nullable=False)
     fk_role = Column(UUID, ForeignKey('roles.role_pk'), nullable=False)
     role = relationship("Role", back_populates="users")

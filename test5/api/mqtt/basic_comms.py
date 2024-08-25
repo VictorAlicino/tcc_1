@@ -19,11 +19,12 @@ async def check_if_server_exists(server_name: str) -> OpusServer | bool:
         return server
     return False
 
-async def send_cmd_to_server(server_id: str, command: dict):
+async def send_msg_to_server(local_server: OpusServer, topic:str, command: dict):
     """Send a command to a server."""
-    server = opus_servers.get_server_by_id(next(db.get_db()), server_id)
+    full_topic = local_server.mqtt_topic[:-1] + topic
+    #log.debug("Publishing to %s the following message:\n%s", full_topic, json.dumps(command))
     async with aiomqtt.Client(env('CLOUD-MQTT')) as client:
-        await client.publish(f"{server.mqtt_topic}/cmd", json.dumps(command))
+        await client.publish(full_topic, json.dumps(command))
 
 async def server_login_listener():
     """Receives Login requests from new servers."""
