@@ -23,7 +23,7 @@ class UserManager:
         self.interfaces = interfaces
         self.managers = managers
         self.drivers = drivers
-        
+
         log.info("Check in for updates on database, this may take a while...")
         self.db_hash: str = self._generate_db_hash()
         log.info("Database up to date!")
@@ -34,7 +34,7 @@ class UserManager:
         """Generates a DB Hash according to specification"""
         hash = sha3_256(str(datetime.timestamp(datetime.now())).encode('utf-8'))
         return hash
-    
+
     def _configure_mqtt(self) -> None:
         """Configure MQTT"""
         log.debug('Configuring MQTT for Users Manager.')
