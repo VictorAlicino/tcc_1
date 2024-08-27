@@ -1,5 +1,6 @@
 """HTTP API Local Servers (Opus) Endpoints"""
 import logging
+import json
 from fastapi import APIRouter, status, Response
 from fastapi.responses import JSONResponse
 from sqlalchemy.dialects.postgresql import UUID
@@ -57,22 +58,34 @@ async def get_server_admins(server_id: str):
 
 @router.post("/assign_users/{server_id}")
 async def assign_users_to_server(server_id: str, server_user_list: list[UserRole]):
-    """Assign a new server to an user.."""
+    """Assign a new server to a list of users"""
     db_session = next(db.get_db())
     local_server: OpusServer = opus_servers.get_server_by_id(db_session, server_id)
+    report: list = []
+    entries: list[tuple] = []
+    flag: bool = False
     for entry in server_user_list:
         # Check in the db if users even exists in Maestro
-        user: MaestroUser = maestro_users.get_user_by_id(db_session, entry.user_id)
-        if user is None: #TODO: We need to fix this, this line is unreacheble
+        user: MaestroUser | None = maestro_users.get_user_by_id(db_session, entry.user_id)
+        if user is None:
             log.warn('BAD REQUEST -> User %s cannot be assigned to server %s - not available', 
-                    user.user_id, local_server.name)
-            return JSONResponse(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                content=f"User {user.user_id} is not registered on Maestro"
-            )
-        await MQTT_Users.register_new_user(local_server, (user, entry.role))
-    # TODO: Sent the the request to the appropriate server
-    return status.HTTP_501_NOT_IMPLEMENTED
+                    entry.user_id, local_server.name)
+            report.append({entry.user_id: status.HTTP_400_BAD_REQUEST})
+            flag = True
+            continue
+        entries.append((user, entry.role))
+        report.append({entry.user_id: status.HTTP_201_CREATED})
+    await MQTT_Users.register_new_user(local_server, entries)
+    if flag is True:
+        return JSONResponse(
+            content=report,
+            status_code=status.HTTP_400_BAD_REQUEST
+        )
+    else:
+        return JSONResponse(
+            content=report,
+            status_code=status.HTTP_201_CREATED
+        )
 
 @router.get("/users/{server_id}")
 async def get_server_users(server_id: str):

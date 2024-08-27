@@ -90,6 +90,7 @@ class MQTTClient():
 
     def register_callback(self, topic: str, callback):
         """Register a callback for a topic"""
+        topic = f'{self.client_id}/{topic}'
         self.client.message_callback_add(
             topic,
             callback)

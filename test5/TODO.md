@@ -6,24 +6,27 @@
 
 #### 1. **Assign Server**
 
-Assign a new server to an user.
+Assign a new server to a list of users.
 
 - **Endpoint:**  
-  `POST /opus_server/{server_id}/add_user`
+  `POST /opus_server/assign_users/{server_id}`
 
 - **Parameters:**
-  - `user_id`: *User ID* (type: `id`)
-  - `role`: *Clearance level* (type: `uint`)
+  - (type: `list[UserRole]`)
+    - `user_id`: *User ID* (type: `id`)
+    - `role`: *Clearance level* (type: `uint`)
 
-#### 2. **Set user role**
+#### 2. **Update user role**
 
-Set a new role in the server to a user already assigned.
+Set a new role in the server to users already assigned.
 
 - **Endpoint:**  
-  `POST /opus_server/{server_id}/set_role`
+  `POST /opus_server/update_role/{server_id}`
 
 - **Parameters:**
-  - `user_id`: *User ID* (type: `id`)
+  - (type: `list[UserRole]`)
+    - `user_id`: *User ID* (type: `id`)
+    - `role`: *Clearance level* (type: `uint`)
 
 #### 3. **Set device access level**
 

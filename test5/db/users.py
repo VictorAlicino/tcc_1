@@ -3,11 +3,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 from db.models import MaestroUser
 
-def get_user_by_google_sub(db: Session, google_sub: str) -> MaestroUser:
+def get_user_by_google_sub(db: Session, google_sub: str) -> MaestroUser | None:
     """Get a user by google sub"""
     return db.query(MaestroUser).filter(MaestroUser.google_sub == google_sub).first()
 
-def create_user(db: Session, user: MaestroUser) -> MaestroUser:
+def create_user(db: Session, user: MaestroUser) -> MaestroUser | None:
     """Create a user"""
     db.add(user)
     db.commit()
@@ -15,11 +15,11 @@ def create_user(db: Session, user: MaestroUser) -> MaestroUser:
     print(f'User created: {user.email}')
     return user
 
-def get_user_by_id(db: Session, user_id: str) -> MaestroUser:
+def get_user_by_id(db: Session, user_id: str) -> MaestroUser | None:
     """Get a user by id"""
     return db.query(MaestroUser).filter(MaestroUser.user_id == user_id).first()
 
-def get_user_by_email(db: Session, email: str) -> MaestroUser:
+def get_user_by_email(db: Session, email: str) -> MaestroUser | None:
     """Get a user by email"""
     return db.query(MaestroUser).filter(MaestroUser.email == email).first()
 

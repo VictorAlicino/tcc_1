@@ -102,11 +102,11 @@ if __name__ == "__main__":
     try:
         a = asyncio.run(main())
     except KeyboardInterrupt as e:
-        sys.exit(127)
         INTERFACES['mqtt<local>'].stop_thread()
         INTERFACES['mqtt<maestro>'].stop_thread()
         a.stop()
         print(e)
+        sys.exit(127)
     except Exception as e:
         print(e)
     finally:

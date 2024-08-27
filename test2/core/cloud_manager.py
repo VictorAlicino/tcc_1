@@ -33,7 +33,7 @@ class CloudManager:
         callback_topic = f"{self.interfaces['mqtt<maestro>'].client_id}/callback/cloud_manager"
 
         self.interfaces['mqtt<maestro>'].register_callback(
-            callback_topic,
+            "callback/cloud_manager",
             self.login_callback
             )
 
