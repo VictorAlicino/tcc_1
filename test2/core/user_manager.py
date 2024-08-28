@@ -27,6 +27,7 @@ class UserManager:
         log.info("Check in for updates on database, this may take a while...")
         self.db_hash: str = self._generate_db_hash()
         log.info("Database up to date!")
+        self._mqtt_root_topic = ""
         self._configure_mqtt()
         log.info('User Manager initialized.')
 
@@ -39,12 +40,17 @@ class UserManager:
         """Configure MQTT"""
         log.debug('Configuring MQTT for Users Manager.')
         self.interfaces['mqtt<maestro>'].register_callback('users/#', self._mqtt_callback)
+        self._mqtt_root_topic = f'{self.interfaces["mqtt<maestro>"].client_id}/users'
         log.debug('MQTT Configured for Users Manager.')
 
     def _mqtt_callback(self, client, userdata, msg): # pylint: disable=unused-argument
         """Callback from MQTT when Maestro sends a message in the /users topic"""
         match msg.topic:
-            case topic if topic == f'{self.interfaces['mqtt<maestro>'].client_id}/users/add':
+            case topic if topic == f'{self._mqtt_root_topic}/add':
                 print(f'User received from Maestro:\n{json.loads(msg.payload)}')
             case _:
                 print("Message not recognized by the User Manager")
+
+    def _assign_maestro_user(self, user: User) -> User | None:
+        """Assign to this server a user coming from Maestro"""
+
