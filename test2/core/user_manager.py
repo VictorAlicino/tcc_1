@@ -51,6 +51,20 @@ class UserManager:
             case _:
                 print("Message not recognized by the User Manager")
 
-    def _assign_maestro_user(self, user: User) -> User | None:
+    def _assign_maestro_user(self, maestro_user: dict) -> User | None:
         """Assign to this server a user coming from Maestro"""
+        user: User
+
+def create_space_on_db(db: Session, space: Space):
+    """Create a new space on the database"""
+    db = next(db)
+    db_space = models.BuildingSpace(
+        building_space_pk=space.id,
+        building_fk=space.building,
+        space_name=space.name
+    )
+    db.add(db_space)
+    db.commit()
+    db.refresh(db_space)
+    log.debug('Space %s added to the database.', space.name)
 
