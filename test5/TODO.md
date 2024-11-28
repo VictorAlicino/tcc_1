@@ -16,19 +16,7 @@ Assign a new server to a list of users.
     - `user_id`: *User ID* (type: `id`)
     - `role`: *Clearance level* (type: `uint`)
 
-#### 2. **Update user role**
-
-Set a new role in the server to users already assigned.
-
-- **Endpoint:**  
-  `POST /opus_server/update_role/{server_id}`
-
-- **Parameters:**
-  - (type: `list[UserRole]`)
-    - `user_id`: *User ID* (type: `id`)
-    - `role`: *Clearance level* (type: `uint`)
-
-#### 3. **Set device access level**
+#### 2. **Set device access level**
 
 Set a new access level requirement for a specific device
 
@@ -39,7 +27,7 @@ Set a new access level requirement for a specific device
   - `device_id`: *Device ID* (type: `id`)
   - `user_level`: *Clearance Level* (type: `uint`)
 
-#### 4. **Guest request to acess a device**
+#### 3. **Guest request to acess a device**
 
 Users not authorized to fully use the device might have some 
 level of control the guest clearance is available to anyone

@@ -9,7 +9,7 @@ def create_server(db: Session, server: OpusServer) -> OpusServer:
     db.refresh(server)
     return server
 
-def get_server_by_id(db: Session, server_id: str) -> OpusServer:
+def get_server_by_id(db: Session, server_id: str) -> OpusServer | None:
     """Get a server by id"""
     return db.query(OpusServer).filter(OpusServer.server_id == server_id).first()
 

@@ -1,10 +1,12 @@
 """User manager to handle permissions"""
 import logging
 import json
+import uuid
 from datetime import datetime
 from hashlib import sha3_256
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func, text
+from sqlalchemy import select, func, text, UUID
+import db.crud as crud
 from db.models import User
 
 log = logging.getLogger(__name__)
@@ -47,24 +49,24 @@ class UserManager:
         """Callback from MQTT when Maestro sends a message in the /users topic"""
         match msg.topic:
             case topic if topic == f'{self._mqtt_root_topic}/add':
-                print(f'User received from Maestro:\n{json.loads(msg.payload)}')
+                self._assign_maestro_user(json.loads(msg.payload))
             case _:
                 print("Message not recognized by the User Manager")
 
-    def _assign_maestro_user(self, maestro_user: dict) -> User | None:
+    def _assign_maestro_user(self, maestro_user: json) -> User | None:
         """Assign to this server a user coming from Maestro"""
-        user: User
-
-def create_space_on_db(db: Session, space: Space):
-    """Create a new space on the database"""
-    db = next(db)
-    db_space = models.BuildingSpace(
-        building_space_pk=space.id,
-        building_fk=space.building,
-        space_name=space.name
-    )
-    db.add(db_space)
-    db.commit()
-    db.refresh(db_space)
-    log.debug('Space %s added to the database.', space.name)
-
+        user: User = User()
+        user_pk, user_data = next(iter(maestro_user.items()))
+        # Checking if User already existis in DB
+        if crud.get_user_by_id(self.opus_db.get_db(), user_pk):
+            log.warn('User %s already on this server', user_data['name'])
+            return None
+        user.user_pk = uuid.UUID(user_pk)
+        user.given_name = user_data['name']
+        user.email = user_data['email']
+        role = crud.get_role_by_id(self.opus_db.get_db(), user_data['role'])
+        if not role:
+            log.warn('Role requested by Maestro does not exist')
+            return None
+        user.fk_role = role.role_pk
+        crud.assign_new_user(self.opus_db.get_db(), user)

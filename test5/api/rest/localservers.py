@@ -60,10 +60,15 @@ async def get_server_admins(server_id: str):
 async def assign_users_to_server(server_id: str, server_user_list: list[UserRole]):
     """Assign a new server to a list of users"""
     db_session = next(db.get_db())
-    local_server: OpusServer = opus_servers.get_server_by_id(db_session, server_id)
+    local_server: OpusServer | None = opus_servers.get_server_by_id(db_session, server_id)
+    if not local_server:
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content="Server not found"
+        )
     report: list = []
     entries: list[tuple] = []
-    flag: bool = False
+    error_flag: bool = False
     for entry in server_user_list:
         # Check in the db if users even exists in Maestro
         user: MaestroUser | None = maestro_users.get_user_by_id(db_session, entry.user_id)
@@ -71,15 +76,15 @@ async def assign_users_to_server(server_id: str, server_user_list: list[UserRole
             log.warn('BAD REQUEST -> User %s cannot be assigned to server %s - not available', 
                     entry.user_id, local_server.name)
             report.append({entry.user_id: status.HTTP_400_BAD_REQUEST})
-            flag = True
+            error_flag = True
             continue
         entries.append((user, entry.role))
         report.append({entry.user_id: status.HTTP_201_CREATED})
     await MQTT_Users.register_new_user(local_server, entries)
-    if flag is True:
+    if error_flag is True:
         return JSONResponse(
             content=report,
-            status_code=status.HTTP_400_BAD_REQUEST
+            status_code=status.HTTP_207_MULTI_STATUS
         )
     else:
         return JSONResponse(
