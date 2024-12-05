@@ -6,13 +6,17 @@ from typing import Final
 import initializers
 
 # Python Version
+"""Some features used in this project are only available in recent versions of Python."""
 REQUIRED_PYTHON_VER: Final = (3, 12, 0)
 
 # OS Supported
+"""Nothing can prevent you from running this project on an unsupported OS, but it is not recommended."""
 SUPPORTED_OS: Final = ["linux", "darwin", "win32"]
 
 # Directories Path
-DIRS: dict = {
+"""This directories are used for the whole project as global viarables,
+set them according to your system."""
+DIRS: dict[str, str] = {
     "CORE": "core",
     "INTERFACES": "interfaces",
     "CONFIG": "config",
@@ -22,17 +26,12 @@ DIRS: dict = {
     "LOGS": "logs",
 }
 
-# Global Configuration
-CONFIG: dict = {}
-
-# Drivers objects
-DRIVERS: dict = {}
-
-# Interfaces objects
-INTERFACES: dict = {}
-
-# Managers
-MANAGERS: dict = {
+# GLobal Variables
+"""This are the global variables that hold most of the objects shared between the modules."""
+CONFIG: dict = {}       # Global Configuration
+DRIVERS: dict = {}      # Drivers objects
+INTERFACES: dict = {}   # Interfaces objects
+MANAGERS: dict = {      # Managers
     "devices": None,
     "locations": None,
 
@@ -63,27 +62,27 @@ if __name__ == "__main__":
         log_level = sys.argv[1]
     else:
         log_level = "INFO"
-    initializers.define_log(DIRS, log_level= log_level)
-    initializers.check_python(REQUIRED_PYTHON_VER)
-    initializers.check_os(SUPPORTED_OS)
-    initializers.check_directories(DIRS)
-    CONFIG = initializers.load_configurations()
+    initializers.define_log(DIRS, log_level= log_level) # Define the LOG modes and formatting
+    initializers.check_python(REQUIRED_PYTHON_VER)      # Check the Python version
+    initializers.check_os(SUPPORTED_OS)                 # Check the OS
+    initializers.check_directories(DIRS)                # Check the directories
+    CONFIG = initializers.load_configurations()         # Load the configurations
     # The initalizers order is: Database -> Interfaces -> Managers -> Drivers
     # DO NOT! load the initalizers in a different order unless you want to
     # see some nasty exceptions
-    initializers.load_db(DIRS, INTERFACES)
+    initializers.load_db(DIRS, INTERFACES)              # Load the database into INTERFACES['opus_db']
     initializers.load_interfaces(
         config=CONFIG,
         dirs=DIRS,
         interfaces=INTERFACES
     )
-    initializers.load_managers(
+    initializers.load_managers(                         # Load the managers into MANAGERS['locations', 'devices', 'maestro' and 'users']
         dirs=DIRS,
         managers=MANAGERS,
         interfaces=INTERFACES,
         drivers=DRIVERS
     )
-    initializers.load_drivers(
+    initializers.load_drivers(                          # Load the drivers
         config=CONFIG,
         dirs=DIRS,
         drivers=DRIVERS,
