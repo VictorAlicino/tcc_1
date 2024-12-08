@@ -49,6 +49,7 @@ async def main() -> None:
     INTERFACES['mqtt<maestro>'].start_thread()
     #MANAGERS["devices"].print_all_devices()
     while True:
+        # TODO: Messages loop
         await asyncio.sleep(1)
         #MANAGERS["devices"].get_device("59e900d215a811efacf9001a7dda710a").on()
         #await asyncio.sleep(1)
