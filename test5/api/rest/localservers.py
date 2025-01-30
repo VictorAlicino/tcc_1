@@ -14,7 +14,7 @@ import db.localservers as opus_servers
 from db.database import DB
 from db.models import OpusServer
 from configurations.config import OpenConfig
-from api.rest.api_models import UserRole
+from api.rest._api_models import UserRole
 import api.mqtt.users as MQTT_Users
 
 log = logging.getLogger(__name__)

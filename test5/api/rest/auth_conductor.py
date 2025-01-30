@@ -12,14 +12,14 @@ from db.database import DB
 import db.users as maestro_users
 from db.models import MaestroUser
 
-from api.rest.api_models import ConductorLogin, ConductorRegister, User
+from api.rest._api_models import ConductorLogin, ConductorRegister, User
 
 log = logging.getLogger(__name__)
 db = DB()
 
 router = APIRouter(
-    prefix="/auth",
-    tags=["Authentications"],
+    prefix="/auth/conductor",
+    tags=["Authentications [Conductor]"],
 )
 
 # Google OAuth2
@@ -35,15 +35,15 @@ oauth.register(
     }
 )
 
-# Conductor Auth -----------------------------
+# Conductor Auth -----------------------------------------------------------------
 
-@router.post("/conductor/register")
+@router.post("/register")
 async def conductor_register(request: ConductorRegister):
     """Conductor register endpoint for the server"""
     print(request)
     return status.HTTP_200_OK
 
-@router.post("/conductor/login")
+@router.post("/login")
 async def conductor_login(request: ConductorLogin):
     """Conductor login endpoint for the server."""
     db_session = next(db.get_db())
@@ -71,15 +71,15 @@ async def conductor_login(request: ConductorLogin):
         'token_type': 'bearer'
     }
 
-@router.get("/login")
-async def login(user: User):
-    """Login endpoint for the server."""
-    # Print the request
-    print(user)
-    return Response(
-        content="You have logged in",
-        status_code=status.HTTP_200_OK
-    )
+# @router.get("/login")
+# async def login(user: User):
+#     """Login endpoint for the server."""
+#     # Print the request
+#     print(user)
+#     return Response(
+#         content="You have logged in",
+#         status_code=status.HTTP_200_OK
+#     )
 
 @router.get("/logout")
 async def logout(request: Request):

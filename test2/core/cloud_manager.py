@@ -70,6 +70,13 @@ class CloudManager:
             log.critical("Failed to login to Maestro")
             sys.exit(1)
 
+    def _configure_mqtt(self) -> None:
+        """Configure MQTT"""
+        log.debug('Configuring MQTT for Cloud Manager.')
+        self.interfaces['mqtt<maestro>'].register_callback('cloud/#', self._mqtt_callback)
+        self._mqtt_root_topic = f'{self.interfaces["mqtt<maestro>"].client_id}/cloud'
+        log.debug('MQTT Configured for Cloud Manager.')
+
     def maestro_ping_resp(self, client, userdata, msg):
         """Answers the Ping from Maestro"""
         log.debug("Maestro ping...")

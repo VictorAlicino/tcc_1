@@ -7,9 +7,9 @@ import logging
 
 from api.rest.users import router as user_router
 from api.rest.localservers import router as server_router
-from api.rest.auth import router as auth_router
+from api.rest.auth_conductor import router as auth_router
 
-from api.rest.index import index_home_page
+from api.rest._index import index_home_page
 
 # Logger
 log = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 # Tag Metadata
 tags_metadata = [
     {
-        "name": "Authentications",
+        "name": "Authentications [Conductor]",
         "description": "Operations with authentications. The `/auth` endpoint returns a list of all authentications.",
     },
     {

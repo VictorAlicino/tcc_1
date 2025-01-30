@@ -18,7 +18,7 @@ interfaces: # Interfaces are expected to be configurable, so don't forget the co
       username: ""
       password: ""
       client_id: "opus-server"
-  
+
 # Drivers
 drivers:
   - sonoff

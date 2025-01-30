@@ -1,0 +1,27 @@
+{
+    "buildings": [
+      {
+        "building_pk": "cc355a321b8511ef8abc001a7dda710a",
+        "building_name": "Bloco 11",
+        "spaces": [
+          {
+            "building_space_pk": "5705fe6e1b8611ef961c001a7dda710a",
+            "space_name": "Espaço 02",
+            "rooms": [
+              {
+                "building_room_pk": "708042f81b8611ef8eb3001a7dda710a",
+                "room_name": "Sala 04",
+                "devices": [
+                    {
+                        "device_pk": "07e164d01b8711ef8a25001a7dda710a",
+                        "device_name": "Ar Condicionado 1",
+                        "device_type": "HVAC"
+                    }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }

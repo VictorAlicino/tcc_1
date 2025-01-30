@@ -1,0 +1,20 @@
+Authentications                           # Autenticações dos usuários
+    Conductor -> Maestro                  # Autenticações de Usuários do App Mobile
+        /auth/conductor/register          # Cadastro de Usuário no Banco
+        /auth/conductor/login             # Login no app
+        /auth/conductor/logout            # Logout no app
+        /auth/conductor/auth ?????
+ 
+Users                                     # Usuários do Maestro
+    /users                                # Recupera todos os usuários do Maestro
+    /users/delete/{user_id}               # Deleta um usuário do Maestro
+    /users/server/{user_id}               # Recupera os servidores de um usuário
+
+Opus Server                               # Servidores Locais
+    /opus_server                          # Recupera todos os servidores locais no Maestro
+    /opus_server/delete/{server_id}       # Deleta um servidor local
+    /opus_server/admins/{server_id}       # Recupera os administradores de um servidor local
+    /opus_server/assign_users/{server_id} # Atribui usuários a um servidor local
+    /opus_server/users/{server_id}        # Recupera os usuários de um servidor local
+    /opus_server/user/devices             # Recupera os dispositivos de um usuário
+    /opus_server/cmd/{server_id}          # Envia um comando para um servidor local

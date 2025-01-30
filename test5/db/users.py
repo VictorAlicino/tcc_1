@@ -29,7 +29,7 @@ def get_all_users(db: Session):
 
 def get_servers_of_user(db: Session, user_id: str):
     """Get all server which a User is registered on"""
-    temp = db.execute(text(f"SELECT server_id FROM roles WHERE user_id = \'{user_id}\'")).all()
+    temp = db.execute(text(f"SELECT DISTINCT server_id FROM roles WHERE user_id = \'{user_id}\'")).all()
     server_list = []
     for server in temp:
         server_list.append((str(server[0])))

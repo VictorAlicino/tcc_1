@@ -90,7 +90,7 @@ if __name__ == "__main__":
         interfaces=INTERFACES,
         managers=MANAGERS
     )
-    MANAGERS["devices"].load_devices_from_db()
+    MANAGERS["devices"].load_devices_from_db()          # Load the devices from the database
 
     # (INTERFACES)
     # TODO: Start devices manager
