@@ -1,12 +1,22 @@
 # Rotas MQTT:
 
+O sistema Opus se comunica faz suas comunicações internas (comandos) através
+do protocolo MQTT, essa comunicação foi inspirada no REST usando a estrutura
+de tópicos do MQTT. O MQTT funciona em Publicar-Assinar, ele não possui uma
+forma padrão de resposta, para isso na forma e comunicação do Opus usamos uma
+estrutura em JSON e sempre que há a necessidade de responder um comando, é passado
+uma chave ```callback```, ela indiica em que tópico deve ser publicada a resposta.
+
 ## Maestro
 
 * Recuperarar dispositivos possíveis para um usuário
 
 ```opus-server-5be2/cloud/get_user_full```
 ```json
-{}
+{
+  "user_pk": "",
+  "callback": 
+}
 ```
 
 ## Usuários
@@ -21,7 +31,8 @@
     "given_name": "",
     "email": "",
     "role": ""
-  }
+  },
+  "callback": 
 }
 ```
 
