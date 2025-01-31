@@ -1,10 +1,20 @@
 # Rotas MQTT:
 
+## Maestro
+
+* Recuperarar dispositivos possíveis para um usuário
+
+```opus-server-5be2/cloud/get_user_full```
+```json
+{}
+```
+
 ## Usuários
 
-* Sincronizar novo usuário vindo do Maestro
+* Adicionar novo usuário vindo do Maestro
+
+```opus-server-5be2/users/add```
 ```json
-opus-server-5be2/users/add
 {
   "user_pk": "",
   "user_data": {
@@ -17,9 +27,11 @@ opus-server-5be2/users/add
 
 ## Edifícios:
 
+### Edifícios:
 * Criar Edifício
+
+```opus-server-5be2/building/new```
 ```json
-opus-server-5be2/building/new
 {
   "name": "",
   "callback": ""
@@ -27,16 +39,19 @@ opus-server-5be2/building/new
 ```
 
 * Lista todos os Edifícios
+
+```opus-server-5be2/building/list```
 ```json
-opus-server-5be2/building/list
 {
   "callback": ""
 }
 ```
 
+### Espaços:
 * Criar Espaço
+
+```opus-server-5be2/space/new```
 ```json
-opus-server-5be2/space/new
 {
   "name": "",
   "building": "",
@@ -45,16 +60,19 @@ opus-server-5be2/space/new
 ```
 
 * Lista todos os Espaços
+
+```opus-server-5be2/spaes/list```
 ```json
-opus-server-5be2/spaes/list
 {
   "callback": ""
 }
 ```
 
+### Salas:
 * Criar Sala
+
+```opus-server-5be2/room/new```
 ```json
-opus-server-5be2/room/new
 {
   "name": "",
   "space": "",
@@ -64,8 +82,9 @@ opus-server-5be2/room/new
 ```
 
 * Lista todos as Salas
+
+```opus-server-5be2/room/list```
 ```json
-opus-server-5be2/room/list
 {
   "callback": ""
 }
@@ -74,40 +93,45 @@ opus-server-5be2/room/list
 ## Dispositivos: 
 
 * Lista todos os dispositivos
+
+```opus-server-5be2/devices/list_all```
 ```json
-opus-server-5be2/devices/list_all
 {
   "callback": ""
 }
 ```
 
 * Lista somente os dispositivos registrados
+
+```opus-server-5be2/devices/list```
 ```json
-opus-server-5be2/devices/list
 {
   "callback": ""
 }
 ```
 
 * Lista os dispositivos disponíveis para registrar
+
+```opus-server-5be2/devices/available```
 ```json
-opus-server-5be2/devices/available
 {
   "callback": ""
 }
 ```
 
 * Lista os drivers disponíveis
+
+```opus-server-5be2/devices/all_drivers```
 ```json
-opus-server-5be2/devices/all_drivers
 {
   "callback": ""
 }
 ```
 
 * Registrar novo Dispositivo (já disponível)
+
+```opus-server-5be2/devices/register```
 ```json
-opus-server-5be2/devices/register
 {
   "id": "",
   "name": "",
@@ -118,8 +142,9 @@ opus-server-5be2/devices/register
 ```
 
 * Criar novo dispositivo específico para driver (Inclui dados adicionais)
+
+```opus-server-5be2/devices/<driver>/new_device```
 ```json
-opus-server-5be2/devices/<driver>/new_device
 {
   "device_type": "",
   "room_id": "",
@@ -131,8 +156,9 @@ opus-server-5be2/devices/<driver>/new_device
 ```
 
 * Envia um comando para um dispositivo
+
+```opus-server-5be2/devices/<device_uuid>```
 ```json
-opus-server-5be2/devices/<device_uuid>
 {
   "callback": ""
 }
