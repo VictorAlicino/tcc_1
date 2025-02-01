@@ -69,6 +69,15 @@ def get_role_by_id(db: Session, security_level: int) -> models.Role | None:
     db = next(db)
     return db.query(models.Role).filter(models.Role.security_level == security_level).first()
 
+def get_role_uuid(db: Session, role_pk: str) -> models.Role | None:
+    """Get the role entity by name"""
+    db = next(db)
+    return db.query(models.Role).filter(models.Role.role_pk == role_pk).first()
+
+def get_all_devices_authorized_to_a_role(db: Session, role: models.Role) -> list[models.Device]:
+    """Get all devices authorized to a role"""
+    db = next(db)
+    return db.query(models.Device).join(models.role_device).filter(models.role_device.c.role_pk == role.role_pk).all()
 # UPDATE
 
 

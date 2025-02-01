@@ -1,5 +1,5 @@
 """Database models for Opus"""
-from sqlalchemy import Column, String, UUID, JSON, ForeignKey, SmallInteger
+from sqlalchemy import Table, Column, String, UUID, JSON, ForeignKey, SmallInteger
 from sqlalchemy.orm import relationship
 from .db import Base
 
@@ -86,3 +86,11 @@ Role.users = relationship(
     order_by=User.user_pk,
     back_populates="role"
     )
+
+role_device = Table(
+    "role_device",
+    Base.metadata,
+    Column("role_pk", UUID, ForeignKey("roles.role_pk"), primary_key=True),
+    Column("device_pk", UUID, ForeignKey("device.device_pk"), primary_key=True)
+)
+

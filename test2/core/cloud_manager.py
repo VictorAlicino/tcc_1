@@ -7,6 +7,8 @@ import json
 import logging
 import requests
 import aiomqtt
+from db import crud
+import db.models as models
 
 log = logging.getLogger(__name__)
 
@@ -24,7 +26,9 @@ class CloudManager:
         self.interfaces = interfaces
         self.managers = managers
         self.drivers = drivers
+        self.opus_db = interfaces['opus_db']
         self.login_to_maestro()
+        self._configure_mqtt()
         log.info('Cloud Manager initialized.')
 
     def login_to_maestro(self):
@@ -82,5 +86,94 @@ class CloudManager:
         log.debug("Maestro ping...")
         self.interfaces['mqtt<maestro>'].publish(
             topic=f'{self.interfaces['mqtt<maestro>'].client_id}/ping'
-            
         )
+
+    def _get_user_full(self, payload: json) -> None:
+        """Get all data including the devices from a user"""
+
+        # Busca o usuário
+        user = crud.get_user_by_id(self.opus_db.get_db(), payload['user_pk'])
+        if not user:
+            log.error("User not found")
+            return
+
+        # Monta os dados do usuário
+        user_data = {
+            "user_pk": str(user.user_pk),
+            "given_name": user.given_name,
+            "email": user.email,
+            "role": str(user.fk_role),
+        }
+
+        # Busca a role e os dispositivos autorizados
+        user_role = crud.get_role_uuid(self.opus_db.get_db(), user.fk_role)
+        authorized_devices = crud.get_all_devices_authorized_to_a_role(self.opus_db.get_db(), user_role)
+
+        # Converte lista de dispositivos autorizados para um dicionário {device_pk: device}
+        authorized_devices_map = {str(device.device_pk): device for device in authorized_devices}
+
+        # Busca todos os prédios e sua estrutura
+        buildings = next(self.opus_db.get_db()).query(models.Building).all()
+
+        user_data["role"] = user_role.role_name
+
+        response = {"user_data": user_data, "buildings": []}
+
+        for building in buildings:
+            building_data = {
+                "building_pk": str(building.building_pk),
+                "security_level": user_role.role_name,
+                "building_name": building.building_name,
+                "spaces": []
+            }
+
+            for space in building.spaces:
+                space_data = {
+                    "building_space_pk": str(space.building_space_pk),
+                    "space_name": space.space_name,
+                    "rooms": []
+                }
+
+                for room in space.rooms:
+                    room_data = {
+                        "building_room_pk": str(room.building_room_pk),
+                        "room_name": room.room_name,
+                        "devices": []
+                    }
+
+                    for device in room.devices:
+                        # Adiciona somente se o dispositivo estiver autorizado para a role do usuário
+                        if str(device.device_pk) in authorized_devices_map:
+                            room_data["devices"].append({
+                                "device_pk": str(device.device_pk),
+                                "device_name": device.device_name,
+                                "device_type": device.device_type
+                            })
+
+                    # Apenas adiciona a sala se houver dispositivos autorizados nela
+                    if room_data["devices"]:
+                        space_data["rooms"].append(room_data)
+
+                # Apenas adiciona o espaço se houver salas com dispositivos autorizados
+                if space_data["rooms"]:
+                    building_data["spaces"].append(space_data)
+
+            # Apenas adiciona o prédio se houver espaços com dispositivos autorizados
+            if building_data["spaces"]:
+                response["buildings"].append(building_data)
+
+        # Envia resposta via MQTT
+        self.interfaces['mqtt<maestro>'].publish(
+            topic=f'{payload["callback"]}',
+            payload=json.dumps(response)
+        )
+
+    def _mqtt_callback(self, client, userdata, msg): # pylint: disable=unused-argument
+        """Callback from MQTT when Maestro sends a message in the /cloud topic"""
+        match msg.topic:
+            case topic if topic == f'{self._mqtt_root_topic}/ping':
+                self.maestro_ping_resp()
+            case topic if topic == f'{self._mqtt_root_topic}/get_user_full':
+                self._get_user_full(json.loads(msg.payload))
+            case _:
+                print("Message not recognized by the Cloud Manager")
