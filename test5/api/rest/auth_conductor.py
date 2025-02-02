@@ -1,7 +1,9 @@
 """HTTP API Authentications Endpoints"""
 import datetime
 import logging
-from fastapi import APIRouter, HTTPException, status, Response
+import json
+from fastapi import APIRouter, HTTPException, status, Response, Depends
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse
 from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth
@@ -12,7 +14,7 @@ from db.database import DB
 import db.users as maestro_users
 from db.models import MaestroUser
 
-from api.rest._api_models import ConductorLogin, ConductorRegister, User
+from api.rest._api_models import ConductorLogin, ConductorRegister, User, VerifyToken
 
 log = logging.getLogger(__name__)
 db = DB()
@@ -35,6 +37,9 @@ oauth.register(
     }
 )
 
+# Internal OAuth2
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 # Conductor Auth -----------------------------------------------------------------
 
 @router.post("/register")
@@ -55,7 +60,7 @@ async def conductor_login(request: ConductorLogin):
             detail="User not found"
         )
     log.debug(f'{user.name} has logged in via Conductor')    
-    exp = datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
+    exp = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
 
     # Create a JWT token
     payload = {

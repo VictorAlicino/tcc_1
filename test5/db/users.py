@@ -1,7 +1,7 @@
 """Users handler for the database"""
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
-from db.models import MaestroUser
+from db.models import MaestroUser, OpusServer
 
 def get_user_by_google_sub(db: Session, google_sub: str) -> MaestroUser | None:
     """Get a user by google sub"""
@@ -35,12 +35,14 @@ def get_servers_of_user(db: Session, user_id: str):
         server_list.append((str(server[0])))
     return server_list
 
-def get_servers_of_user_by_google_sub(db: Session, google_sub: str):
+def get_servers_of_user_by_google_sub(db: Session, google_sub: str) -> list[MaestroUser, list[OpusServer]]:
     """Get all server which a User is registered on"""
     user = get_user_by_google_sub(db, google_sub)
+    server_list: list[OpusServer] = []
     if user:
-        return get_servers_of_user(db, str(user.user_id))
-    return []
+        severs = get_servers_of_user(db, str(user.user_id))
+        server_list = db.query(OpusServer).filter(OpusServer.server_id.in_(severs)).all()
+    return [user, server_list]
 
 def delete_user(db: Session, user: MaestroUser):
     """Delete a user"""

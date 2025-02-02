@@ -14,6 +14,10 @@ class UserRole(BaseModel):
             return str(UUID(v))  # Tenta converter a string para UUID
         except ValueError:
             raise ValueError('Invalid UUID format')
+        
+class VerifyToken(BaseModel):
+    """Conductor Register Request"""
+    access_token: str
 
 class ConductorLogin(BaseModel):
     """Conductor Login Request"""

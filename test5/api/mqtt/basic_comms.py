@@ -2,6 +2,7 @@
 import json
 import aiomqtt
 import logging
+import asyncio
 import db.localservers as opus_servers
 import db.users as maestro_users
 from db.models import OpusServer
@@ -25,6 +26,19 @@ async def send_msg_to_server(local_server: OpusServer, topic:str, command: dict)
     #log.debug("Publishing to %s the following message:\n%s", full_topic, json.dumps(command))
     async with aiomqtt.Client(env('CLOUD-MQTT')) as client:
         await client.publish(full_topic, json.dumps(command))
+
+async def receive_callback(callback_topic: str, timeout: float = 0.5) -> json:
+    """Receive a callback from a server with a timeout."""
+    async with aiomqtt.Client(env('CLOUD-MQTT')) as client:
+        await client.subscribe(callback_topic)
+
+        async def wait_for_message():
+            async for message in client.messages:
+                return json.loads(message.payload.decode())
+        try:
+            return await asyncio.wait_for(wait_for_message(), timeout)
+        except asyncio.TimeoutError:
+            return None
 
 async def server_login_listener():
     """Receives Login requests from new servers."""

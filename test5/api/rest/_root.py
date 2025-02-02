@@ -39,7 +39,7 @@ tags_metadata = [
 api: FastAPI = FastAPI(
     title="Maestro",
     description="This is the Opus Maestro API.",
-    version="0.0.2",
+    version="0.0.3",
     terms_of_service="Nah, no terms of service. It's just an example.",
     contact={
         "name": "Victor Alicino",
