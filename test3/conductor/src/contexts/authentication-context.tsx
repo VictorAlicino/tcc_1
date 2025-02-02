@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { api } from "../services/api";
 import * as SecureStore from 'expo-secure-store';
 import { GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -86,6 +87,7 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
               exp: data.exp
           };
           setConductorUser(loginResponse);
+          api.defaults.headers.common["Authorization"] = `Bearer ${data.access_token}`;
       })
       .catch(error => {
           switch (error.name) {
