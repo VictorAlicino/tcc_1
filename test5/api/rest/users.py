@@ -42,8 +42,8 @@ async def get_user_servers(user_id: str):
     db_session = next(db.get_db())
     return maestro_users.get_servers_of_user(db_session, user_id)
 
-@router.post("/opus_server/dump_all_servers_info")
-async def dump_all_servers_info(request: Request, validate: str = Depends(oauth2_scheme)):
+@router.get("/opus_server/dump_all_servers_info")
+async def dump_all_servers_info(validate: str = Depends(oauth2_scheme)):
     """Dump all servers info endpoint for the server."""
     token_decoded: dict = jwt.decode(validate, CONFIG['api-secrets']['secret_key'], algorithms=["HS256"])
     db_session = next(db.get_db())

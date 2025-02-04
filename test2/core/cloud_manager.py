@@ -90,12 +90,12 @@ class CloudManager:
 
     def _get_user_full(self, payload: json) -> None:
         """Get all data including the devices from a user"""
-        log.debug("Maestro requested the full data of a user")
         # Busca o usuário
         user = crud.get_user_by_id(self.opus_db.get_db(), payload['user_pk'])
         if not user:
-            log.error("User not found")
+            log.error("Maestro requested the full data of a user that does not exist")
             return
+        log.debug(f"Maestro requested the full data of user {user.given_name}")
 
         # Monta os dados do usuário
         user_data = {

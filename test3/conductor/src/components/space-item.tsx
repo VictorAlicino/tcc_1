@@ -1,13 +1,8 @@
 import { clsx } from "clsx";
 import { TouchableOpacity, TouchableOpacityProps } from "react-native";
+import { SpaceData } from "@/models/opus-models";
 
 import { Text } from "@/components/text";
-
-export interface SpaceData {
-  id: string;
-  name: string;
-  buildingId: string;
-}
 
 export interface SpaceItemProps extends TouchableOpacityProps {
   space: SpaceData;

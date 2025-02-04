@@ -3,7 +3,8 @@ import { api } from "../services/api";
 import * as SecureStore from 'expo-secure-store';
 import { GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { conductorUser, conductorToken } from "@/models/conductor_models";
+import { loginToConductor } from "@/services/conductor-api";
 
 interface AuthenticationContextData {
   isAuthenticated: boolean;
@@ -16,28 +17,18 @@ interface AuthenticationProviderProps {
   children: React.ReactNode;
 }
 
-interface conductorToken{
-  access_token?: string | null;
-  exp: Date | null;
-}
-
-interface conductorUser {
-  id: string | null;
-  email: string | null;
-  name: string | null;
-  givenName: string | null;
-  familyName: string | null;
-  photo: string | null;
-  conductorToken?: conductorToken;
-}
 const AuthenticationContext = createContext({} as AuthenticationContextData);
 
-async function storeToken(token: string): Promise<void> {
-  await SecureStore.setItemAsync('googleAccessToken', token);
+async function storeToken(token: conductorToken): Promise<void> {
+  await SecureStore.setItemAsync('conductorAcessToken', token.access_token || '');
+  await SecureStore.setItemAsync('conductorAcessTokenExp', token.exp ? token.exp.toString() : '');
 }
 
-async function getStoredToken(): Promise<string | null> {
-  return await SecureStore.getItemAsync('googleAccessToken');
+async function getStoredToken(): Promise<conductorToken> {
+  return {
+    access_token: await SecureStore.getItemAsync('conductorAcessToken'),
+    exp: new Date(await SecureStore.getItemAsync('conductorAcessTokenExp')||'')
+  }
 }
 
 export function AuthenticationProvider({ children }: AuthenticationProviderProps) {
@@ -59,35 +50,16 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
       await GoogleSignin.hasPlayServices();
       let loginResponse: conductorUser = (await GoogleSignin.signIn()).user;
       // Request login to the server
-      const request = JSON.stringify({
-        'email': loginResponse.email,
-        'google_sub': loginResponse.id
-      })
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1500);
-      await fetch('http://192.168.15.87:9530/auth/conductor/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: request,
-        signal: controller.signal
-      })
-      .then(response => {
-          clearTimeout(timeoutId);
-          if (response.status === 401) {
-              throw new Error('Unauthorized: Invalid credentials or session expired.');
-          }
-          
-          return response.json();
-      })
+      loginToConductor(loginResponse.email, loginResponse.id)
       .then(data => {
-          loginResponse.conductorToken = {
-              access_token: data.access_token,
-              exp: data.exp
-          };
-          setConductorUser(loginResponse);
-          api.defaults.headers.common["Authorization"] = `Bearer ${data.access_token}`;
+        //console.log(data);
+        loginResponse.conductorToken = data;
+        setConductorUser(loginResponse);
+        api.defaults.headers.common["Authorization"] = `Bearer ${data.access_token}`; // Set the token in the header
+        storeToken(data); // Store the token in the secure store
+        console.log(conductorUser);
       })
       .catch(error => {
           switch (error.name) {
@@ -99,8 +71,8 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
               console.error('Error:', error.message);
               break;
           }
-      });
         console.log(loginResponse);
+      });
 
     } catch (error: any) {
       setError(error.message);

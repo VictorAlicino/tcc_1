@@ -1,16 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity, TouchableOpacityProps, View } from "react-native";
+import { RoomData } from "@/models/opus-models";
 
 import { Icon } from "@/components/icon";
 import { Text } from "@/components/text";
 import { StackItemProps } from "@/routes/protected-routes";
-
-export interface RoomData {
-  id: string;
-  name: string;
-  spaceId: string;
-  devicesCount: number;
-}
 
 interface RoomItemProps extends TouchableOpacityProps {
   room: RoomData;

@@ -2,14 +2,16 @@ import { AnimatePresence, MotiView } from "moti";
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import colors from "tailwindcss/colors";
+import { api } from "@/services/api";
 
 import { BuildingButton } from "@/components/building-button";
-import { BuildingData, BuildingItem } from "@/components/building-item";
+import { BuildingItem } from "@/components/building-item";
 import { EmptyData } from "@/components/empty-data";
-import { RoomData, RoomItem } from "@/components/room-item";
+import { RoomItem } from "@/components/room-item";
+import { BuildingData, DeviceData, RoomData, SpaceData} from "@/models/opus-models";
 import { SafeAreaView, statusBarHeight } from "@/components/safe-area-view";
 import { SearchBar } from "@/components/search-bar";
-import { SpaceData, SpaceItem } from "@/components/space-item";
+import { SpaceItem } from "@/components/space-item";
 
 const buildings: BuildingData[] = [
   {
@@ -124,10 +126,83 @@ export const rooms: RoomData[] = [
   },
 ];
 
+
+
+let availableBuildings: BuildingData[] = [];
+let availableSpaces: SpaceData[] = [];
+let availableRooms: RoomData[] = [];
+let availableDevices: DeviceData[] = [];
+
+async function getBuildings() {
+  let opusResponse;
+  api.get("/users/opus_server/dump_all_servers_info")
+    .then(response => {
+      opusResponse = response.data;
+      console.log(response.data);
+      console.log(response.data['opus-server-5be2']);
+    })
+    .catch(error => {
+      console.error(error);
+      return [];
+    });
+
+  //if(opusResponse) {
+  //  const buildingData = Object.values(opusResponse)[0];
+  //  if(buildingData && buildingData.buildings) {
+  //    availableBuildings = buildingData.buildings.map(building => ({
+  //      pk: building.building_pk,
+  //      name: building.building_name,
+  //      role: building.building_role,
+  //    })
+  //  }
+  //}
+}
+
 export function Home() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    setIsLoading(true);
+
+    api.get("/users/opus_server/dump_all_servers_info")
+      .then(response => {
+        setData(response.data);
+        setIsLoading(false);
+        for (const server in response.data) {
+          console.log("--------------------------");
+          console.log("Buildings on server: " + server);
+          if(response.data[server]){
+            for (const building in response.data[server].buildings) {
+              console.log("\t" + response.data[server].buildings[building].building_name);
+              for (const spaces in response.data[server].buildings[building].spaces){
+                console.log("\t\t" + response.data[server].buildings[building].spaces[spaces].space_name);
+                for (const rooms in response.data[server].buildings[building].spaces[spaces].rooms){
+                  console.log("\t\t\t" + response.data[server].buildings[building].spaces[spaces].rooms[rooms].room_name);
+                  for (const devices in response.data[server].buildings[building].spaces[spaces].rooms[rooms].devices){
+                    console.log("\t\t\t\t" + response.data[server].buildings[building].spaces[spaces].rooms[rooms].devices[devices].device_name);
+                  }
+                }
+              }
+            }
+          }
+          else{
+            console.log("\tNo buildings found");
+          }
+        };
+      })
+      .catch(error => {
+        console.error(error);
+        setIsLoading(false);
+      });
+  }, []);
+
   const [buildingsVisible, setBuildingsVisible] = useState(false);
   const [search, setSearch] = useState("");
   const [searchBuilding, setSearchBuilding] = useState("");
+
+
+
 
   const [currentBuilding, setCurrentBuilding] = useState<BuildingData>(buildings[0]);
 

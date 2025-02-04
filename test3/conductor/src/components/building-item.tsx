@@ -1,15 +1,10 @@
 import { clsx } from "clsx";
 import { TouchableOpacity, TouchableOpacityProps, View } from "react-native";
 import colors from "tailwindcss/colors";
+import { BuildingData } from "@/models/opus-models";
 
 import { Icon } from "@/components/icon";
 import { Text } from "@/components/text";
-
-export interface BuildingData {
-  id: string;
-  name: string;
-  role: "ADMIN" | "USER";
-}
 
 interface BuildingItemProps extends TouchableOpacityProps {
   building: BuildingData;
