@@ -7,6 +7,7 @@ import { Text } from "@/components/text";
 import { SpaceItem } from "@/components/space-item";
 import { Circle, type MaterialCommunityIconName, type MaterialIconName } from "@/components/circle";
 import Spacer from "@/components/spacer";
+import { StackItemProps } from "@/routes/protected-routes";
 
 interface HVACMode {
   id?: string;
@@ -66,7 +67,7 @@ const fanSpeeds: HVACMode[] = [
   },
 ]
 
-export function OpusHVAC() {
+export function OpusHVAC({ navigation } : StackItemProps<"HVACControl">) {
 
   const [isHVACOn, setIsHVACOn] = useState(false);
   const [temp, setTemp] = useState(24);
@@ -106,6 +107,10 @@ export function OpusHVAC() {
     }
   }
 
+  const handleGoBack = () => {
+    navigation.goBack();
+  }
+
   return (
     <SafeAreaView>
       <View style={{
@@ -119,14 +124,14 @@ export function OpusHVAC() {
           alignItems:'center',
           paddingTop:15
         }}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleGoBack}>
               <Icon name="arrow-back-ios" size={30} />
           </TouchableOpacity>
-          <View className="flex-1 items-center justify-center">
+          <View className="flex-1 items-center bg-white">
               <Text className="text-xl font-500">Ar Condicionado</Text>
               <Text style={{fontSize:15}}>Sala 01</Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity >
               <Icon name="report" size={30} />
           </TouchableOpacity>
         </View>

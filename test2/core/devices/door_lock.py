@@ -39,3 +39,10 @@ class DoorLock(OpusDevice):
     @abstractmethod
     def is_open(self) -> bool:
         """Check if the door is open"""
+
+    @abstractmethod
+    def get_state(self) -> bool:
+        """Get the state of the door lock"""
+        return {
+            "lock_state": self.lock_state
+        }

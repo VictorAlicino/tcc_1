@@ -39,3 +39,10 @@ class GateOpener(OpusDevice):
     @abstractmethod
     def is_open(self) -> bool:
         """Check if the gate is open"""
+
+    @abstractmethod
+    def get_state(self) -> bool:
+        """Get the state of the gate opener"""
+        return {
+            "lock_state": self.lock_state
+        }

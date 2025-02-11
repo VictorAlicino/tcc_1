@@ -59,7 +59,7 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
         setConductorUser(loginResponse);
         api.defaults.headers.common["Authorization"] = `Bearer ${data.access_token}`; // Set the token in the header
         storeToken(data); // Store the token in the secure store
-        console.log(conductorUser);
+        //console.log(conductorUser);
       })
       .catch(error => {
           switch (error.name) {

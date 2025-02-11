@@ -18,7 +18,7 @@ export function SpaceItem({ space, selected, ...props }: SpaceItemProps) {
           selected && "text-amber-500 border-b-[3px] border-amber-500 md:border-b-2"
         )}
       >
-        {space.name}
+        {space.space_name}
       </Text>
     </TouchableOpacity>
   );

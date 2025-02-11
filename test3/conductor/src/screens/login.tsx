@@ -30,7 +30,7 @@ export function Login() {
                     onPress={googleSignIn}
                 >
                     <Icon name="google" size={30} />
-                    <Text className="text-base font-500 px-4">Entrar com o Google</Text>
+                    <Text className="text-base font-500 px-4">Continuar com o Google</Text>
 
                 </TouchableOpacity>
             </View>

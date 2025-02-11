@@ -1,247 +1,114 @@
 import { AnimatePresence, MotiView } from "moti";
 import { useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
-import colors from "tailwindcss/colors";
 import { api } from "@/services/api";
 
 import { BuildingButton } from "@/components/building-button";
 import { BuildingItem } from "@/components/building-item";
 import { EmptyData } from "@/components/empty-data";
 import { RoomItem } from "@/components/room-item";
-import { BuildingData, DeviceData, RoomData, SpaceData} from "@/models/opus-models";
+import { BuildingData, DeviceData, RoomData, SpaceData, ApiResponse } from "@/models/opus-models";
 import { SafeAreaView, statusBarHeight } from "@/components/safe-area-view";
 import { SearchBar } from "@/components/search-bar";
-import { SpaceItem } from "@/components/space-item";
+import Spacer from "@/components/spacer";
+import { Text } from "@/components/text";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
-const buildings: BuildingData[] = [
-  {
-    id: "1",
-    name: "Bloco 1",
-    role: "ADMIN",
-  },
-  {
-    id: "2",
-    name: "Bloco 2",
-    role: "ADMIN",
-  },
-  {
-    id: "3",
-    name: "Bloco 3",
-    role: "USER",
-  },
-  {
-    id: "4",
-    name: "Bloco 4",
-    role: "USER",
-  },
-  {
-    id: "5",
-    name: "Bloco 5",
-    role: "USER",
-  },
-  {
-    id: "6",
-    name: "Bloco 6",
-    role: "ADMIN",
-  },
-];
-
-export const spaces: SpaceData[] = [
-  {
-    id: "1234",
-    name: "Espaço 01",
-    buildingId: "1",
-  },
-  {
-    id: "1233",
-    name: "Espaço 02",
-    buildingId: "1",
-  },
-  {
-    id: "1232",
-    name: "Espaço 03",
-    buildingId: "2",
-  },
-  {
-    id: "1231",
-    name: "Espaço 04",
-    buildingId: "2",
-  },
-];
-
-export const rooms: RoomData[] = [
-  {
-    id: "1",
-    name: "Sala 01",
-    spaceId: "1234",
-    devicesCount: 1,
-  },
-  {
-    id: "2",
-    name: "Sala 02",
-    spaceId: "1234",
-    devicesCount: 3,
-  },
-  {
-    id: "3",
-    name: "Sala 03",
-    spaceId: "1234",
-    devicesCount: 5,
-  },
-  {
-    id: "4",
-    name: "Sala 04",
-    spaceId: "1233",
-    devicesCount: 1,
-  },
-  {
-    id: "5",
-    name: "Sala 05",
-    spaceId: "1232",
-    devicesCount: 1,
-  },
-  {
-    id: "50",
-    name: "Sala 05",
-    spaceId: "1232",
-    devicesCount: 6,
-  },
-  {
-    id: "51",
-    name: "Sala 51",
-    spaceId: "1231",
-    devicesCount: 2,
-  },
-  {
-    id: "52",
-    name: "Sala 52",
-    spaceId: "1231",
-    devicesCount: 0,
-  },
-  {
-    id: "53",
-    name: "Sala 53",
-    spaceId: "1232",
-    devicesCount: 1,
-  },
-];
-
-
-
-let availableBuildings: BuildingData[] = [];
-let availableSpaces: SpaceData[] = [];
-let availableRooms: RoomData[] = [];
-let availableDevices: DeviceData[] = [];
-
-async function getBuildings() {
-  let opusResponse;
-  api.get("/users/opus_server/dump_all_servers_info")
-    .then(response => {
-      opusResponse = response.data;
-      console.log(response.data);
-      console.log(response.data['opus-server-5be2']);
-    })
-    .catch(error => {
-      console.error(error);
-      return [];
-    });
-
-  //if(opusResponse) {
-  //  const buildingData = Object.values(opusResponse)[0];
-  //  if(buildingData && buildingData.buildings) {
-  //    availableBuildings = buildingData.buildings.map(building => ({
-  //      pk: building.building_pk,
-  //      name: building.building_name,
-  //      role: building.building_role,
-  //    })
-  //  }
-  //}
-}
+export let buildings: BuildingData[] = [];
 
 export function Home() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [maestroPayload, setMaestroPayload] = useState<Record<string, ApiResponse | null>>({});
 
-  useEffect(() => {
-    setIsLoading(true);
-
-    api.get("/users/opus_server/dump_all_servers_info")
-      .then(response => {
-        setData(response.data);
-        setIsLoading(false);
-        for (const server in response.data) {
-          console.log("--------------------------");
-          console.log("Buildings on server: " + server);
-          if(response.data[server]){
-            for (const building in response.data[server].buildings) {
-              console.log("\t" + response.data[server].buildings[building].building_name);
-              for (const spaces in response.data[server].buildings[building].spaces){
-                console.log("\t\t" + response.data[server].buildings[building].spaces[spaces].space_name);
-                for (const rooms in response.data[server].buildings[building].spaces[spaces].rooms){
-                  console.log("\t\t\t" + response.data[server].buildings[building].spaces[spaces].rooms[rooms].room_name);
-                  for (const devices in response.data[server].buildings[building].spaces[spaces].rooms[rooms].devices){
-                    console.log("\t\t\t\t" + response.data[server].buildings[building].spaces[spaces].rooms[rooms].devices[devices].device_name);
-                  }
-                }
-              }
-            }
-          }
-          else{
-            console.log("\tNo buildings found");
-          }
-        };
-      })
-      .catch(error => {
-        console.error(error);
-        setIsLoading(false);
-      });
-  }, []);
+  const [availableBuildings, setAvailableBuildings] = useState<BuildingData[]>([]);
+  const [availableSpaces, setAvailableSpaces] = useState<SpaceData[]>([]);
+  const [availableRooms, setAvailableRooms] = useState<RoomData[]>([]);
+  const [availableDevices, setAvailableDevices] = useState<DeviceData[]>([]);
 
   const [buildingsVisible, setBuildingsVisible] = useState(false);
   const [search, setSearch] = useState("");
   const [searchBuilding, setSearchBuilding] = useState("");
 
-
-
-
-  const [currentBuilding, setCurrentBuilding] = useState<BuildingData>(buildings[0]);
-
-  const defaultSpace = {
-    id: "ALL",
-    name: "Todos",
-    buildingId: currentBuilding.id,
-  };
-
+  const [currentBuilding, setCurrentBuilding] = useState<BuildingData | null>(null);
+  const defaultSpace: SpaceData = { building_space_pk: "ALL", space_name: "Todos", rooms: [] };
   const [currentSpace, setCurrentSpace] = useState<SpaceData>(defaultSpace);
 
-  const filteredSpaces = spaces.filter((space) => {
-    return space.buildingId === currentBuilding.id;
-  });
+  useEffect(() => {
+    api.get("/users/opus_server/dump_all_servers_info")
+      .then(response => {
+        setMaestroPayload(response.data);
+      })
+      .catch(error => {
+        console.error("Error fetching buildings:", error);
+        setIsLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!maestroPayload) return;
+
+    let spaces: SpaceData[] = [];
+    let rooms: RoomData[] = [];
+    let devices: DeviceData[] = [];
+
+    for (const value of Object.values(maestroPayload)) {
+      if (!value) continue;
+      const buildings = value.buildings;
+      const spaces = buildings.flatMap(building => building.spaces);
+      const rooms = spaces.flatMap(space => space.rooms);
+      const devices = rooms.flatMap(room => room.devices);
+      setAvailableBuildings(buildings);
+      setAvailableSpaces(spaces);
+      setAvailableRooms(rooms);
+      setAvailableDevices(devices);
+    }
+    
+    if (buildings.length > 0) setCurrentBuilding(buildings[0]);
+  }, [maestroPayload]);
+
+  useEffect(() => {
+    setCurrentSpace(currentBuilding?.spaces[0] ?? defaultSpace);
+  }, [currentBuilding]);
+
+  useEffect(() => {
+      if (availableBuildings) setIsLoading(false);
+  }, [availableBuildings])
+
+  const filteredSpaces = currentBuilding?.spaces ?? [];
+
+  const rooms = filteredSpaces.flatMap(space => space.rooms.map(room => ({
+    ...room,
+    building_space_pk: space.building_space_pk,
+    space_name: space.space_name,
+  })));
 
   const filteredRooms = rooms.filter((room) => {
-    if (currentSpace.id === "ALL") {
-      return filteredSpaces.some((space) => space.id === room.spaceId);
+    if (currentSpace.building_space_pk === "ALL") {
+      return filteredSpaces
     }
 
-    return room.spaceId === currentSpace.id;
+    return room.building_space_pk === currentSpace.building_space_pk;
   });
-
-  const searchRooms = filteredRooms.filter((room) => {
-    return room.name.toLowerCase().includes(search.toLowerCase());
-  });
-
-  const searchBuildings = buildings.filter((building) => {
-    return building.name.toLowerCase().includes(searchBuilding.toLowerCase());
-  });
+  
+  const searchRooms = filteredRooms.filter(room =>
+    room.room_name.toLowerCase().includes(search.toLowerCase())
+  );
+  const searchBuildings = availableBuildings.filter(building =>
+    building.building_name.toLowerCase().includes(searchBuilding.toLowerCase())
+  );
 
   function handleBuildingChange(building: BuildingData) {
     setCurrentBuilding(building);
     setBuildingsVisible(false);
   }
 
-  useEffect(() => {
-    setCurrentSpace(defaultSpace);
-  }, [currentBuilding]);
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center">
+
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView>
@@ -255,7 +122,11 @@ export function Home() {
             exit={{ opacity: 0, translateY: -600 }}
             transition={{ type: "timing", duration: 400 }}
           >
-            <BuildingButton title={currentBuilding.name} open={true} onPress={() => setBuildingsVisible(false)} />
+            <BuildingButton
+              title={currentBuilding?.building_name ?? "Selecione um edifício"}
+              open={true}
+              onPress={() => setBuildingsVisible(false)}
+            />
 
             <View className="mt-4 border-b pb-4 -mx-4 px-4 border-zinc-800">
               <SearchBar
@@ -265,21 +136,21 @@ export function Home() {
                 onClear={() => setSearchBuilding("")}
               />
             </View>
-
+            
             <ScrollView
               className="space-y-4"
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingVertical: 16 }}
             >
               {!searchBuildings.length && (
-                <EmptyData icon="apartment" message="Você não possui edíficios com esse filtro!" />
+                <EmptyData icon="apartment" message="Nenhum edifício encontrado!" />
               )}
 
-              {searchBuildings.map((building) => (
+              {searchBuildings.map(building => (
                 <BuildingItem
-                  key={building.id}
+                  key={building.building_name}
                   building={building}
-                  selected={building.id === currentBuilding.id}
+                  selected={building.building_name === currentBuilding?.building_name}
                   onChange={handleBuildingChange}
                 />
               ))}
@@ -288,11 +159,15 @@ export function Home() {
         )}
       </AnimatePresence>
 
-      <BuildingButton title={currentBuilding.name} open={false} onPress={() => setBuildingsVisible(true)} />
+      <BuildingButton
+        title={currentBuilding?.building_name ?? "Selecione um edifício"}
+        open={false}
+        onPress={() => setBuildingsVisible(true)}
+      />
 
       <View className="mt-4">
         <SearchBar
-          placeholder="Buscar sala em espaços"
+          placeholder="Buscar sala"
           value={search}
           onChangeText={setSearch}
           onClear={() => setSearch("")}
@@ -300,42 +175,40 @@ export function Home() {
       </View>
 
       <View className="border-b pb-2 border-zinc-800 -mx-4 px-4">
-        <ScrollView
-          className="mt-4 -mx-4"
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 14,
-            paddingHorizontal: 16,
-          }}
-        >
-          <SpaceItem
-            space={defaultSpace}
-            selected={defaultSpace.id === currentSpace.id}
-            onPress={() => setCurrentSpace(defaultSpace)}
-          />
-
-          {filteredSpaces.map((space) => (
-            <SpaceItem
-              key={space.id}
-              space={space}
-              selected={space.id === currentSpace.id}
+        <ScrollView horizontal className="flex-row space-x-3 mt-3" showsHorizontalScrollIndicator={false}>
+          <TouchableOpacity className={currentSpace.building_space_pk === defaultSpace.building_space_pk ? "border-b-2 border-amber-500" : ""} onPress={() => setCurrentSpace(defaultSpace)}>
+            <Text className={`text-sm uppercase font-bold ${currentSpace.building_space_pk === defaultSpace.building_space_pk ? "text-amber-500" : "text-white"}`}>
+              {defaultSpace.space_name}
+            </Text>
+          </TouchableOpacity>
+          
+          {filteredSpaces.map(space => (
+            <TouchableOpacity
+              key={space.building_space_pk}
+              className={currentSpace.building_space_pk === space.building_space_pk ? "border-b-2 border-amber-500" : ""}
               onPress={() => setCurrentSpace(space)}
-            />
+            >
+              <Text
+                className={`uppercase text-sm font-bold ${currentSpace.building_space_pk === space.building_space_pk ? "text-amber-500" : "text-white"}`}
+              >
+                {space.space_name}
+              </Text>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       </View>
 
-      <ScrollView
-        className="space-y-4"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingVertical: 16 }}
-      >
-        {!searchRooms.length && <EmptyData icon="no-meeting-room" message="Você não possui salas nesse espaço!" />}
-
-        {searchRooms.map((room) => {
-          const space = spaces.find((space) => space.id === room.spaceId);
-          return <RoomItem key={room.id} room={room} spaceName={space?.name || currentSpace.name} />;
+      <ScrollView className="space-y-4" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingVertical: 16 }}>
+        {!searchRooms.length && <EmptyData icon="no-meeting-room" message="Nenhuma sala encontrada!" />}
+        {searchRooms.map(room => {
+          return (
+            <RoomItem
+              key={room.room_name}
+              room={room}
+              spaceName={room.space_name ?? currentSpace.space_name}
+              buildings={availableBuildings}
+            />
+          );
         })}
       </ScrollView>
     </SafeAreaView>

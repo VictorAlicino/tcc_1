@@ -12,4 +12,3 @@ class TasmotaDevice(OpusDevice):
 
     def __str__(self) -> str:
         return f"<TasmotaDevice-{self.tasmota_name}>"
-

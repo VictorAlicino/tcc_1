@@ -114,7 +114,7 @@ class CloudManager:
 
         # Busca todos os prédios e sua estrutura
         buildings = next(self.opus_db.get_db()).query(models.Building).all()
-
+        
         user_data["role"] = user_role.role_name
 
         response = {"user_data": user_data, "buildings": []}
@@ -151,16 +151,13 @@ class CloudManager:
                             })
 
                     # Apenas adiciona a sala se houver dispositivos autorizados nela
-                    if room_data["devices"]:
-                        space_data["rooms"].append(room_data)
+                    space_data["rooms"].append(room_data)
 
                 # Apenas adiciona o espaço se houver salas com dispositivos autorizados
-                if space_data["rooms"]:
-                    building_data["spaces"].append(space_data)
+                building_data["spaces"].append(space_data)
 
             # Apenas adiciona o prédio se houver espaços com dispositivos autorizados
-            if building_data["spaces"]:
-                response["buildings"].append(building_data)
+            response["buildings"].append(building_data)
 
         # Envia resposta via MQTT
         self.interfaces['mqtt<maestro>'].publish(

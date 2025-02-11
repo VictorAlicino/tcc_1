@@ -2,6 +2,11 @@
 from abc import abstractmethod
 from .__generic import OpusDevice, DeviceType
 
+class OpusHSL(enumerate):
+    H: float    #  Hue
+    S: float    # Saturation
+    L: float    # Lightness    
+
 class OpusLight(OpusDevice):
     """Generic Implementation of a Light"""
     def __init__(self, name: str,
@@ -16,6 +21,7 @@ class OpusLight(OpusDevice):
         self.driver = driver
         self.type = DeviceType.LIGHT
         self.power_state: bool  # Is the HVAC On or Off
+        self.hsl_color: OpusHSL  # Hue, Saturation, Lightness
 
     @abstractmethod
     def on(self) -> None:
@@ -24,3 +30,10 @@ class OpusLight(OpusDevice):
     @abstractmethod
     def off(self) -> None:
         """Turn the light off"""
+
+    @abstractmethod
+    def get_state(self) -> bool:
+        """Get the state of the light"""
+        return {
+            "power_state": self.power_state
+        }

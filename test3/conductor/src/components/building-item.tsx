@@ -13,7 +13,7 @@ interface BuildingItemProps extends TouchableOpacityProps {
 }
 
 export function BuildingItem({ building, selected, onChange, ...props }: BuildingItemProps) {
-  const isAdmin = building.role === "ADMIN";
+  const isAdmin = building.security_level === "Administrator";
 
   return (
     <TouchableOpacity
@@ -27,7 +27,7 @@ export function BuildingItem({ building, selected, onChange, ...props }: Buildin
     >
       <View className="flex-row items-center space-x-5">
         <Icon name="apartment" size={36} />
-        <Text className="text-xl font-700">{building.name}</Text>
+        <Text className="text-xl font-700">{building.building_name}</Text>
       </View>
       <View className="items-center space-y-1">
         <Icon name="badge" color={isAdmin ? colors.amber[500] + "90" : colors.green[500] + "90"} />

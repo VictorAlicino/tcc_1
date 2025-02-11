@@ -49,8 +49,32 @@ class OpusHVAC(OpusDevice):
 
     @abstractmethod
     def on(self) -> None:
-        """Turn the light on"""
+        """Turn the HVAC on"""
 
     @abstractmethod
     def off(self) -> None:
-        """Turn the light off"""
+        """Turn the HVAC off"""
+
+    @abstractmethod
+    def get_state(self) -> bool:
+        """Get the state of the HVAC"""
+        return {
+            "power_state": self.power_state,
+            "vendor": self.vendor,
+            "model": self.model,
+            "mode": self.mode,
+            "fan_speed": self.fan_speed,
+            "swing_vertical": self.swing_vertical,
+            "swing_horizontal": self.swing_horizontal,
+            "is_celsius": self.is_celsius,
+            "temperature": self.temperature,
+            "quiet": self.quiet,
+            "turbo": self.turbo,
+            "economy": self.economy,
+            "light": self.light,
+            "filter": self.filter,
+            "clean": self.clean,
+            "beep": self.beep,
+            "sleep": self.sleep,
+            "state_mode": self.state_mode
+        }
