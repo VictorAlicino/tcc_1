@@ -370,6 +370,33 @@ class DeviceManager:
                                 })
                             )
                             return
+                    case 'get_state':
+                        try:
+                            temp = json.loads(msg.payload)
+                            device = self.get_device(UUID(topic[3]))
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps(device.get_state())
+                            )
+                            return
+                        except Exception as exc: # pylint: disable=broad-except
+                            log.warning(msg.payload)
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({
+                                    'status': 'failed',
+                                    'reason': str(exc)
+                                })
+                            )
+                            self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({
+                                    'status': 'failed',
+                                    'reason': str(exc)
+                                })
+                            )
+                            return
+
 
                 if topic[2] in self.opus_drivers:
                     try:

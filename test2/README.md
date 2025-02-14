@@ -174,3 +174,12 @@ uma chave ```callback```, ela indiica em que tópico deve ser publicada a respos
   "callback": ""
 }
 ```
+
+* Solicita o estado de um dispositivo
+
+```opus-server-5be2/devices/get_state/<device_uuid>```
+```json
+{
+  "callback": ""
+}
+```
