@@ -9,6 +9,7 @@ Users                                     # Usuários do Maestro
     /users                                # Recupera todos os usuários do Maestro
     /users/delete/{user_id}               # Deleta um usuário do Maestro
     /users/server/{user_id}               # Recupera os servidores de um usuário
+    /users/opus_server/dump_all_servers_info
 
 Opus Server                               # Servidores Locais
     /opus_server                          # Recupera todos os servidores locais no Maestro
@@ -18,3 +19,4 @@ Opus Server                               # Servidores Locais
     /opus_server/users/{server_id}        # Recupera os usuários de um servidor local
     /opus_server/user/devices             # Recupera os dispositivos de um usuário
     /opus_server/cmd/{server_id}          # Envia um comando para um servidor local
+    /opus_server/devices/{server_id}/get_state/{device_id} # Recupera o estado de um dispositivo

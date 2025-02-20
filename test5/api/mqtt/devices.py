@@ -2,6 +2,7 @@
 import json
 import aiomqtt
 import asyncio
+import uuid
 import logging
 from sqlalchemy.orm import Session
 import db.localservers as opus_servers
@@ -18,13 +19,14 @@ db = DB()
 # TODO: Terminar esta
 async def get_device_state(local_server: OpusServer, device_id: str) -> json:
     """Get the state of a device."""
+    request_id = str(uuid.uuid4())
     data: dict = {
         "device_id": device_id,
-        "callback": env('CLOUD-MQTT') + "/devices/get_device_state/callback"
+        "callback": env('CLOUD-MQTT') + "/devices/get_device_state/callback/" + request_id
     }
 
-    send_task = asyncio.create_task(send_msg_to_server(local_server, "cloud/get_device_state", data))
-    receive_task = asyncio.create_task(receive_callback(env('CLOUD-MQTT') + "/devices/get_device_state/callback"))
+    send_task = asyncio.create_task(send_msg_to_server(local_server, f"devices/get_state/{device_id}", data))
+    receive_task = asyncio.create_task(receive_callback(env('CLOUD-MQTT') + f"/devices/get_device_state/callback/{request_id}"))
 
     await send_task
     result = await receive_task

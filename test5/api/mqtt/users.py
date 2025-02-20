@@ -50,6 +50,10 @@ async def dump_all_info_from_a_user(local_server: OpusServer, user: MaestroUser)
     receive_task = asyncio.create_task(receive_callback(env('CLOUD-MQTT') + "/users/get_user_full/callback"))
 
     await send_task
-    result = await receive_task
+    result: json = await receive_task
+    if (result):
+        result['buildings'] = [
+            {**building, "server_pk": local_server.server_id} for building in result['buildings']
+        ]
 
     return result

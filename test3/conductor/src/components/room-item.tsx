@@ -16,6 +16,8 @@ interface RoomItemProps extends TouchableOpacityProps {
 export function RoomItem({ room, spaceName, buildings, ...props }: RoomItemProps) {
   const navigation = useNavigation<StackItemProps["navigation"]>();
 
+  //console.log("RoomItemProps", room, spaceName, buildings);
+
   const handleNavigateToDetails = useCallback(() => {
     navigation.navigate("RoomDetails", { roomId: room.building_room_pk, buildings, });
   }, [navigation, room.building_room_pk]);

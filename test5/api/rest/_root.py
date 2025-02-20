@@ -8,6 +8,7 @@ import logging
 from api.rest.users import router as user_router
 from api.rest.localservers import router as server_router
 from api.rest.auth_conductor import router as auth_router
+from api.rest.devices import router as server_devices_router
 
 from api.rest._index import index_home_page
 
@@ -57,6 +58,7 @@ api.add_middleware(SessionMiddleware, secret_key="your-secret")
 api.include_router(auth_router)
 api.include_router(server_router)
 api.include_router(user_router)
+api.include_router(server_devices_router)
 
 @api.get("/", response_class=HTMLResponse, tags=["Root"])
 async def root():

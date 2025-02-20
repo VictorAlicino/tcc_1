@@ -16,6 +16,7 @@ export function RoomDetails({ navigation, route }: StackItemProps<"RoomDetails">
   const [room, setRoom] = useState<RoomData | null>(null);
   const [spaceName, setSpaceName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [currentBuilding, setCurrentBuilding] = useState("");
 
   useEffect(() => {
     const fetchRoomDetails = async () => {
@@ -56,12 +57,12 @@ export function RoomDetails({ navigation, route }: StackItemProps<"RoomDetails">
   }
 
   return (
-    <SafeAreaView className="p-4">
-      <Text className="text-3xl font-700 mt-4">{room?.room_name}</Text>
-      {spaceName && <Text className="opacity-70 text-lg">{spaceName}</Text>}
+    <SafeAreaView className="p-2">
+      <Text className="text-3xl font-700 mt-8 ml-3">{room?.room_name}</Text>
+      {spaceName && <Text className="opacity-70 text-lg ml-3">{spaceName}</Text>}
 
       <TouchableOpacity
-        className="flex-row items-center space-x-2 my-2 py-2"
+        className="flex-row items-center my-2 py-2"
         activeOpacity={0.7}
         onPress={handleGoBack}
         accessibilityLabel="Voltar para a seleção de salas"
@@ -77,7 +78,7 @@ export function RoomDetails({ navigation, route }: StackItemProps<"RoomDetails">
         contentContainerStyle={{ paddingHorizontal: 8 }}
         columnWrapperStyle={{ justifyContent: "space-between", marginBottom: 16 }}
         renderItem={({ item }) => (
-          <DeviceItem device={item} onPress={ () => handleOnPress(item) }/>
+          <DeviceItem device={item} onPress={ () => {console.log(buildings); handleOnPress(item)} }/>
         )}
         ListEmptyComponent={
           <Text className="text-center text-lg mt-8">Nenhum dispositivo encontrado nesta sala.</Text>

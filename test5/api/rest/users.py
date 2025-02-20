@@ -24,33 +24,46 @@ router = APIRouter(
 
 @router.get("/")
 async def get_all_users():
-    """Users endpoint for the server."""
-    return maestro_users.get_all_users(next(db.get_db()))
+    """Endpoint to get all users from the server."""
+    users = None
+    with db.get_db() as db_session:
+        users = maestro_users.get_all_users(db_session)
+    return users
 
-@router.delete("/delete/{user_id}")
+@router.get("/{user_id}")
+async def get_user(user_id: str):
+    """Endpoint to get a user from the server."""
+    user = None
+    with db.get_db() as db_session:
+        user = maestro_users.get_user_by_id(db_session, user_id)
+    return user
+
+@router.delete("/{user_id}/delete")
 async def delete_user(user_id: str):
-    """Delete user endpoint for the server."""
-    db_session = next(db.get_db())
-    user = maestro_users.get_user_by_id(db_session, user_id)
+    """Endpoint to delete a user from the server."""
+    user: MaestroUser = None
+    with db.get_db() as db_session:
+        user = maestro_users.get_user_by_id(db_session, user_id)
     if user:
-        return maestro_users.delete_user(db_session, user)
+        with db.get_db() as db_session:
+            maestro_users.delete_user(db_session, user)
+        return "User deleted", status.HTTP_200_OK
     return "User not found", status.HTTP_404_NOT_FOUND
 
-@router.get("/server/{user_id}")
+@router.get("/{user_id}/servers")
 async def get_user_servers(user_id: str):
-    """Get user servers endpoint for the server."""
-    db_session = next(db.get_db())
-    return maestro_users.get_servers_of_user(db_session, user_id)
+    """Endpoint to get all servers of a user."""
+    with db.get_db() as db_session:
+        return maestro_users.get_servers_of_user(db_session, user_id)
 
-@router.get("/opus_server/dump_all_servers_info")
-async def dump_all_servers_info(validate: str = Depends(oauth2_scheme)):
+@router.get("/opus_server/dump")
+async def dump_all_servers_info(validate: str = Depends(oauth2_scheme), db_session=Depends(db.get_db)):
     """Dump all servers info endpoint for the server."""
     token_decoded: dict = jwt.decode(validate, CONFIG['api-secrets']['secret_key'], algorithms=["HS256"])
-    db_session = next(db.get_db())
-    user_servers: list[MaestroUser, list[OpusServer]] =  maestro_users.get_servers_of_user_by_google_sub(db_session, token_decoded['sub'])
-    servers_dumped: dict = {}
+    user_servers: list[MaestroUser, list[OpusServer]] = maestro_users.get_servers_of_user_by_google_sub(db_session, token_decoded['sub'])
+    servers_dumped: list = []
     
     for server in user_servers[1]:
-        servers_dumped[server.name] = await dump_all_info_from_a_user(server, user_servers[0])
+        servers_dumped.append(await dump_all_info_from_a_user(server, user_servers[0]))
 
     return servers_dumped

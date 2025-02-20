@@ -1,0 +1,27 @@
+Authentications
+    /auth/conductor/register          # Cadastro de usuário
+    /auth/conductor/login             # Login
+    /auth/conductor/logout            # Logout
+    /auth/conductor/refresh_token     # (Sugestão) Renova token de autenticação
+    /auth/conductor/verify_token      # (Sugestão) Verifica estado da autenticação
+
+Usuários
+    /users                            # Lista todos os usuários
+    /users/{user_id}                  # Recupera detalhes de um usuário específico
+    /users/{user_id}/delete           # Deleta um usuário
+    /users/{user_id}/servers          # Recupera servidores atribuídos ao usuário
+    /users/{user_id}/servers/dump     # Recupera dispositivos de um usuário
+
+Servidores Locais
+    /servers                          # Lista todos os servidores
+    /servers/{server_id}              # Recupera detalhes de um servidor
+    /servers/{server_id}/delete       # Deleta um servidor
+    /servers/{server_id}/admins       # Lista administradores do servidor
+    /servers/{server_id}/assign_users # Atribui usuários ao servidor
+    /servers/{server_id}/users        # Lista usuários do servidor
+    /servers/{server_id}/cmd          # Envia um comando ao servidor
+
+Dispositivos
+    /servers/{server_id}/devices               # Lista dispositivos do servidor
+    /servers/{server_id}/devices/{device_id}   # Recupera detalhes de um dispositivo
+    /servers/{server_id}/devices/{device_id}/state # Recupera estado do dispositivo

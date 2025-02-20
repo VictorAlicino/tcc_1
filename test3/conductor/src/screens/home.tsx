@@ -7,7 +7,7 @@ import { BuildingButton } from "@/components/building-button";
 import { BuildingItem } from "@/components/building-item";
 import { EmptyData } from "@/components/empty-data";
 import { RoomItem } from "@/components/room-item";
-import { BuildingData, DeviceData, RoomData, SpaceData, ApiResponse } from "@/models/opus-models";
+import { BuildingData, DeviceData, RoomData, SpaceData, ApiResponse, OpusPayload } from "@/models/opus-models";
 import { SafeAreaView, statusBarHeight } from "@/components/safe-area-view";
 import { SearchBar } from "@/components/search-bar";
 import Spacer from "@/components/spacer";
@@ -18,8 +18,10 @@ export let buildings: BuildingData[] = [];
 
 export function Home() {
   const [isLoading, setIsLoading] = useState(true);
-  const [maestroPayload, setMaestroPayload] = useState<Record<string, ApiResponse | null>>({});
+  const [maestroPayload, setMaestroPayload] = useState<ApiResponse | null>(null);
+  const [opusServer, setOpusServer] = useState<OpusPayload[]>([]);
 
+  const [currentServerPK, setCurrentServerPK] = useState("");
   const [availableBuildings, setAvailableBuildings] = useState<BuildingData[]>([]);
   const [availableSpaces, setAvailableSpaces] = useState<SpaceData[]>([]);
   const [availableRooms, setAvailableRooms] = useState<RoomData[]>([]);
@@ -34,9 +36,9 @@ export function Home() {
   const [currentSpace, setCurrentSpace] = useState<SpaceData>(defaultSpace);
 
   useEffect(() => {
-    api.get("/users/opus_server/dump_all_servers_info")
+    api.get("/users/opus_server/dump")
       .then(response => {
-        setMaestroPayload(response.data);
+        setOpusServer(response.data);
       })
       .catch(error => {
         console.error("Error fetching buildings:", error);
@@ -45,13 +47,17 @@ export function Home() {
   }, []);
 
   useEffect(() => {
-    if (!maestroPayload) return;
+    setCurrentServerPK(opusServer);
+    setMaestroPayload(opusServer.response);
 
     let spaces: SpaceData[] = [];
     let rooms: RoomData[] = [];
     let devices: DeviceData[] = [];
 
-    for (const value of Object.values(maestroPayload)) {
+    console.log("maestroPayload: ", maestroPayload);
+
+    for (const [key, value] of Object.entries(maestroPayload)) {
+      console.log(key, value);
       if (!value) continue;
       const buildings = value.buildings;
       const spaces = buildings.flatMap(building => building.spaces);
@@ -206,7 +212,7 @@ export function Home() {
               key={room.room_name}
               room={room}
               spaceName={room.space_name ?? currentSpace.space_name}
-              buildings={availableBuildings}
+              buildings={currentBuilding ? [currentBuilding] : []}
             />
           );
         })}

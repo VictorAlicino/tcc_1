@@ -67,7 +67,7 @@ const fanSpeeds: HVACMode[] = [
   },
 ]
 
-export function OpusHVAC({ navigation } : StackItemProps<"HVACControl">) {
+export function OpusHVAC({ navigation, route } : StackItemProps<"HVACControl">) {
 
   const [isHVACOn, setIsHVACOn] = useState(false);
   const [temp, setTemp] = useState(24);
@@ -76,6 +76,9 @@ export function OpusHVAC({ navigation } : StackItemProps<"HVACControl">) {
 
   const bgColor = isHVACOn ? "#D5FBFF" : "white";
   const textHVAC = isHVACOn ? "Ligado" : "Desligado";
+
+  // Call the API to get the current state of the HVAC
+  
 
   function handleSwitchMode() {
     const index = modes.indexOf(mode);
@@ -111,6 +114,9 @@ export function OpusHVAC({ navigation } : StackItemProps<"HVACControl">) {
     navigation.goBack();
   }
 
+  // Print DeviceItem coming from previous screen
+  console.log(route.params);
+
   return (
     <SafeAreaView>
       <View style={{
@@ -127,7 +133,7 @@ export function OpusHVAC({ navigation } : StackItemProps<"HVACControl">) {
           <TouchableOpacity onPress={handleGoBack}>
               <Icon name="arrow-back-ios" size={30} />
           </TouchableOpacity>
-          <View className="flex-1 items-center bg-white">
+          <View className="flex-1 items-center">
               <Text className="text-xl font-500">Ar Condicionado</Text>
               <Text style={{fontSize:15}}>Sala 01</Text>
           </View>

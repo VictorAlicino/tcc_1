@@ -4,7 +4,7 @@ import logging
 import json
 from fastapi import APIRouter, HTTPException, status, Response, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth
 from jose import JWTError, jwt
@@ -43,15 +43,39 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 # Conductor Auth -----------------------------------------------------------------
 
 @router.post("/register")
-async def conductor_register(request: ConductorRegister):
+async def conductor_register(request: Request, db_session=Depends(db.get_db)):
     """Conductor register endpoint for the server"""
-    print(request)
-    return status.HTTP_200_OK
+    try:
+        token = await oauth.google.authorize_access_token(request)
+    except Exception as e: # pylint: disable=broad-except
+        print(e)
+        # Return 401
+        return "Unauthorized", status.HTTP_401_UNAUTHORIZED
+
+    # Check if the user is authenticated
+    print(token)
+    if maestro_users.get_user_by_google_sub(db_session, token['userinfo']['sub']):
+        return "User already exists"
+    user = MaestroUser(
+        google_sub = token['userinfo']['sub'],
+        email = token['userinfo']['email'],
+        name = token['userinfo']['name'],
+        given_name = token['userinfo']['given_name'],
+        family_name = token['userinfo']['family_name'],
+        picture = token['userinfo']['picture']
+    )
+    maestro_users.create_user(db_session, user)
+    return JSONResponse(
+        content={
+            "message": f"Mr(s). {user.given_name} {user.family_name} has been created",
+            "email": user.email
+        },
+        status_code=201
+    )
 
 @router.post("/login")
-async def conductor_login(request: ConductorLogin):
+async def conductor_login(request: ConductorLogin, db_session=Depends(db.get_db)):
     """Conductor login endpoint for the server."""
-    db_session = next(db.get_db())
     user = maestro_users.get_user_by_google_sub(db_session, request.google_sub)
     if user is None:
         log.warning(f"{request.email} tried to login but is not authorized")
@@ -76,44 +100,17 @@ async def conductor_login(request: ConductorLogin):
         'token_type': 'bearer'
     }
 
-# @router.get("/login")
-# async def login(user: User):
-#     """Login endpoint for the server."""
-#     # Print the request
-#     print(user)
-#     return Response(
-#         content="You have logged in",
-#         status_code=status.HTTP_200_OK
-#     )
-
 @router.get("/logout")
 async def logout(request: Request):
     """Logout endpoint for the server."""
     return request
 
-@router.get("/auth")
-async def auth(request: Request):
-    """Auth endpoint for the server."""
-    try:
-        token = await oauth.google.authorize_access_token(request)
-    except Exception as e: # pylint: disable=broad-except
-        print(e)
-        # Return 401
-        return "Unauthorized", status.HTTP_401_UNAUTHORIZED
+@router.get("/refresh_token")
+async def refresh_token(request: Request):
+    """Refresh token endpoint for the server."""
+    return request
 
-    # Check if the user is authenticated
-    print(token)
-    if maestro_users.get_user_by_google_sub(next(db.get_db()), token['userinfo']['sub']):
-        return "User already exists"
-    user = MaestroUser(
-        google_sub = token['userinfo']['sub'],
-        email = token['userinfo']['email'],
-        name = token['userinfo']['name'],
-        given_name = token['userinfo']['given_name'],
-        family_name = token['userinfo']['family_name'],
-        picture = token['userinfo']['picture']
-    )
-    maestro_users.create_user(next(db.get_db()), user)
-    return (f"Mr(s). {user.given_name} {user.family_name} "
-            f"has been created with the email {user.email}")
-
+@router.get("/verify_token")
+async def verify_token(request: Request):
+    """Verify token endpoint for the server."""
+    return request

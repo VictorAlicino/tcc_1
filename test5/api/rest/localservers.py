@@ -1,7 +1,7 @@
 """HTTP API Local Servers (Opus) Endpoints"""
 import logging
 import json
-from fastapi import APIRouter, status, Response
+from fastapi import APIRouter, status, Response, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.dialects.postgresql import UUID
 from fastapi.responses import HTMLResponse
@@ -16,6 +16,8 @@ from db.models import OpusServer
 from configurations.config import OpenConfig
 from api.rest._api_models import UserRole
 import api.mqtt.users as MQTT_Users
+import api.mqtt.devices as MQTT_Devices
+from api.rest.auth_conductor import oauth2_scheme
 
 log = logging.getLogger(__name__)
 config = OpenConfig()
@@ -27,23 +29,26 @@ router = APIRouter(
 )
 
 @router.get("/")
-async def get_all_servers():
-    """Servers endpoint for the server."""
-    return opus_servers.get_all_servers(next(db.get_db()))
+async def get_all_servers(db_session=Depends(db.get_db)):
+    """Endpoipoint to get all local servers"""
+    return opus_servers.get_all_servers(db_session)
+
+@router.get("/{server_id}")
+async def get_server(server_id: str, db_session=Depends(db.get_db)):
+    """Get server endpoint for the server."""
+    return opus_servers.get_server_by_id(db_session, server_id)
 
 @router.delete("/delete/{server_id}")
-async def delete_server(server_id: str):
+async def delete_server(server_id: str, db_session=Depends(db.get_db)):
     """Delete server endpoint for the server."""
-    db_session = next(db.get_db())
     server = opus_servers.get_server_by_id(db_session, server_id)
     if server:
         return opus_servers.delete_server(db_session, server)
     return "Server not found", status.HTTP_404_NOT_FOUND
 
-@router.get("/admins/{server_id}")
-async def get_server_admins(server_id: str):
+@router.get("/{server_id}/admins")
+async def get_server_admins(server_id: str, db_session=Depends(db.get_db)):
     """Get server admins endpoint for the server."""
-    db_session = next(db.get_db())
     result =  opus_servers.get_server_admins(db_session, server_id)
     if result:
         admins = []
@@ -56,10 +61,9 @@ async def get_server_admins(server_id: str):
         }
     return "Server not found", status.HTTP_404_NOT_FOUND
 
-@router.post("/assign_users/{server_id}")
-async def assign_users_to_server(server_id: str, server_user_list: list[UserRole]):
+@router.post("/{server_id}/assign_users")
+async def assign_users_to_server(server_id: str, server_user_list: list[UserRole], db_session=Depends(db.get_db)):
     """Assign a new server to a list of users"""
-    db_session = next(db.get_db())
     local_server: OpusServer | None = opus_servers.get_server_by_id(db_session, server_id)
     if not local_server:
         return JSONResponse(
@@ -92,8 +96,8 @@ async def assign_users_to_server(server_id: str, server_user_list: list[UserRole
             status_code=status.HTTP_201_CREATED
         )
 
-@router.get("/users/{server_id}")
-async def get_server_users(server_id: str):
+@router.get("/{server_id}/users")
+async def get_server_users(server_id: str, db_session=Depends(db.get_db)):
     """Get server users endpoint for the server."""
     db_session = next(db.get_db())
     result =  opus_servers.get_server_users(db_session, server_id)
@@ -108,15 +112,15 @@ async def get_server_users(server_id: str):
         }
     return "Server not found", status.HTTP_404_NOT_FOUND
 
-@router.get("/user/devices")
-async def get_user_devices(server_id: str):
-    """Get all user devices from the server provided."""
-    # This will only work with the user on the provided JWT Token
-    # The user will be the one that is logged in
-    # TODO: Implement this
-
-@router.post("/cmd/{server_id}")
+@router.post("/{server_id}/users")
 async def command(server_id: str, cmd: dict):
     """Command endpoint for the server."""
     send_cmd_to_server(server_id, cmd)
     return "Command sent", status.HTTP_200_OK
+
+#@router.get("/user/devices")
+#async def get_user_devices(server_id: str):
+#    """Get all user devices from the server provided."""
+#    # This will only work with the user on the provided JWT Token
+#    # The user will be the one that is logged in
+#    # TODO: Implement this
