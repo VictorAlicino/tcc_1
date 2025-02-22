@@ -8,6 +8,8 @@ import { SpaceItem } from "@/components/space-item";
 import { Circle, type MaterialCommunityIconName, type MaterialIconName } from "@/components/circle";
 import Spacer from "@/components/spacer";
 import { StackItemProps } from "@/routes/protected-routes";
+import { api } from "@/services/api";
+import { HVACPayload } from "@/models/devices_models";
 
 interface HVACMode {
   id?: string;
@@ -67,25 +69,87 @@ const fanSpeeds: HVACMode[] = [
   },
 ]
 
+interface HVACData {
+  power_state: string;
+  temperature: number;
+  mode: string;
+  fan_speed: string;
+}
+
 export function OpusHVAC({ navigation, route } : StackItemProps<"HVACControl">) {
 
   const [isHVACOn, setIsHVACOn] = useState(false);
   const [temp, setTemp] = useState(24);
   const [mode, setMode] = useState(modes[0]);
   const [fanSpeed, setFanSpeed] = useState(fanSpeeds[0]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const bgColor = isHVACOn ? "#D5FBFF" : "white";
-  const textHVAC = isHVACOn ? "Ligado" : "Desligado";
+  const bgColor = !isHVACOn ? "#D5FBFF" : "white";
+  const textHVAC = !isHVACOn ? "Ligado" : "Desligado";
 
   // Call the API to get the current state of the HVAC
+  async function getHVACState() {
+    try{
+      const response = await api.get<HVACPayload>(
+        "/opus_server/" + 
+        route.params.buildings[0].server_pk + 
+        "/devices/" + 
+        route.params.device.device_pk
+      );
+      setIsHVACOn(response.data.power_state);
+      setTemp(response.data.temperature);
+      setMode(modes.find((m) => m.name === response.data.mode) || modes[0]);
+      setFanSpeed(fanSpeeds.find((f) => f.id === response.data.fan_speed) || fanSpeeds[0]);
+    } catch (error) {
+      console.error("Error fetching HVAC state:", error);
+    }
+  }
+
+  async function setHVACState(payload: HVACData) {
+    try {
+      const response = await api.put(
+        "/opus_server/" + 
+        route.params.buildings[0].server_pk + 
+        "/devices/" + 
+        route.params.device.device_pk +
+        "/set_state",
+        payload
+      );
+    }
+    catch (error) {
+      console.error("Error setting HVAC state:", error);
+    }
+  }
   
+  // Fetch the HVAC state when the component is loaded
+  useState(() => {
+    getHVACState();
+    setIsLoaded(true);
+  }
+  );
 
   function handleSwitchMode() {
     const index = modes.indexOf(mode);
     if (index === modes.length - 1) {
       setMode(modes[0]);
+      setHVACState(
+        {
+          power_state: isHVACOn ? "On" : "Off",
+          temperature: temp,
+          mode: modes[0].name,
+          fan_speed: fanSpeed.id ? fanSpeed.id : "Auto"
+        }
+      )
     } else {
       setMode(modes[index + 1]);
+      setHVACState(
+        {
+          power_state: isHVACOn ? "On" : "Off",
+          temperature: temp,
+          mode: modes[index + 1].name,
+          fan_speed: fanSpeed.id ? fanSpeed.id : "Auto"
+        }
+      )
     }
   }
 
@@ -93,21 +157,69 @@ export function OpusHVAC({ navigation, route } : StackItemProps<"HVACControl">) 
     const index = fanSpeeds.indexOf(fanSpeed);
     if (index === fanSpeeds.length - 1) {
       setFanSpeed(fanSpeeds[0]);
+      setHVACState(
+        {
+          power_state: isHVACOn ? "On" : "Off",
+          temperature: temp,
+          mode: mode.name,
+          fan_speed: fanSpeeds[0].name
+        }
+      );
     } else {
       setFanSpeed(fanSpeeds[index + 1]);
+      setHVACState(
+        {
+          power_state: isHVACOn ? "On" : "Off",
+          temperature: temp,
+          mode: mode.name,
+          fan_speed: fanSpeeds[index + 1].name
+        }
+      );
     }
   }  
   
   const tempUp = () => {
+    let new_temp = temp;
     if(temp < 30){
-      setTemp(temp + 1);
+      new_temp = temp + 1;
     }
+    setTemp(new_temp);
+    setHVACState(
+      {
+        power_state: isHVACOn ? "On" : "Off",
+        temperature: new_temp,
+        mode: mode.name,
+        fan_speed: fanSpeed.id ? fanSpeed.id : "Auto"
+      }
+    );
   }
 
   const tempDown = () => {
+    let new_temp = temp;
     if(temp > 16){
-      setTemp(temp - 1);
+      new_temp = temp - 1;
     }
+    setTemp(new_temp);
+    setHVACState(
+      {
+        power_state: isHVACOn ? "On" : "Off",
+        temperature: new_temp,
+        mode: mode.name,
+        fan_speed: fanSpeed.id ? fanSpeed.id : "Auto"
+      }
+    );
+  }
+
+  const handleToogleSwitch = () => {
+    setIsHVACOn(!isHVACOn);
+    setHVACState(
+      {
+        power_state: isHVACOn ? "On" : "Off",
+        temperature: temp,
+        mode: mode.name,
+        fan_speed: fanSpeed.id ? fanSpeed.id : "Auto"
+      }
+    );
   }
 
   const handleGoBack = () => {
@@ -115,7 +227,7 @@ export function OpusHVAC({ navigation, route } : StackItemProps<"HVACControl">) 
   }
 
   // Print DeviceItem coming from previous screen
-  console.log(route.params);
+  //console.log(route.params);
 
   return (
     <SafeAreaView>
@@ -184,7 +296,7 @@ export function OpusHVAC({ navigation, route } : StackItemProps<"HVACControl">) 
             <Text style={{ fontSize: 15 }}>{mode.name}</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity onPress={() => setIsHVACOn(!isHVACOn)} style={{padding: 15}}>
+          <TouchableOpacity onPress={() => handleToogleSwitch() } style={{padding: 15}}>
             <Circle 
               size={115}
               color="#2E3844"
@@ -200,7 +312,7 @@ export function OpusHVAC({ navigation, route } : StackItemProps<"HVACControl">) 
                 fontSize={20}
                 icon={{ name: fanSpeed.icon, size: 30, color: "white" }}
               />
-            <Text style={{ fontSize: 15 }}>{fanSpeed.name}</Text>
+            <Text style={{ fontSize: 15 }}>{fanSpeed.id ? fanSpeed.id : "Auto"}</Text>
           </TouchableOpacity>
         </View>
         <Spacer y={30}/>

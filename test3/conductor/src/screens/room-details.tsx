@@ -46,10 +46,10 @@ export function RoomDetails({ navigation, route }: StackItemProps<"RoomDetails">
   const handleOnPress = (device: DeviceData) => {
     switch(device.device_type) {
       case "HVAC":
-        navigation.navigate("HVACControl", { device});
+        navigation.navigate("HVACControl", { buildings, device });
         break;
       case "LIGHT":
-        navigation.navigate("LightControl", { device });
+        navigation.navigate("LightControl", { buildings, device });
         break;
       default:
         break;
@@ -78,7 +78,7 @@ export function RoomDetails({ navigation, route }: StackItemProps<"RoomDetails">
         contentContainerStyle={{ paddingHorizontal: 8 }}
         columnWrapperStyle={{ justifyContent: "space-between", marginBottom: 16 }}
         renderItem={({ item }) => (
-          <DeviceItem device={item} onPress={ () => {console.log(buildings); handleOnPress(item)} }/>
+          <DeviceItem device={item} onPress={ () => {handleOnPress(item)} }/>
         )}
         ListEmptyComponent={
           <Text className="text-center text-lg mt-8">Nenhum dispositivo encontrado nesta sala.</Text>

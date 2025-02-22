@@ -26,12 +26,9 @@ export interface SpaceData {
 export interface BuildingData {
   server_pk: string;
   building_pk: string;
-  security_level: string;
   building_name: string;
+  security_level: string;
   spaces: SpaceData[];
 }
 
-export interface ApiResponse {
-  buildings: BuildingData[];
-  user_data: UserData;
-}
+export type ApiResponse = BuildingData[]

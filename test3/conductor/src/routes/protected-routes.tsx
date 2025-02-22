@@ -13,9 +13,11 @@ type StackParamList = {
     buildings: BuildingData[]
   };
   HVACControl: {
+    buildings: BuildingData[];
     device: DeviceData;
   };
   LightControl: {
+    buildings: BuildingData[];
     device: DeviceData;
   };
 };

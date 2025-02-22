@@ -22,6 +22,18 @@ router = APIRouter(
     tags=["Users"],
 )
 
+def _decode_jwt(token: str):
+    try:
+        return jwt.decode(token, CONFIG['api-secrets']['secret_key'], algorithms=["HS256"])
+    except JWTError:
+        return None
+    
+def get_user_requesting(token: str, db_session):
+    token_decoded = _decode_jwt(token)
+    if token_decoded:
+        return maestro_users.get_user_by_google_sub(db_session, token_decoded['sub'])
+    return None
+
 @router.get("/")
 async def get_all_users():
     """Endpoint to get all users from the server."""
@@ -62,8 +74,11 @@ async def dump_all_servers_info(validate: str = Depends(oauth2_scheme), db_sessi
     token_decoded: dict = jwt.decode(validate, CONFIG['api-secrets']['secret_key'], algorithms=["HS256"])
     user_servers: list[MaestroUser, list[OpusServer]] = maestro_users.get_servers_of_user_by_google_sub(db_session, token_decoded['sub'])
     servers_dumped: list = []
-    
+
     for server in user_servers[1]:
-        servers_dumped.append(await dump_all_info_from_a_user(server, user_servers[0]))
+        server_response: json = await dump_all_info_from_a_user(server, user_servers[0])
+        if server_response:
+            for building in server_response['buildings']:
+                servers_dumped.append(building)
 
     return servers_dumped

@@ -78,3 +78,25 @@ class OpusHVAC(OpusDevice):
             "sleep": getattr(self, "sleep", None) or None,
             "state_mode": getattr(self, "state_mode", None) or None,
         }
+    
+    @abstractmethod
+    def set_state(self, state: dict) -> None:
+        """Set the state of the HVAC"""
+        self.power_state = state.get("power_state", None)
+        self.vendor = state.get("vendor", None)
+        self.model = state.get("model", None)
+        self.mode = state.get("mode", None)
+        self.fan_speed = state.get("fan_speed", None)
+        self.swing_vertical = state.get("swing_vertical", None)
+        self.swing_horizontal = state.get("swing_horizontal", None)
+        self.is_celsius = state.get("is_celsius", None)
+        self.temperature = state.get("temperature", None)
+        self.quiet = state.get("quiet", None)
+        self.turbo = state.get("turbo", None)
+        self.economy = state.get("economy", None)
+        self.light = state.get("light", None)
+        self.filter = state.get("filter", None)
+        self.clean = state.get("clean", None)
+        self.beep = state.get("beep", None)
+        self.sleep = state.get("sleep", None)
+        self.state_mode = state.get("state_mode", None)

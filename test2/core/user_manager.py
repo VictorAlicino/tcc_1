@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, func, text, UUID
 import db.crud as crud
 from db.models import User
+from db.models import Device
 
 log = logging.getLogger(__name__)
 
@@ -70,3 +71,20 @@ class UserManager:
             return None
         user.fk_role = role.role_pk
         crud.assign_new_user(self.opus_db.get_db(), user)
+
+    def check_user_access_to_device(self, user: User, device: Device) -> bool:
+        """Check if a user has access to a device"""
+        if not user:
+            log.error('User does not exist')
+            return False
+        if not device:
+            log.error('Device does not exist')
+            return False
+        user_role = crud.get_role_uuid(self.opus_db.get_db(), user.fk_role)
+        if device.id in [device.device_pk for device in crud.get_all_devices_authorized_to_a_role(self.opus_db.get_db(), user_role)]:
+            return True
+        return False
+    
+    def get_user(self, user_pk: str) -> User:
+        """Get a user by its PK"""
+        return crud.get_user_by_id(self.opus_db.get_db(), user_pk)

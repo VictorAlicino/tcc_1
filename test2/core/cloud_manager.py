@@ -90,14 +90,12 @@ class CloudManager:
 
     def _get_user_full(self, payload: json) -> None:
         """Get all data including the devices from a user"""
-        # Busca o usuário
         user = crud.get_user_by_id(self.opus_db.get_db(), payload['user_pk'])
         if not user:
             log.error("Maestro requested the full data of a user that does not exist")
             return
         log.debug(f"Maestro requested the full data of user {user.given_name}")
 
-        # Monta os dados do usuário
         user_data = {
             "user_pk": str(user.user_pk),
             "given_name": user.given_name,
@@ -105,19 +103,16 @@ class CloudManager:
             "role": str(user.fk_role),
         }
 
-        # Busca a role e os dispositivos autorizados
         user_role = crud.get_role_uuid(self.opus_db.get_db(), user.fk_role)
         authorized_devices = crud.get_all_devices_authorized_to_a_role(self.opus_db.get_db(), user_role)
 
-        # Converte lista de dispositivos autorizados para um dicionário {device_pk: device}
         authorized_devices_map = {str(device.device_pk): device for device in authorized_devices}
 
-        # Busca todos os prédios e sua estrutura
         buildings = next(self.opus_db.get_db()).query(models.Building).all()
         
         user_data["role"] = user_role.role_name
 
-        response = {"user_data": user_data, "buildings": []}
+        response = {"buildings": []}
 
         for building in buildings:
             building_data = {
@@ -142,7 +137,6 @@ class CloudManager:
                     }
 
                     for device in room.devices:
-                        # Adiciona somente se o dispositivo estiver autorizado para a role do usuário
                         if str(device.device_pk) in authorized_devices_map:
                             room_data["devices"].append({
                                 "device_pk": str(device.device_pk),
@@ -150,16 +144,12 @@ class CloudManager:
                                 "device_type": device.device_type
                             })
 
-                    # Apenas adiciona a sala se houver dispositivos autorizados nela
                     space_data["rooms"].append(room_data)
 
-                # Apenas adiciona o espaço se houver salas com dispositivos autorizados
                 building_data["spaces"].append(space_data)
 
-            # Apenas adiciona o prédio se houver espaços com dispositivos autorizados
             response["buildings"].append(building_data)
 
-        # Envia resposta via MQTT
         self.interfaces['mqtt<maestro>'].publish(
             topic=f'{payload["callback"]}',
             payload=json.dumps(response)

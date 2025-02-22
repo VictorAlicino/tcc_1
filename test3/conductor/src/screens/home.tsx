@@ -7,7 +7,7 @@ import { BuildingButton } from "@/components/building-button";
 import { BuildingItem } from "@/components/building-item";
 import { EmptyData } from "@/components/empty-data";
 import { RoomItem } from "@/components/room-item";
-import { BuildingData, DeviceData, RoomData, SpaceData, ApiResponse, OpusPayload } from "@/models/opus-models";
+import { BuildingData, DeviceData, RoomData, SpaceData, ApiResponse} from "@/models/opus-models";
 import { SafeAreaView, statusBarHeight } from "@/components/safe-area-view";
 import { SearchBar } from "@/components/search-bar";
 import Spacer from "@/components/spacer";
@@ -18,8 +18,6 @@ export let buildings: BuildingData[] = [];
 
 export function Home() {
   const [isLoading, setIsLoading] = useState(true);
-  const [maestroPayload, setMaestroPayload] = useState<ApiResponse | null>(null);
-  const [opusServer, setOpusServer] = useState<OpusPayload[]>([]);
 
   const [currentServerPK, setCurrentServerPK] = useState("");
   const [availableBuildings, setAvailableBuildings] = useState<BuildingData[]>([]);
@@ -35,49 +33,42 @@ export function Home() {
   const defaultSpace: SpaceData = { building_space_pk: "ALL", space_name: "Todos", rooms: [] };
   const [currentSpace, setCurrentSpace] = useState<SpaceData>(defaultSpace);
 
-  useEffect(() => {
-    api.get("/users/opus_server/dump")
-      .then(response => {
-        setOpusServer(response.data);
-      })
-      .catch(error => {
-        console.error("Error fetching buildings:", error);
-        setIsLoading(false);
-      });
-  }, []);
+  async function getDataFromServer() {
+    try {
+      const response = await api.get<ApiResponse>("/users/opus_server/dump")
 
-  useEffect(() => {
-    setCurrentServerPK(opusServer);
-    setMaestroPayload(opusServer.response);
-
-    let spaces: SpaceData[] = [];
-    let rooms: RoomData[] = [];
-    let devices: DeviceData[] = [];
-
-    console.log("maestroPayload: ", maestroPayload);
-
-    for (const [key, value] of Object.entries(maestroPayload)) {
-      console.log(key, value);
-      if (!value) continue;
-      const buildings = value.buildings;
+      const buildings = response.data
       const spaces = buildings.flatMap(building => building.spaces);
       const rooms = spaces.flatMap(space => space.rooms);
       const devices = rooms.flatMap(room => room.devices);
+
       setAvailableBuildings(buildings);
       setAvailableSpaces(spaces);
       setAvailableRooms(rooms);
       setAvailableDevices(devices);
-    }
-    
-    if (buildings.length > 0) setCurrentBuilding(buildings[0]);
-  }, [maestroPayload]);
+
+      if (buildings.length > 0) {
+        setCurrentBuilding(buildings[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching buildings:", error);      
+    } finally {
+      setIsLoading(false);
+    } 
+  }
+
+  useEffect(() => {
+    getDataFromServer()
+  }, []);
 
   useEffect(() => {
     setCurrentSpace(currentBuilding?.spaces[0] ?? defaultSpace);
   }, [currentBuilding]);
 
   useEffect(() => {
-      if (availableBuildings) setIsLoading(false);
+    if (availableBuildings) {
+      setIsLoading(false);
+    }
   }, [availableBuildings])
 
   const filteredSpaces = currentBuilding?.spaces ?? [];

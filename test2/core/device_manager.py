@@ -5,6 +5,7 @@ import json
 from uuid import UUID
 from sqlalchemy.orm import Session
 from db import models
+import core
 
 log = logging.getLogger(__name__)
 
@@ -53,16 +54,16 @@ class DeviceManager:
                  dirs: dict,
                  interfaces: dict,
                  drivers: dict,
-                 location_manager: any) -> None:
+                 managers: any) -> None:
         log.debug('Initializing Device Manager.')
         self.devices: dict = {}  # This is gonna be hella big
         self.available_devices: dict = {}  # This is gonna be worse
         self.opus_db = interfaces['opus_db']
         self.opus_drivers = drivers
-        self.location_manager = location_manager
+        self.location_manager: core.LocationManager = managers['locations']
         self.opus_interfaces = interfaces
         #self._load_devices_from_db()
-
+        self.users_managers: core.UserManager = managers['users']
         self._manager_init(dirs)
         self._configure_mqtt()
         log.info('Device Manager initialized.')
@@ -396,6 +397,32 @@ class DeviceManager:
                                 })
                             )
                             return
+                    case 'set_state':
+                        try:
+                            temp = json.loads(msg.payload)
+                            user = self.users_managers.get_user(temp['user_id'])
+                            device = self.get_device(UUID(topic[3]))
+                            if not self.users_managers.check_user_access_to_device(user, device):
+                                raise ValueError('User does not have access to this device')
+                            device.set_state(temp['state'])
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'success'})
+                            )
+                            self.opus_interfaces['mqtt<local>'].publish(
+                                payload['callback'],
+                                json.dumps({'status': 'success'})
+                            )
+                            return
+                        except Exception as exc: # pylint: disable=broad-except
+                            log.warning(msg.payload)
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({
+                                    'status': 'failed',
+                                    'reason': str(exc)
+                                })
+                            )
 
 
                 if topic[2] in self.opus_drivers:

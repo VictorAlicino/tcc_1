@@ -112,12 +112,6 @@ async def get_server_users(server_id: str, db_session=Depends(db.get_db)):
         }
     return "Server not found", status.HTTP_404_NOT_FOUND
 
-@router.post("/{server_id}/users")
-async def command(server_id: str, cmd: dict):
-    """Command endpoint for the server."""
-    send_cmd_to_server(server_id, cmd)
-    return "Command sent", status.HTTP_200_OK
-
 #@router.get("/user/devices")
 #async def get_user_devices(server_id: str):
 #    """Get all user devices from the server provided."""

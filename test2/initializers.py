@@ -233,13 +233,8 @@ def load_managers(
         as 'locations', 'devices', 'maestro' and 'users')"""
     logging.debug("Loading managers...")
     # Please follow this order:
-    # Location -> Devices -> Maestro -> Users
+    # Location -> Maestro -> Users -> Devices
     managers["locations"] = LocationManager(interfaces)
-    managers["devices"] = DeviceManager(dirs,
-                                    interfaces,
-                                    drivers,
-                                    managers["locations"]
-                                    )
     managers["maestro"] = CloudManager(dirs,
                                        interfaces,
                                        managers,
@@ -249,6 +244,11 @@ def load_managers(
                                     interfaces,
                                     managers,
                                     drivers
+                                    )
+    managers["devices"] = DeviceManager(dirs,
+                                    interfaces,
+                                    drivers,
+                                    managers
                                     )
 
 def _interface_loader(
