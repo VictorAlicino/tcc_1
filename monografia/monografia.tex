@@ -14,68 +14,70 @@
 \makeindex
 \begin{document}
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %                    PRETEXTUAL                             %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \input{Automatico/capa}
     \input{Automatico/folhaRosto}
     \input{Automatico/aprovacao}
     
-%    \input{Conteudo/Prologo/dedicatoria}
-%    \input{Conteudo/Prologo/agradecimentos}
-%    \input{Conteudo/Prologo/epigrafe}
-%    \input{Conteudo/Prologo/resumo}
+    % Elementos do prólogo (crie os arquivos conforme necessário)
+    %\input{Conteudo/Prologo/dedicatoria}    % Novo arquivo: Dedicatoria
+    %\input{Conteudo/Prologo/agradecimentos}  % Novo arquivo: Agradecimentos
+    %\input{Conteudo/Prologo/epigrafe}         % Novo arquivo: Epígrafe
+    %\input{Conteudo/Prologo/resumo}           % Novo arquivo: Resumo
     
     \input{Automatico/lista_figuras}
-    %\input{Automatico/lista_tabelas}
-    %\input{Automatico/lista_siglas}    
+    %\input{Automatico/lista_tabelas}          % Futuro arquivo: Lista de Tabelas
+    %\input{Automatico/lista_siglas}           % Futuro arquivo: Lista de Siglas    
     \input{Automatico/sumario}
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %                      TEXTUAL                              %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \textual
     \setcounter{page}{1}
 
-    % COMEÇO -------------------------------------------------------------
+    %--------------------------------------------------------------
+    % Parte I - Introdução
+    %--------------------------------------------------------------
+    %\include{Conteudo/Introducao/introducao.tex} % Novo arquivo: Introdução
 
-    %    \include{Conteudo/introducao}
+    %--------------------------------------------------------------
+    % Parte II - Revisão Bibliográfica
+    %--------------------------------------------------------------
+    \include{Conteudo/Comeco/RevisaoBibliografica/edificio-inteligente.tex}
+    \include{Conteudo/Comeco/RevisaoBibliografica/internet-das-coisas.tex}
+    \include{Conteudo/Comeco/RevisaoBibliografica/tecnologias.tex}
+    
 
-        % BEGIN REVISÃO BIBLIOGRÁFICA
-        \include{Conteudo/Comeco/RevisaoBibliografica/edificio-inteligente.tex}
-        \include{Conteudo/Comeco/RevisaoBibliografica/internet-das-coisas.tex}
-        \include{Conteudo/Comeco/RevisaoBibliografica/tecnologias.tex}
-        % END REVISÃO BIBLIOGRÁFICA
-    % --------------------------------------------------------------------
+    %--------------------------------------------------------------
+    % Parte III - Desenvolvimento
+    %--------------------------------------------------------------
+    \include{Conteudo/Meio/proposta.tex}       % Novo arquivo: Proposta de Projeto
+    \include{Conteudo/Meio/arquitetura.tex}       % Arquivo existente ou a ser criado: Arquitetura do Sistema
+    %\include{Conteudo/Desenvolvimento/nome-componentes.tex}  % Novo arquivo: Nomes dos Componentes
+    %\include{Conteudo/Desenvolvimento/detalhamento.tex}      % Novo arquivo: Detalhamento da Arquitetura
 
-    % MEIO ---------------------------------------------------------------
-        % Proposta
-    %    \include{Conteudo/Meio/proposta.tex}
+    % Se o projeto incluir uma subseção específica (ex.: Opus), descomente e crie os respectivos arquivos:
+    %\include{Conteudo/Desenvolvimento/Opus/introducao.tex}   % Novo arquivo: Introdução do Opus
+    %\include{Conteudo/Desenvolvimento/Opus/interfaces.tex}   % Novo arquivo: Interfaces do Opus
+    %\include{Conteudo/Desenvolvimento/Opus/drivers.tex}      % Novo arquivo: Drivers do Opus
+    %\include{Conteudo/Desenvolvimento/Opus/nucleo.tex}       % Novo arquivo: Núcleo do Opus
+    %\include{Conteudo/Desenvolvimento/Opus/banco_de_dados.tex} % Novo arquivo: Banco de Dados do Opus
 
-        % Arquitetura Header
-        \include{Conteudo/Meio/arquitetura.tex}
-        % Explicando o nome dos componentes
-    %    \include{Conteudo/Meio/nome-componentes.tex}
-        % Explicando a arquitetura
-    %    \include{Conteudo/Meio/arquitetura.tex}
+    %--------------------------------------------------------------
+    % Parte IV - Conclusão
+    %--------------------------------------------------------------
+    %\include{Conteudo/Conclusao/resultados.tex}      % Novo arquivo: Resultados
+    %\include{Conteudo/Conclusao/conclusao.tex}         % Novo arquivo: Conclusão
+    %\include{Conteudo/Conclusao/trabalhos_futuros.tex} % Novo arquivo: Trabalhos Futuros
 
-        % BEGIN Opus
-    %    \include{Conteudo/Meio/Opus/introducao.tex}
-    %    \include{Conteudo/Meio/Opus/interfaces.tex}
-    %    \include{Conteudo/Meio/Opus/drivers.tex}
-    %    \include{Conteudo/Meio/Opus/nucleo.tex}
-        %\include{Conteudo/Meio/Opus/banco_de_dados.tex}
-        % END Opus
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %                    PÓS-TEXTUAL                            %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \bibliography{Conteudo/bibliografia}
+    
+    %\include{Conteudo/Anexos/anexos.tex}  % Novo arquivo: Anexos
 
-        %\include{Conteudo/cap2-exemplos}
-        %\include{Conteudo/cap3} ....
-        %\include{Conteudo/capX}
-        %\include{Conteudo/capX+1-proposta}
-    % --------------------------------------------------------------------
-
-    % FIM ----------------------------------------------------------------
-
-    %    \include{Conteudo/Fim/resultados.tex}
-    %    \include{Conteudo/Fim/conclusao.tex}
-    %    \include{Conteudo/Fim/trabalhos_futuros.tex}
-
-        %\nocite{*}
-        \bibliography{Conteudo/bibliografia}
-        
-        %\include{Conteudo/anexos}
-    % --------------------------------------------------------------------  
 \end{document}

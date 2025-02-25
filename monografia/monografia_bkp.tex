@@ -1,0 +1,81 @@
+\documentclass[
+	12pt,				% tamanho da fonte
+	a4paper,			% tamanho do papel. 
+	oneside,            % imprimir em um lado da folha  //twosides
+	%english,
+    %french,
+    brazil,			
+]{Pacotes/abntex2}
+
+
+\input{Pacotes/packages}
+\input{Conteudo/informacoesGerais}
+
+\makeindex
+\begin{document}
+
+    \input{Automatico/capa}
+    \input{Automatico/folhaRosto}
+    \input{Automatico/aprovacao}
+    
+%    \input{Conteudo/Prologo/dedicatoria}
+%    \input{Conteudo/Prologo/agradecimentos}
+%    \input{Conteudo/Prologo/epigrafe}
+%    \input{Conteudo/Prologo/resumo}
+    
+    \input{Automatico/lista_figuras}
+    %\input{Automatico/lista_tabelas}
+    %\input{Automatico/lista_siglas}    
+    \input{Automatico/sumario}
+
+    \textual
+    \setcounter{page}{1}
+
+    % COMEÇO -------------------------------------------------------------
+
+    %    \include{Conteudo/introducao}
+
+        % BEGIN REVISÃO BIBLIOGRÁFICA
+        \include{Conteudo/Comeco/RevisaoBibliografica/edificio-inteligente.tex}
+        \include{Conteudo/Comeco/RevisaoBibliografica/internet-das-coisas.tex}
+        \include{Conteudo/Comeco/RevisaoBibliografica/tecnologias.tex}
+        % END REVISÃO BIBLIOGRÁFICA
+    % --------------------------------------------------------------------
+
+    % MEIO ---------------------------------------------------------------
+        % Proposta
+    %    \include{Conteudo/Meio/proposta.tex}
+
+        % Arquitetura Header
+        \include{Conteudo/Meio/arquitetura.tex}
+        % Explicando o nome dos componentes
+    %    \include{Conteudo/Meio/nome-componentes.tex}
+        % Explicando a arquitetura
+    %    \include{Conteudo/Meio/arquitetura.tex}
+
+        % BEGIN Opus
+    %    \include{Conteudo/Meio/Opus/introducao.tex}
+    %    \include{Conteudo/Meio/Opus/interfaces.tex}
+    %    \include{Conteudo/Meio/Opus/drivers.tex}
+    %    \include{Conteudo/Meio/Opus/nucleo.tex}
+        %\include{Conteudo/Meio/Opus/banco_de_dados.tex}
+        % END Opus
+
+        %\include{Conteudo/cap2-exemplos}
+        %\include{Conteudo/cap3} ....
+        %\include{Conteudo/capX}
+        %\include{Conteudo/capX+1-proposta}
+    % --------------------------------------------------------------------
+
+    % FIM ----------------------------------------------------------------
+
+    %    \include{Conteudo/Fim/resultados.tex}
+    %    \include{Conteudo/Fim/conclusao.tex}
+    %    \include{Conteudo/Fim/trabalhos_futuros.tex}
+
+        %\nocite{*}
+        \bibliography{Conteudo/bibliografia}
+        
+        %\include{Conteudo/anexos}
+    % --------------------------------------------------------------------  
+\end{document}
