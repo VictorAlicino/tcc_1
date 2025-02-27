@@ -85,7 +85,7 @@ class CloudManager:
         """Answers the Ping from Maestro"""
         log.debug("Maestro ping...")
         self.interfaces['mqtt<maestro>'].publish(
-            topic=f'{self.interfaces['mqtt<maestro>'].client_id}/ping'
+            topic=f'{self.interfaces["mqtt<maestro>"].client_id}/ping'
         )
 
     def _get_user_full(self, payload: json) -> None:
