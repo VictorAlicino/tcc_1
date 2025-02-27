@@ -43,6 +43,7 @@ def define_log(
     """
 
     # Create a new log file with a timestamp in its name
+    os.makedirs(dirs['LOGS'], exist_ok=True)
     log_filename = f"{dirs['LOGS']}/opus-server-{datetime.now().strftime('%Y%m%d-%H%M%S')}.log"
 
     # Define the format for the log messages
