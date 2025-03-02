@@ -1,5 +1,6 @@
 """Database configuration and session management"""
 import logging
+from functools import wraps
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
@@ -9,6 +10,17 @@ from db import models
 log = logging.getLogger(__name__)
 
 Base = declarative_base()
+
+def vault_db(func, db):
+    """Decorator to provide database session"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        db = next(db.opus_db.get_db())
+        try:
+            return func(*args, **kwargs, db=db)
+        finally:
+            db.close()
+    return wrapper
 
 class OpusDB:
     """Database Class"""

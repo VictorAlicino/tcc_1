@@ -98,7 +98,11 @@ class LocationManager:
         building.id = new_uuid
         building.name = name
         self.buildings[building.id] = building
-        create_building_on_db(self.opus_db.get_db(), building)
+        db = self.opus_db.get_db()
+        try:
+            create_building_on_db(db, building)
+        finally:
+            db.close()
         log.debug('New Building Added')
         log.debug('└─── Building: %s', building.name)
         log.debug('     └── UUID: %s', building.id)
@@ -123,7 +127,11 @@ class LocationManager:
         space.name = name
         space.building = building
         self.spaces[space.id] = space
-        create_space_on_db(self.opus_db.get_db(), space)
+        db = self.opus_db.get_db()
+        try:
+            create_space_on_db(db, space)
+        finally:
+            db.close()
         log.debug('New Space Added')
         log.debug('└─── Space: %s', space.name)
         log.debug('     ├── UUID: %s', space.id)
@@ -156,7 +164,11 @@ class LocationManager:
         room.space = space.id
         room.building = space.building
         self.rooms[room.id] = room
-        create_room_on_db(self.opus_db.get_db(), room)
+        db = self.opus_db.get_db()
+        try:
+            create_room_on_db(db, room)
+        finally:
+            db.close()
         log.debug('New Room Added')
         log.debug('└─── Room: %s', room.name)
         log.debug('     ├── UUID: %s', room.id)
@@ -181,35 +193,41 @@ class LocationManager:
     def _load_buildings_from_db(self) -> None:
         """Load buildings from the database"""
         db = next(self.opus_db.get_db())
-        for building in db.query(models.Building).all():
-            new_building = Building()
-            new_building.id = building.building_pk
-            new_building.name = building.building_name
-            self.buildings[new_building.id] = new_building
-        db.close()
+        try:
+            for building in db.query(models.Building).all():
+                new_building = Building()
+                new_building.id = building.building_pk
+                new_building.name = building.building_name
+                self.buildings[new_building.id] = new_building
+        finally:
+            db.close()
 
     def _load_spaces_from_db(self) -> None:
         """Load spaces from the database"""
         db = next(self.opus_db.get_db())
-        for space in db.query(models.BuildingSpace).all():
-            new_space = Space()
-            new_space.id = space.building_space_pk
-            new_space.name = space.space_name
-            new_space.building = space.building_fk
-            self.spaces[new_space.id] = new_space
-        db.close()
+        try:
+            for space in db.query(models.BuildingSpace).all():
+                new_space = Space()
+                new_space.id = space.building_space_pk
+                new_space.name = space.space_name
+                new_space.building = space.building_fk
+                self.spaces[new_space.id] = new_space
+        finally:
+            db.close()
 
     def _load_rooms_from_db(self) -> None:
         """Load rooms from the database"""
         db = next(self.opus_db.get_db())
-        for room in db.query(models.BuildingRoom).all():
-            new_room = Room()
-            new_room.id = room.building_room_pk
-            new_room.name = room.room_name
-            new_room.space = room.building_space_fk
-            new_room.building = self.spaces[new_room.space].building
-            self.rooms[new_room.id] = new_room
-        db.close()
+        try:
+            for room in db.query(models.BuildingRoom).all():
+                new_room = Room()
+                new_room.id = room.building_room_pk
+                new_room.name = room.room_name
+                new_room.space = room.building_space_fk
+                new_room.building = self.spaces[new_room.space].building
+                self.rooms[new_room.id] = new_room
+        finally:
+            db.close()
 
     def get_building(self, name: str = None,
                      building_id: UUID = None) -> Any | None:

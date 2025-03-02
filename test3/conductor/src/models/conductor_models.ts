@@ -1,6 +1,7 @@
 /*
     Models to represent the data of the conductor server
 */
+import { HVACPayload } from "./devices_models";
 
 export interface conductorToken{
   access_token?: string | null;
@@ -18,26 +19,34 @@ export interface conductorUser {
 }
 
 export interface opusDevices {
-    devicePK: string;
-    deviceName: string;
-    deviceType: string;
+    device_pk: string;
+    device_name: string;
+    device_type: string;
 }
 
 export interface opusRoom {
-    buildingRoomPK: string;
-    roomName: string;
+    building_room_pk: string;
+    room_name: string;
     devices: opusDevices[];
 }
 
 export interface opusSpace {
-    buildingSpacePK: string;
-    spaceName: string;
+    building_space_pk: string;
+    space_name: string;
     rooms: opusRoom[];
 }
 
 export interface opusBuilding {
-    buildingPK: string;
-    buildingName: string;
-    securityLevel: string;
+    building_pk: string;
+    building_name: string;
+    server_pk: string;
+    security_level: string;
     spaces: opusSpace[];
+}
+
+export interface guestAPIResponse {
+    server_id: string;
+    grant_until: Date;
+    device: opusDevices;
+    state: HVACPayload;
 }

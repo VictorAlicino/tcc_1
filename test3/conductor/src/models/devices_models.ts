@@ -7,7 +7,7 @@ interface HVACMode {
 }
 
 export interface HVACPayload {
-    power_state: boolean;
+    power_state: string;
     vendor: string | null;
     model: string | null;
     mode: string

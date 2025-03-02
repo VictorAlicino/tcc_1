@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 def create_device_on_db(db: Session, device: any) -> None:
     """Create a Device in the database"""
     log.debug('Creating Device in the database')
-    db = next(db)
+    #db = next(db)
     db_device = models.Device(
         device_pk=device.id,
         room_fk=device.room_id,
@@ -137,7 +137,11 @@ class DeviceManager:
             case _:
                 log.error('Device Type not found')
         self.available_devices[device_driver].remove(new_device)
-        create_device_on_db(self.opus_db.get_db(), temp_device)
+        db = next(self.opus_db.get_db())
+        try:
+            create_device_on_db(db, temp_device)
+        finally:
+            db.close()
 
     def get_available_devices(self) -> list:
         """Return all available devices"""
@@ -234,34 +238,35 @@ class DeviceManager:
     def load_devices_from_db(self) -> None:
         """Load all devices from the database"""
         log.debug('Loading all devices from the database')
-        db = self.opus_db.get_db()
-        db = next(db)
-        for device in db.query(models.Device).all():
-            match device.device_type:
-                case 'LIGHT':
-                    temp_device = (
-                        self.opus_drivers[device.driver_name]
-                        .load_light(device.device_name, device.driver_data)
-                    )
-                    temp_device.room_id = device.room_fk
-                    temp_room = self.location_manager.get_room(device.room_fk)
-                    temp_device.space_id = temp_room.space
-                    temp_device.building_id = temp_room.building
-                    self.devices['opus_light'][device.device_pk] = temp_device
-                case 'HVAC':
-                    temp_device = (
-                        self.opus_drivers[device.driver_name]
-                        .load_hvac(device.device_name, device.driver_data)
-                    )
-                    temp_device.room_id = device.room_fk
-                    temp_room = self.location_manager.get_room(device.room_fk)
-                    temp_device.space_id = temp_room.space
-                    temp_device.building_id = temp_room.building
-                    self.devices['opus_hvac'][device.device_pk] = temp_device
-                case _:
-                    log.error('Device Type not found')
-        log.info('All devices loaded from the database')
-        db.close()
+        db = next(self.opus_db.get_db())
+        try:
+            for device in db.query(models.Device).all():
+                match device.device_type:
+                    case 'LIGHT':
+                        temp_device = (
+                            self.opus_drivers[device.driver_name]
+                            .load_light(device.device_name, device.driver_data)
+                        )
+                        temp_device.room_id = device.room_fk
+                        temp_room = self.location_manager.get_room(device.room_fk)
+                        temp_device.space_id = temp_room.space
+                        temp_device.building_id = temp_room.building
+                        self.devices['opus_light'][device.device_pk] = temp_device
+                    case 'HVAC':
+                        temp_device = (
+                            self.opus_drivers[device.driver_name]
+                            .load_hvac(device.device_name, device.driver_data)
+                        )
+                        temp_device.room_id = device.room_fk
+                        temp_room = self.location_manager.get_room(device.room_fk)
+                        temp_device.space_id = temp_room.space
+                        temp_device.building_id = temp_room.building
+                        self.devices['opus_hvac'][device.device_pk] = temp_device
+                    case _:
+                        log.error('Device Type not found')
+            log.info('All devices loaded from the database')
+        finally:
+            db.close()
 
     def _configure_mqtt(self) -> None:
         """Configure MQTT"""
@@ -371,6 +376,28 @@ class DeviceManager:
                                 })
                             )
                             return
+                    case 'get':
+                        try:
+                            device = self.get_device(UUID(topic[3]))
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({
+                                    "device_name": device.name,
+                                    "device_pk": str(device.id),
+                                    "device_type": device.type,
+                                })
+                            )
+                            return
+                        except Exception as exc: # pylint: disable=broad-except
+                            log.warning(msg.payload)
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({
+                                    'status': 'failed',
+                                    'reason': str(exc)
+                                })
+                            )
+                            return
                     case 'get_state':
                         try:
                             temp = json.loads(msg.payload)
@@ -423,8 +450,24 @@ class DeviceManager:
                                     'reason': str(exc)
                                 })
                             )
-
-
+                    case 'get_type':
+                        try:
+                            temp = json.loads(msg.payload)
+                            device = self.get_device(UUID(topic[3]))
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({'type': device.type})
+                            )
+                            return
+                        except Exception as exc: # pylint: disable=broad-except
+                            log.warning(msg.payload)
+                            self.opus_interfaces['mqtt<maestro>'].publish(
+                                payload['callback'],
+                                json.dumps({
+                                    'status': 'failed',
+                                    'reason': str(exc)
+                                })
+                            )
                 if topic[2] in self.opus_drivers:
                     try:
                         log.debug("Driver specific message received, sending to %s.", topic[2])

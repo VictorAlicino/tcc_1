@@ -90,70 +90,74 @@ class CloudManager:
 
     def _get_user_full(self, payload: json) -> None:
         """Get all data including the devices from a user"""
-        user = crud.get_user_by_id(self.opus_db.get_db(), payload['user_pk'])
-        if not user:
-            log.error("Maestro requested the full data of a user that does not exist")
-            return
-        log.debug(f"Maestro requested the full data of user {user.given_name}")
+        db = next(self.opus_db.get_db())
+        try:
+            user = crud.get_user_by_id(db, payload['user_pk'])
+            if not user:
+                log.error("Maestro requested the full data of a user that does not exist")
+                return
+            log.debug(f"Maestro requested the full data of user {user.given_name}")
 
-        user_data = {
-            "user_pk": str(user.user_pk),
-            "given_name": user.given_name,
-            "email": user.email,
-            "role": str(user.fk_role),
-        }
-
-        user_role = crud.get_role_uuid(self.opus_db.get_db(), user.fk_role)
-        authorized_devices = crud.get_all_devices_authorized_to_a_role(self.opus_db.get_db(), user_role)
-
-        authorized_devices_map = {str(device.device_pk): device for device in authorized_devices}
-
-        buildings = next(self.opus_db.get_db()).query(models.Building).all()
-        
-        user_data["role"] = user_role.role_name
-
-        response = {"buildings": []}
-
-        for building in buildings:
-            building_data = {
-                "building_pk": str(building.building_pk),
-                "security_level": user_role.role_name,
-                "building_name": building.building_name,
-                "spaces": []
+            user_data = {
+                "user_pk": str(user.user_pk),
+                "given_name": user.given_name,
+                "email": user.email,
+                "role": str(user.fk_role),
             }
 
-            for space in building.spaces:
-                space_data = {
-                    "building_space_pk": str(space.building_space_pk),
-                    "space_name": space.space_name,
-                    "rooms": []
+            user_role = crud.get_role_uuid(db, user.fk_role)
+            authorized_devices = crud.get_all_devices_authorized_to_a_role(db, user_role)
+
+            authorized_devices_map = {str(device.device_pk): device for device in authorized_devices}
+
+            buildings = db.query(models.Building).all()
+
+            user_data["role"] = user_role.role_name
+
+            response = {"buildings": []}
+
+            for building in buildings:
+                building_data = {
+                    "building_pk": str(building.building_pk),
+                    "security_level": user_role.role_name,
+                    "building_name": building.building_name,
+                    "spaces": []
                 }
 
-                for room in space.rooms:
-                    room_data = {
-                        "building_room_pk": str(room.building_room_pk),
-                        "room_name": room.room_name,
-                        "devices": []
+                for space in building.spaces:
+                    space_data = {
+                        "building_space_pk": str(space.building_space_pk),
+                        "space_name": space.space_name,
+                        "rooms": []
                     }
 
-                    for device in room.devices:
-                        if str(device.device_pk) in authorized_devices_map:
-                            room_data["devices"].append({
-                                "device_pk": str(device.device_pk),
-                                "device_name": device.device_name,
-                                "device_type": device.device_type
-                            })
+                    for room in space.rooms:
+                        room_data = {
+                            "building_room_pk": str(room.building_room_pk),
+                            "room_name": room.room_name,
+                            "devices": []
+                        }
 
-                    space_data["rooms"].append(room_data)
+                        for device in room.devices:
+                            if str(device.device_pk) in authorized_devices_map:
+                                room_data["devices"].append({
+                                    "device_pk": str(device.device_pk),
+                                    "device_name": device.device_name,
+                                    "device_type": device.device_type
+                                })
 
-                building_data["spaces"].append(space_data)
+                        space_data["rooms"].append(room_data)
 
-            response["buildings"].append(building_data)
+                    building_data["spaces"].append(space_data)
 
-        self.interfaces['mqtt<maestro>'].publish(
-            topic=f'{payload["callback"]}',
-            payload=json.dumps(response)
-        )
+                response["buildings"].append(building_data)
+
+            self.interfaces['mqtt<maestro>'].publish(
+                topic=f'{payload["callback"]}',
+                payload=json.dumps(response)
+            )
+        finally:
+            db.close()
 
     def _mqtt_callback(self, client, userdata, msg): # pylint: disable=unused-argument
         """Callback from MQTT when Maestro sends a message in the /cloud topic"""

@@ -21,3 +21,14 @@ class OpusDevice():
         self.building_id: UUID | None
         self.driver: any
         self.type: DeviceType
+
+    def get(self):
+        """Get the device"""
+        return {
+            "device_name": self.name,
+            "device_pk": str(self.id),
+            "device_type": self.type,
+            "building_room_pk": str(self.room_id),
+            "building_space_pk": str(self.space_id),
+            "building_pk": str(self.building_id)
+        }

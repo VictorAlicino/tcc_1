@@ -108,6 +108,7 @@ class TasmotaHVAC(OpusHVAC):
         self.mqtt_link.publish(
             topic=f"cmnd/{self.mqtt_name}/IRHVAC",
             payload=json.dumps({
+                "Vendor": self.vendor,
                 "Power": state.get("power_state", self.power_state),
                 "Mode": state.get("mode", self.mode),
                 "FanSpeed": state.get("fan_speed", self.fan_speed),

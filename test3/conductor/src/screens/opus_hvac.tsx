@@ -84,8 +84,8 @@ export function OpusHVAC({ navigation, route } : StackItemProps<"HVACControl">) 
   const [fanSpeed, setFanSpeed] = useState(fanSpeeds[0]);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const bgColor = !isHVACOn ? "#D5FBFF" : "white";
-  const textHVAC = !isHVACOn ? "Ligado" : "Desligado";
+  const bgColor = isHVACOn ? "#D5FBFF" : "white";
+  const textHVAC = isHVACOn ? "Ligado" : "Desligado";
 
   // Call the API to get the current state of the HVAC
   async function getHVACState() {
@@ -96,7 +96,8 @@ export function OpusHVAC({ navigation, route } : StackItemProps<"HVACControl">) 
         "/devices/" + 
         route.params.device.device_pk
       );
-      setIsHVACOn(response.data.power_state);
+      //console.log(response.data);
+      setIsHVACOn(response.data.power_state === "On");
       setTemp(response.data.temperature);
       setMode(modes.find((m) => m.name === response.data.mode) || modes[0]);
       setFanSpeed(fanSpeeds.find((f) => f.id === response.data.fan_speed) || fanSpeeds[0]);
@@ -179,47 +180,42 @@ export function OpusHVAC({ navigation, route } : StackItemProps<"HVACControl">) 
   }  
   
   const tempUp = () => {
-    let new_temp = temp;
-    if(temp < 30){
-      new_temp = temp + 1;
-    }
-    setTemp(new_temp);
-    setHVACState(
-      {
+    if (temp < 30) {
+      const new_temp = temp + 1;
+      setTemp(new_temp);
+      setHVACState({
         power_state: isHVACOn ? "On" : "Off",
         temperature: new_temp,
         mode: mode.name,
         fan_speed: fanSpeed.id ? fanSpeed.id : "Auto"
-      }
-    );
-  }
-
+      });
+    }
+  };
+  
   const tempDown = () => {
-    let new_temp = temp;
-    if(temp > 16){
-      new_temp = temp - 1;
-    }
-    setTemp(new_temp);
-    setHVACState(
-      {
+    if (temp > 16) {
+      const new_temp = temp - 1;
+      setTemp(new_temp);
+      setHVACState({
         power_state: isHVACOn ? "On" : "Off",
         temperature: new_temp,
         mode: mode.name,
         fan_speed: fanSpeed.id ? fanSpeed.id : "Auto"
-      }
-    );
-  }
+      });
+    }
+  };
 
-  const handleToogleSwitch = () => {
-    setIsHVACOn(!isHVACOn);
-    setHVACState(
-      {
-        power_state: isHVACOn ? "On" : "Off",
+  const handleToggleSwitch = () => {
+    setIsHVACOn((prev) => {
+      const newState = !prev;
+      setHVACState({
+        power_state: newState ? "On" : "Off",
         temperature: temp,
         mode: mode.name,
         fan_speed: fanSpeed.id ? fanSpeed.id : "Auto"
-      }
-    );
+      });
+      return newState;
+    });
   }
 
   const handleGoBack = () => {
@@ -296,7 +292,7 @@ export function OpusHVAC({ navigation, route } : StackItemProps<"HVACControl">) 
             <Text style={{ fontSize: 15 }}>{mode.name}</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity onPress={() => handleToogleSwitch() } style={{padding: 15}}>
+          <TouchableOpacity onPress={() => handleToggleSwitch() } style={{padding: 15}}>
             <Circle 
               size={115}
               color="#2E3844"

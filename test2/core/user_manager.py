@@ -59,18 +59,22 @@ class UserManager:
         user: User = User()
         user_pk, user_data = next(iter(maestro_user.items()))
         # Checking if User already existis in DB
-        if crud.get_user_by_id(self.opus_db.get_db(), user_pk):
-            log.warn('User %s already on this server', user_data['name'])
-            return None
-        user.user_pk = uuid.UUID(user_pk)
-        user.given_name = user_data['name']
-        user.email = user_data['email']
-        role = crud.get_role_by_id(self.opus_db.get_db(), user_data['role'])
-        if not role:
-            log.warn('Role requested by Maestro does not exist')
-            return None
-        user.fk_role = role.role_pk
-        crud.assign_new_user(self.opus_db.get_db(), user)
+        db = next(self.opus_db.get_db())
+        try:
+            if crud.get_user_by_id(db, user_pk):
+                log.warn('User %s already on this server', user_data['name'])
+                return None
+            user.user_pk = uuid.UUID(user_pk)
+            user.given_name = user_data['name']
+            user.email = user_data['email']
+            role = crud.get_role_by_id(db, user_data['role'])
+            if not role:
+                log.warn('Role requested by Maestro does not exist')
+                return None
+            user.fk_role = role.role_pk
+            crud.assign_new_user(db, user)
+        finally:
+            db.close()
 
     def check_user_access_to_device(self, user: User, device: Device) -> bool:
         """Check if a user has access to a device"""
@@ -80,11 +84,19 @@ class UserManager:
         if not device:
             log.error('Device does not exist')
             return False
-        user_role = crud.get_role_uuid(self.opus_db.get_db(), user.fk_role)
-        if device.id in [device.device_pk for device in crud.get_all_devices_authorized_to_a_role(self.opus_db.get_db(), user_role)]:
-            return True
-        return False
+        db = next(self.opus_db.get_db())
+        try:
+            user_role = crud.get_role_uuid(db, user.fk_role)
+            if device.id in [device.device_pk for device in crud.get_all_devices_authorized_to_a_role(db, user_role)]:
+                return True
+            return False
+        finally:
+            db.close()
     
     def get_user(self, user_pk: str) -> User:
         """Get a user by its PK"""
-        return crud.get_user_by_id(self.opus_db.get_db(), user_pk)
+        db = next(self.opus_db.get_db())
+        try:
+            return crud.get_user_by_id(db, user_pk)
+        finally:
+            db.close()
