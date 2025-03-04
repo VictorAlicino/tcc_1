@@ -1,0 +1,72 @@
+\providecommand{\abntreprintinfo}[1]{%
+ \citeonline{#1}}
+\setlength{\labelsep}{0pt}\begin{thebibliography}{}
+\providecommand{\abntrefinfo}[3]{}
+\providecommand{\abntbstabout}[1]{}
+\abntbstabout{v-1.9.7 }
+
+\bibitem[Bashir 2024]{statista3}
+\abntrefinfo{Bashir}{BASHIR}{2024}
+{BASHIR, U. \emph{Smart speaker ownership by brand in the U.S. as of June
+  2024}. 2024.
+Dispon{\'\i}vel em:
+  \url{https://www.statista.com/forecasts/997149/smart-speaker-ownership-by-brand-in-the-us/}.
+  Acesso em: 12 de agosto de 2024.}
+
+\bibitem[Home Assistant Analytics 2024]{home_assistant1}
+\abntrefinfo{Home\ldots}{HOME\ldots}{2024}
+{HOME Assistant Analytics. 2024.
+Dispon{\'\i}vel em: \url{https://analytics.home-assistant.io/}. Acesso em: 12
+  de agosto de 2024.}
+
+\bibitem[Laricchia 2022]{statista1}
+\abntrefinfo{Laricchia}{LARICCHIA}{2022a}
+{LARICCHIA, F. \emph{Installed base of smart speakers in the United States from
+  2018 to 2022}. 2022.
+Dispon{\'\i}vel em:
+  \url{https://www.statista.com/statistics/967402/united-states-smart-speakers-in-households/}.
+  Acesso em: 12 de agosto de 2024.}
+
+\bibitem[Laricchia 2022]{statista2}
+\abntrefinfo{Laricchia}{LARICCHIA}{2022b}
+{LARICCHIA, F. \emph{Smart speaker devices installed base in the United States
+  from 2017 to 2020}. 2022.
+Dispon{\'\i}vel em:
+  \url{https://www.statista.com/statistics/794480/us-amazon-echo-google-home-installed-base/}.
+  Acesso em: 12 de agosto de 2024.}
+
+\bibitem[Macaya et al. 2017]{cetic}
+\abntrefinfo{Macaya et al.}{MACAYA et al.}{2017}
+{MACAYA, J. F.~M. et al. Ano {IX} - {Nº} 2 - {Smart} {Cities}.
+\emph{Cetic.br - Centro Regional para o Desenvolvimento da Sociedade da
+  Informação}, nov. 2017.
+Dispon{\'\i}vel em: \url{https://cetic.br/publicacao/ano-ix-n-2-smart-cities}.}
+
+\bibitem[Marcin 2021]{assistant_home_nodate}
+\abntrefinfo{Marcin}{MARCIN}{2021}
+{MARCIN. \emph{WHAT IS HOME ASSISTANT AND WHAT IT CAN DO?} 2021.
+Dispon{\'\i}vel em:
+  \url{https://futurehousestore.co.uk/what-is-home-assistant-and-what-it-can-do}.
+  Acesso em: 12 de agosto de 2024.}
+
+\bibitem[Meyer 2022]{noauthor_how_nodate}
+\abntrefinfo{Meyer}{MEYER}{2022}
+{MEYER, F.~D. \emph{How smart buildings will revolutionize our society
+  {\textbar} {Frederik} {De} {Meyer} {\textbar} {TEDxGlarus}}. 2022.
+Dispon{\'\i}vel em: \url{https://www.youtube.com/watch?v=XDP2Gz7fP38}. Acesso
+  em: 12 de agosto de 2024.}
+
+\bibitem[Morvaj, Lugaric e Krajcar 2011]{Morvaj2011}
+\abntrefinfo{Morvaj, Lugaric e Krajcar}{MORVAJ; LUGARIC; KRAJCAR}{2011}
+{MORVAJ, B.; LUGARIC, L.; KRAJCAR, S. \emph{Demonstrating smart buildings and
+  smart grid features in a smart energy city}. 2011.}
+
+\bibitem[Paiva e Jedon 2019]{art1}
+\abntrefinfo{Paiva e Jedon}{PAIVA; JEDON}{2019}
+{PAIVA, A. de; JEDON, R. Short- and long-term effects of architecture on the
+  brain: Toward theoretical formalization.
+\emph{Frontiers of Architectural Research}, Higher Education Press Limited
+  Company, v.~8, p. 564--571, 12 2019.
+ISSN 20952635.}
+
+\end{thebibliography}

@@ -9,7 +9,7 @@
 
 
 \input{Pacotes/packages}
-\input{Conteudo/informacoesGerais}
+\input{Conteudo/informacoes_gerais}
 
 \makeindex
 \begin{document}
@@ -20,28 +20,26 @@
     \input{Automatico/capa}
     \input{Automatico/folhaRosto}
     \input{Automatico/aprovacao}
+
+    %\input{Conteudo/Prologo/dedicatoria}
+    %\input{Conteudo/Prologo/agradecimentos}
+    %\input{Conteudo/Prologo/epigrafe}
+    %\input{Conteudo/Prologo/resumo}
     
-    % Elementos do prólogo (crie os arquivos conforme necessário)
-    %\input{Conteudo/Prologo/dedicatoria}    % Novo arquivo: Dedicatoria
-    %\input{Conteudo/Prologo/agradecimentos}  % Novo arquivo: Agradecimentos
-    %\input{Conteudo/Prologo/epigrafe}         % Novo arquivo: Epígrafe
-    %\input{Conteudo/Prologo/resumo}           % Novo arquivo: Resumo
-    
-    \input{Automatico/lista_figuras}
-    %\input{Automatico/lista_tabelas}          % Futuro arquivo: Lista de Tabelas
-    %\input{Automatico/lista_siglas}           % Futuro arquivo: Lista de Siglas    
+    %\input{Automatico/lista_figuras}
+    %\input{Automatico/lista_tabelas}
+    %\input{Automatico/lista_siglas}  
     \input{Automatico/sumario}
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %                      TEXTUAL                              %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \textual
-    \setcounter{page}{1}
+    \textual\setcounter{page}{1}
 
     %--------------------------------------------------------------
     % Parte I - Introdução
     %--------------------------------------------------------------
-    \include{Conteudo/introducao.tex} % Novo arquivo: Introdução
+    \include{Conteudo/Comeco/introducao.tex}
 
     %--------------------------------------------------------------
     % Parte II - Revisão Bibliográfica
@@ -50,21 +48,9 @@
     \include{Conteudo/Comeco/RevisaoBibliografica/internet-das-coisas.tex}
     \include{Conteudo/Comeco/RevisaoBibliografica/tecnologias.tex}
     
-
     %--------------------------------------------------------------
     % Parte III - Desenvolvimento
     %--------------------------------------------------------------
-    \include{Conteudo/Meio/proposta.tex}       % Novo arquivo: Proposta de Projeto
-    \include{Conteudo/Meio/arquitetura.tex}       % Arquivo existente ou a ser criado: Arquitetura do Sistema
-    %\include{Conteudo/Desenvolvimento/nome-componentes.tex}  % Novo arquivo: Nomes dos Componentes
-    %\include{Conteudo/Desenvolvimento/detalhamento.tex}      % Novo arquivo: Detalhamento da Arquitetura
-
-    % Se o projeto incluir uma subseção específica (ex.: Opus), descomente e crie os respectivos arquivos:
-    %\include{Conteudo/Desenvolvimento/Opus/introducao.tex}   % Novo arquivo: Introdução do Opus
-    %\include{Conteudo/Desenvolvimento/Opus/interfaces.tex}   % Novo arquivo: Interfaces do Opus
-    %\include{Conteudo/Desenvolvimento/Opus/drivers.tex}      % Novo arquivo: Drivers do Opus
-    %\include{Conteudo/Desenvolvimento/Opus/nucleo.tex}       % Novo arquivo: Núcleo do Opus
-    %\include{Conteudo/Desenvolvimento/Opus/banco_de_dados.tex} % Novo arquivo: Banco de Dados do Opus
 
     %--------------------------------------------------------------
     % Parte IV - Conclusão
