@@ -1,7 +1,10 @@
 \section{Tecnologias}
 ~\label{tecnologias}
 
-\subsection{BACnet}
+\subsection{Tecnologias utilizadas em automação de edifícios}
+Nesta sessão serão apresentados algumas tecnologias utilizadas na automação de edifícios
+
+\subsubsection{BACnet}
 Protocolo de Rede de Automação e Controle de Edifícios (Building Automation and Control Network Protocol) ou BACnet é um protocolo 
 mantido e desenvolvido pela ASHRAE com o objetivo de atender as necessidades de comunicações dos sistemas de controle e automação 
 dos edifícios com seu sensores e atuadores. O protocolo fornece meios para que equipamentos troquem informações não importando o 
@@ -12,7 +15,40 @@ o BACnet define um modelo de informação, criando objetos para os dispositivos 
 assim como suas entradas e saídas. Esses objetos chamados de \emph{device object} definem as propriedades do dispositivo como: nome do modelo,
 fabricante, status e a lista de outros objetos BACnet associados ao dispositivo~\cite{Domingues2016}.
 
-\subsection{MQTT}
+\subsubsection{KNX}
+KNX ou Konnex é um padrão aberto desenvolvido para ser utilizado em automação de edifícios ou residências~\cite{Sapundzhi2020},
+da mesma forma que o BACnet, o KNX integra sensores, atuadores e controladores dentro de uma rede, os dispositivos são controlados
+através de um barramento e são chamados de \emph{Bus Access Unit} ou BAU, sendo possível controlar mais de 65 mil BAUs.
+No KNX, cada fabricante pode implementar sua própria especificação nos dispositivos. BAUs podem ser separadas em grupos menores
+chamados de de \emph{areas} que podem ser separadas em \emph{lines} de dispositivos. As mensagens trocadas pelos dispositivos KNX
+pode ser transmitida através de cabos de par trançado, cabos de energia, frequências de rádio ou internet, sendo a forma mais comum o
+KNX.TP que usa os cabos de par trançado~\cite{Kraus2020}.
+Um ponto chave do KNX é seu método de comunicação, pouco similar ao MQTT, o KNX utiliza o padrão \emph{observador} na hora de trocar informações,
+neste padrão múltiplos dispositivos ``observadores'' serão notificados através de uma única mensagem em \emph{multicast}
+de quando os dados em uma fonte sofrerem alterações, dessa forma fica mais fácil a criação de relacionamentos um para muitos (1:N).~\cite{Domingues2016}. 
+
+\subsubsection{ZigBee}
+ZigBee é um dos mais populares padrões de redes \emph{mesh} sem fio. O protocolo é aberto e baseado em pacotes, projetado para ser de fácil uso,
+baixo consumo e seguro~\cite{tomar2011}.
+O modelo ZigBee é principalmente definido em três camadas.
+\begin{itemize}
+    \item \emph{Application Support Sublayer}: Responsável por vincular \emph{endpoints}, transmistir mensagens entre os dispositivos e o gerenciamento de grupos.
+    \item \emph{ZigBee Device Object}: Responsável pelo gerenciamento de dispositivos; definir o modo de operação do dispositivo; descobrir novos dispositivos e quais serviços de aplicação ele provê; lidar com os pedidos de vinculamento de outros dispositivos.
+    \item \emph{Application Framework}: Abriga as aplicações dos dispositivos. 
+\end{itemize}
+~\cite{Domingues2016}
+
+\subsection{Tecnologias utilizadas no desenvolvimento deste trabalho}
+\subsubsection{Tasmota}
+~\label{sec:tasmota}
+Tasmota é um software de código aberto que atua como firmware para SoC’s (System-on-a-Chip) ESP32 
+da Espressif e possibilita controle e comunicação personalizado com alguns dispositivos comerciais que são 
+baseados nesse SoC, como interruptores inteligentes, lâmpadas inteligentes ou controles infravermelho
+inteligentes.
+A comunicação com o firmware é realizada através do protocolo MQTT, permitindo integrar o hardware comercial
+a qualquer sistema com suporte ao protocolo~\cite{tasmota-1}.
+
+\subsubsection{MQTT}
 ~\label{sec:mqtt}
 MQTT ou Message Queuing Telemetry Transport~\cite{ISO20922} é um protocolo de transporte para mensagens no formato \emph{publicar/assinar},
 ele é simples, leve, aberto e projetado para ser fácil de implementar, seu foco de uso são ambientes onde recursos são geridos com cuidado,
@@ -34,38 +70,6 @@ Uma estrutura que suporte o protocolo MQTT deve ter pelo menos três componentes
 No padrão \emph{publicar/assinar}, o produtor cria uma mensagem e envia para o servidor, consumidores então leem essa mensagem.
 No MQTT um produtor publica mensagens nos tópicos do \emph{broker}, consumidores interessados em receber essas mensagens se
 inscreverão nesse tópico e o \emph{broker} se encarregará de entregá-las~\cite{Mishra2020}.
-
-\subsection{KNX}
-KNX ou Konnex é um padrão aberto desenvolvido para ser utilizado em automação de edifícios ou residências~\cite{Sapundzhi2020},
-da mesma forma que o BACnet, o KNX integra sensores, atuadores e controladores dentro de uma rede, os dispositivos são controlados
-através de um barramento e são chamados de \emph{Bus Access Unit} ou BAU, sendo possível controlar mais de 65 mil BAUs.
-No KNX, cada fabricante pode implementar sua própria especificação nos dispositivos. BAUs podem ser separadas em grupos menores
-chamados de de \emph{areas} que podem ser separadas em \emph{lines} de dispositivos. As mensagens trocadas pelos dispositivos KNX
-pode ser transmitida através de cabos de par trançado, cabos de energia, frequências de rádio ou internet, sendo a forma mais comum o
-KNX.TP que usa os cabos de par trançado~\cite{Kraus2020}.
-Um ponto chave do KNX é seu método de comunicação, pouco similar ao MQTT, o KNX utiliza o padrão \emph{observador} na hora de trocar informações,
-neste padrão múltiplos dispositivos ``observadores'' serão notificados através de uma única mensagem em \emph{multicast}
-de quando os dados em uma fonte sofrerem alterações, dessa forma fica mais fácil a criação de relacionamentos um para muitos (1:N).~\cite{Domingues2016}. 
-
-\subsection{ZigBee}
-ZigBee é um dos mais populares padrões de redes \emph{mesh} sem fio. O protocolo é aberto e baseado em pacotes, projetado para ser de fácil uso,
-baixo consumo e seguro~\cite{tomar2011}.
-O modelo ZigBee é principalmente definido em três camadas.
-\begin{itemize}
-    \item \emph{Application Support Sublayer}: Responsável por vincular \emph{endpoints}, transmistir mensagens entre os dispositivos e o gerenciamento de grupos.
-    \item \emph{ZigBee Device Object}: Responsável pelo gerenciamento de dispositivos; definir o modo de operação do dispositivo; descobrir novos dispositivos e quais serviços de aplicação ele provê; lidar com os pedidos de vinculamento de outros dispositivos.
-    \item \emph{Application Framework}: Abriga as aplicações dos dispositivos. 
-\end{itemize}
-~\cite{Domingues2016}
-
-\subsection{Tasmota}
-~\label{sec:tasmota}
-Tasmota é um software de código aberto que atua como firmware para SoC’s (System-on-a-Chip) ESP32 
-da Espressif e possibilita controle e comunicação personalizado com alguns dispositivos comerciais que são 
-baseados nesse SoC, como interruptores inteligentes, lâmpadas inteligentes ou controles infravermelho
-inteligentes.
-A comunicação com o firmware é realizada através do protocolo MQTT, permitindo integrar o hardware comercial
-a qualquer sistema com suporte ao protocolo~\cite{tasmota-1}.
 
 
 
