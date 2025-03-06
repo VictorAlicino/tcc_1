@@ -1,10 +1,14 @@
 \section{\textbf{Servidor Local}}
-\label{opus}
+~\label{opus}
 
-A aplicação que gerencia os dispositivos, a abstração do edifício no sistema e o nível de acesso de usuários a dispositivos específicos
-é chamada de \emph{Opus}, nela estão contidos \emph{drivers} responsáveis por se comunicar com os dispositivos.
+O controle de dispositivos, gerenciamento de permissões de usuário e abstração da estrutura de um edifício,
+são responsabilidades assumidas pelo Servidor Local, chamado de \emph{Opus}.
 
-A aplicação é organizada em quatro módulos principais, como ilustrado na figura \ref{fig:opus1}.
+O \emph{Opus} é uma aplicação escrita em Python visando convergir a operação de dispositivos IoT de vários
+fabricantes e protocolos em um único ponto de controle, tal funcionalidade é obtida a partir da natureza modular
+do Python que foi aqui aproveitada para criar partes expansíveis do sistema, chamadas de \emph{drivers} e \emph{interfaces}.
+
+A aplicação é organizada em quatro módulos principais, como ilustrado na figura \ref{fig:opus1}, são eles:
 \begin{figure}[h!]
     \conteudoFigura
     [Elaborado pelo Autor (2025)]
@@ -14,23 +18,21 @@ A aplicação é organizada em quatro módulos principais, como ilustrado na fig
     {fig:opus1}
 \end{figure}
 
-Alguns módulos podem ser alterados conforme for descrito no arquivo de configuração do \emph{Opus}, o arquivo de configuração é um arquivo texto
-escrito em YAML, onde o usuário pode alterar o comportamento do \emph{Opus} sem a necessidade de alterar o código fonte.
-Um exemplo de arquivo de configuração é mostrado na figura \ref{fig:opus2}.
-\begin{figure}[h!]
-    \conteudoFigura
-    [Elaborado pelo Autor (2024)]
-    {0.2}
-    {opus-config.png}
-    {Exemplo de arquivo de configuração}
-    {fig:opus2}
-\end{figure}
-
+\emph{Interfaces}, módulos que adicionam uma forma de comunicação ao \emph{Opus}, como, por exemplo, uma \emph{interface} para comunicação com dispositivos ZigBee\ref{sec:zigbee}, ou KNX\ref{sec:knx};
+\emph{Drivers}, responsáveis por traduzir os comandos do \emph{Opus} para o protocolo do dispositivo, podendo ou não utilizar alguma \emph{interface} própria para esta finalidade;
+\emph{Managers}, são módulos da aplicação que gerenciam seu funcionamento, recebem, enviam e processam comandos vindos do Servidor Remoto e por fim,
+o banco de dados.
 
 Módulos como \emph{drivers} e \emph{interfaces} terão seus objetos carregados no ambiente de execução do \emph{Opus}
-através de um dicionário, onde a chave é o nome do módulo e o valor é objeto.
+via um dicionário, onde a chave é o nome do módulo e o valor é objeto.
 Sendo assim para acessar um \emph{driver} ou \emph{interface} basta acessar o dicionário com o nome do módulo como no exemplo
 a seguir:
 \begin{lstlisting}[language=Python]
     interfaces['nome_da_interface'].metodo_desejado()
 \end{lstlisting}
+
+\subsection{Interfaces}
+A fim de ser uma aplicação modular, que pode se comunicar com diversos dispositivos, foi necessário levar em conta a vasta 
+gama de protocolos existentes hoje no mercado, sejam de dispositivos IoT com fins de automação residencial, ou equipamentos industriais
+de automação de edifícios. Para preencher essa lacuna, foi criado o conceito de \emph{Interfaces}.
+
