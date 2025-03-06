@@ -1,5 +1,26 @@
 \subsection{Drivers}
 
+% Por que os drivers são necessários no Opus?
+% Quais problemas o conceito de drivers resolve?
+% Quais são as responsabilidades de um driver?
+% Como os drivers funcionam dentro do Opus?
+% Os drivers se comunicam diretamente com os dispositivos ou há camadas intermediárias?
+% Os drivers seguem algum padrão de implementação dentro do Opus?
+% Como um novo driver pode ser desenvolvido e integrado ao Opus?
+% Quais são os desafios ao criar um driver para um novo dispositivo IoT?
+% Quais drivers já foram implementados no Opus?
+% Há algum driver planejado, mas que não será finalizado para o TCC? Por quê?
+
+Sem uma padronização da comunicação entre dispositivos IoT, o Opus não tem como prever todos as particularidades 
+de comunicação de cada dispositivo, com isto em mente foi criado o conceito de \emph{drivers} para abstrair as comunicações.
+
+A função de um driver é essencialmente agir como um tradutor entre o Opus e um tipo de dispositivo, desta forma é possível
+abrangir uma gama maior de dispositivos sem a necessidade de modificar o código de outros módulos do sistema.
+
+
+
+
+
 Os \emph{drivers} são responsáveis por traduzir os comandos do sistema para os dispositivos, de forma que cada dispositivo no \emph{Opus} está
 associado a um \emph{driver} específico, desta forma, quando o usuário pedir que um determinado dispositivo seja ligado, por exemplo,
 esse comando chamará o método correspondente da classe do dispositivo que utilizará seu \emph{driver} para enviar o comando para o hardware.
