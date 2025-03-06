@@ -1,45 +1,35 @@
-\section{Interfaces}
+\subsection{Interfaces}
 \label{opus-sec:interfaces}
 
-O módulo de interfaces contém as implementações para comunicações externas do \emph{Opus} utilizando outros protocolos,
-alguns \emph{drivers} podem requesitar que uma ou mais interfaces específicas estejam ativadas para que ele funcione corretamente.
-O programa principal irá carregar cada interface cujo o nome do script estiver listado no arquivo de configuração, esse processo
-se dará através de uma função ``\lstinline{def initialize() -> Any}'' que deve ser implementada em todas as interfaces, essa função
-deverá retornar o objeto principal da classe desta interface, para que ele seja adicionado no ambiente de execução do \emph{Opus}.
+A fim de ser uma aplicação modular, que pode se comunicar com diversos dispositivos, foi necessário levar em conta a vasta 
+gama de protocolos existentes hoje no mercado, sejam de dispositivos IoT com fins de automação residencial, ou equipamentos industriais
+de automação de edifícios. Para preencher essa lacuna, foi criado o conceito de \emph{Interfaces}. Este conceito permite que novos meios de
+comunicação sejam adicionados sem a necessidade de alterar o código-fonte dos módulos já existentes, criando um sistema expansível.
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.2}
+    {interface_example.png}
+    {Exemplo de Interface}
+    {fig:interface-example}
+\end{figure}
 
-\subsection{Interface MQTT}
-\label{opus-sec:interfaces-mqtt}
-A interface MQTT é implementada por padrão no \emph{Opus} uma vez que a comunicação do \emph{Opus} com o servidor \emph{Maestro}
-é feita via MQTT, logo, ela é essencial para o funcionamento do sistema.
+Uma \emph{Interface} é um módulo Python que implementa um conjunto de métodos necessários para a comunicação com um protocolo específico. Cada interface
+encapsula a lógica de comunicação para um método de comunicação e expõe aos módulos somente os métodos necessários para realizar a comunicação.
+Todas as \emph{Interface}s recebem um dicionário de configurações, onde o usuário pode especificar parâmetros para a comunicação, desta forma
+cada método de comunicação pode ser configurado conforme as necessidades do usuário e de forma dinâmica.
 
-A implementação da interface MQTT segue uma abordagem simples para um script Python, apenas uma classe feita no padrão de 
-projeto Singleton, isso não se fez tão necessário já que interfaces são carregadas para o ambiente de execução do 
-\emph{Opus} por apenas um objeto que é compartilhado entre toda a aplicação, mas foi adotado por boas práticas.
+Para um módulo Python ser considerado uma \emph{Interface} pelo \emph{Opus}, ele deve implementar uma função ``\lstinline{initialize()}'' que retorna o objeto 
+principal da classe implementada no módulo, este objeto será adicionado ao ambiente de execução do \emph{Opus} e estará então acessível para todos os módulos 
+da aplicação. Também é necessário a implementação de um método ``\lstinline{begin(self, config: dict) -> bool}'' membro da classe principal, este método 
+receberá o dicionário de configurações da \emph{Interface} e então começar a comunicação com o protocolo especificado. 
+A figura~\ref{fig:interface-example} apresenta um exemplo prático da implementação de uma \emph{Interface}, destacando os métodos e função 
+essenciais para o funcionamento.
 
-Os seguintes métodos foram implementados na class MQTT:
-\begin{itemize}
-    \item \lstinline{def begin(self, config: dict) -> bool}:
-    inicializa o Client MQTT, assim que o client efetua a conexão com o servidor MQTT especificado 
-    no arquivo de configurações, ele se inscreve em um tópico raiz que é o ID do client, 
-    assim ele receberá todas as mensagens enviadas para este tópico;
-
-    \item \lstinline{def start_thread(self)},:
-    inicia a Thread do Cliente MQTT, isso é necessário para que o cliente MQTT 
-    possa receber mensagens de forma assíncrona;
-
-    \item \lstinline{def on_connect(self, client, userdata, flags, reason_code, properties)}
-
-    \item \lstinline{def on_message(self, client, userdata, msg)}
-
-    \item \lstinline{def connect(self, host: str, port: int = 1883)}
-
-    \item \lstinline{def publish(self, topic: str, payload: str)}:
-    publica o texto da variável payload no tópico especificado;
-
-    \item \lstinline{def register_callback(self, topic: str, callback)}:
-    registra uma função como callback para um tópico específico, 
-    extremamente útil para que outros módulos do \emph{Opus} possam especificar
-    o que querem receber do MQTT e onde.
-
-    \item \lstinline{def subscribe(self, topic: str)}, se inscreve no tópico especificado.
-\end{itemize}
+As \emph{Interface}s são carregadas na aplicação em tempo de execução, de forma dinâmica no momento da inicialização dos módulos. Para que uma \emph{Interface}
+seja carregada, é necessário que seu nome esteja listado no arquivo de configuração do \emph{Opus} seguido de um identificador 
+único (exemplo: ``\lstinline{interface1<identificador>}''), como também é necessário que o arquivo contendo a implementação da \emph{Interface} esteja 
+no diretório de \emph{Interface}s com o mesmo nome mencionado no arquivo de configuração (exemplo: ``\lstinline{./interfaces/interface1.py}''), em 
+caso da mesma \emph{Interface} ser mencionada mais de uma vez no arquivo de configuração com o identificador diferente, será carregada uma instância
+diferente da \emph{Interface} para cada identificador. Por fim, se ocorrer uma falha durante a inicialização de uma \emph{Interface} o \emph{Opus} 
+não prosseguirá e encerrará a execução com um erro marcado como crítico no arquivo de log, sendo necessário corrigir o erro e reiniciar a aplicação.
