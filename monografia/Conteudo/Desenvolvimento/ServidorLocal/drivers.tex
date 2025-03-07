@@ -1,13 +1,19 @@
 \subsection{Drivers}
 
-Sem uma padronização da comunicação entre dispositivos IoT, cada fabricante pode adotar protocolos distintos e estruturas variadas de mensagens.
-Diante deste cenário, foi adotado o conceito de \emph{Driver}s, criado para abstrair e padronizar a comunicação entre dispositivos e o \emph{Opus}.
+Sem uma padronização da comunicação entre dispositivos IoT, cada fabricante pode adotar protocolos distintos e estruturas variadas de 
+mensagens. Diante deste cenário, foi adotado o conceito de \emph{Driver}s, criado para abstrair e padronizar a comunicação entre 
+dispositivos e o \emph{Opus}.
 
-A função de um \emph{Driver} é atuar como um tradutor entre o \emph{Opus} e um tipo específico de dispositivo, garantido que comandos e dados
-sejam corretamente interpretados e processados. Isso garante a integração de uma ampla gama de dispositivos sem a necessidade de modificar os 
-módulos do sistema, como resultado o sistema se torna modular e escalável.
+Assim como as \emph{Interface}s[\ref{opus-sec:interfaces}], os \emph{Driver}s são módulos escritos em Python carregados no momento da inicialização do \emph{Opus},
+sua função é atuar como um tradutor entre o \emph{Opus} e um tipo específico de dispositivo, garantido que 
+comandos e dados sejam corretamente interpretados e processados. Isso garante a integração de uma ampla gama de dispositivos 
+sem a necessidade de modificar os  módulos do sistema, como resultado o sistema se torna modular e escalável.
 
-Em casos onde o dispositivo se comunica via um protocolo não suportado nativamente pelo Python, como dispositivos que requerem uma camada
-física diferente das utilizadas pelo protocolo TCP/IP, como Serial, ou até mesmo que utilizam TCP/IP, porém não HTTP, como o MQTT,
-é possível que \emph{Driver}s acessem as \emph{Interfaces}[\ref{opus-sec:interfaces}] para realizar a comunicação com o dispositivo.
+Em casos onde o dispositivo se comunica via um protocolo não suportado nativamente pelo Python, como dispositivos que 
+requerem uma camada física diferente das utilizadas pelo protocolo TCP/IP, como Serial, ou até mesmo que utilizam TCP/IP, 
+porém não HTTP, como o MQTT, é possível que \emph{Driver}s acessem as \emph{Interfaces} para realizar a comunicação com o dispositivo.
 
+Para ser considerado um \emph{Driver}, o módulo deve ter implementado uma função \lstinline{start()} sem retornos, essa função será 
+chamada no momento em que o \emph{Driver} for carregado, também deve ter um dicionário global de \emph{Interface}s com a seguinte assinatura
+\lstinline{interfaces: dict[str, Any]}, em caso do \emph{Driver} necessitar de uma \emph{Interface}, o nome dela deve estar presente neste dicionário,
+o \emph{Opus} irá injetar o objeto da \emph{Interface} neste dicionário, permitindo que o \emph{Driver} a acesse.
