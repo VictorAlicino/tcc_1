@@ -1,30 +1,13 @@
 \subsection{Drivers}
 
-Os \emph{drivers} são responsáveis por traduzir os comandos do sistema para os dispositivos, de forma que cada dispositivo no \emph{Opus} está
-associado a um \emph{driver} específico, desta forma, quando o usuário pedir que um determinado dispositivo seja ligado, por exemplo,
-esse comando chamará o método correspondente da classe do dispositivo que utilizará seu \emph{driver} para enviar o comando para o hardware.
+Sem uma padronização da comunicação entre dispositivos IoT, cada fabricante pode adotar protocolos distintos e estruturas variadas de mensagens.
+Diante deste cenário, foi adotado o conceito de \emph{Driver}s, criado para abstrair e padronizar a comunicação entre dispositivos e o \emph{Opus}.
 
-Usando o Tasmota como exemplo, um dos comandos que é possível usar, é o de ligar um AVAC, para isso é necessário enviar uma mensagem
-MQTT em uma estrutura de JSON para o tópico: ``\lstinline{cmnd/TOPICO MQTT DO DISPOSITIVO/IRHVAC}'', com o seguinte conteúdo:
-\begin{lstlisting}[language=Python]
-    {
-    "Vendor": O fabricante do AVAC,
-    "Power": AVAC ligado ou desligado,
-    "Mode":  Modo do AVAC, como frio, calor, ventilação, etc,
-    "FanSpeed": Velocidade do ventilador,
-    "Temp": Temperatura desejada
-    }
-\end{lstlisting}
+A função de um \emph{Driver} é atuar como um tradutor entre o \emph{Opus} e um tipo específico de dispositivo, garantido que comandos e dados
+sejam corretamente interpretados e processados. Isso garante a integração de uma ampla gama de dispositivos sem a necessidade de modificar os 
+módulos do sistema, como resultado o sistema se torna modular e escalável.
 
-A função do driver é abstrair detalhes como estes e expor para aplicação apenas os comandos que ela espera ter, como ligar, desligar, etc.
-Para ligar um AVAC Tasmota no \emph{Opus} utilizando este driver, a aplicação apenas chama o método ``\lstinline{on()}'' do objeto. O
-método ``\lstinline{on()}'' está ilustrado na figura \ref{fig:driver1}.
-\begin{figure}[h!]
-    \conteudoFigura
-    [Elaborado pelo Autor (2024)]
-    {0.35}
-    {driver1.png}
-    {Método \lstinline{on()} de dispositivos AVAC com o \emph{driver} Tasmota}
-    {fig:driver1}
-\end{figure}
+Em casos onde o dispositivo se comunica via um protocolo não suportado nativamente pelo Python, como dispositivos que requerem uma camada
+física diferente das utilizadas pelo protocolo TCP/IP, como Serial, ou até mesmo que utilizam TCP/IP, porém não HTTP, como o MQTT,
+é possível que \emph{Driver}s acessem as \emph{Interfaces}[\ref{opus-sec:interfaces}] para realizar a comunicação com o dispositivo.
 
