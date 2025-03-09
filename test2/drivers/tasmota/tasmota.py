@@ -28,27 +28,31 @@ def new_hvac(name: str, base_device: TasmotaDevice, additional_data) -> TasmotaH
 def _mqtt_callback(topic, data: json) -> None:
     """Callback for new devices"""
     log.debug("Tasmota -> MQTT Callback")
-    match topic[3]:
-        case "new_device":
-            log.debug("Tasmota -> New device Requested")
-            print(data)
-            match data["device_type"]:
-                case "HVAC":
-                    log.debug("Creating new Tasmota HVAC")
-                    new_device = TasmotaDevice()
-                    new_device.id = uuid.uuid1()
-                    new_device.tasmota_name = data['data']["tasmota_name"]
-                    new_device.type = "HVAC"
-                    OPUS_D_MANAGER.new_device(new_device)
-                    OPUS_D_MANAGER.register_device(
-                        device_id=uuid.UUID(str(new_device.id)),
-                        device_name=data["device_name"],
-                        device_driver="tasmota",
-                        room_id=uuid.UUID(str(data["room_id"])),
-                        additional_data=data
-                    )
-                case _:
-                    log.error("Unknown Device Type: %s", data["device_type"])
+    try:
+        match topic[3]:
+            case "new_device":
+                log.debug("Tasmota -> New device Requested")
+                # print(data)
+                match data["device_type"]:
+                    case "HVAC":
+                        log.debug("Creating new Tasmota HVAC")
+                        new_device = TasmotaDevice()
+                        new_device.id = uuid.uuid1()
+                        new_device.tasmota_name = data['data']["tasmota_name"]
+                        new_device.type = "HVAC"
+                        OPUS_D_MANAGER.new_device(new_device)
+                        OPUS_D_MANAGER.register_device(
+                            device_id=uuid.UUID(str(new_device.id)),
+                            device_name=data["device_name"],
+                            device_driver="tasmota",
+                            room_id=uuid.UUID(str(data["room_id"])),
+                            additional_data=data
+                        )
+                    case _:
+                        log.error("Unknown Device Type: %s", data["device_type"])
+    except Exception as exp:
+        log.error("Error in Tasmota MQTT Callback: %s", exp)
+        print(exp.with_traceback())
 
 def load_hvac(name: str, driver_data: dict) -> TasmotaHVAC:
     """Load a Tasmota HVAC"""

@@ -159,22 +159,22 @@ class DeviceManager:
 
     def dump_devices(self, send_to_log=False) -> None:
         """Print all devices"""
+        send_to_log = True
         if send_to_log:
             log.debug('All devices in the DeviceManager')
             log.debug('├──REGISTERED DEVICES')
             for device_type, devices in self.devices.items():
                 log.debug('│\t├── %s', device_type)
                 for device in devices:
-                    log.debug('│\t│\t├── %s', device)
+                    log.debug(f'│\t│\t├── {device} from [{self.devices[device_type][device].driver}]')
                 log.debug('│\t│\t└── END OF %s', device_type)
             log.debug('│\t└── END OF REGISTERED DEVICES')
             log.debug('└──AVAILABLE DEVICES')
             for driver, devices in self.available_devices.items():
-                log.debug('│\t├── %s', driver)
                 for device in devices:
                     log.debug('│\t│\t├── %s : %s', device.id, device.type)
                 log.debug('│\t└── END OF %s', driver)
-            log.debug('└── END OF AVAILABLE DEVICES')
+            log.debug(' \t└── END OF AVAILABLE DEVICES')
         dump: dict = {}
         dump['registered_devices'] = {}
         for device_type, devices in self.devices.items():
@@ -290,13 +290,14 @@ class DeviceManager:
             case 'devices':
                 match topic[2]:
                     case 'list_all':
+                        data = json.dumps(self.dump_devices())
                         self.opus_interfaces['mqtt<local>'].publish(
                             payload['callback'],
-                            json.dumps(self.dump_devices())
+                            data
                             )
                         self.opus_interfaces['mqtt<maestro>'].publish(
                             payload['callback'],
-                            json.dumps(self.dump_devices())
+                            data
                             )
                         return
                     case 'list':
