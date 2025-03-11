@@ -373,13 +373,14 @@ class LocationManager:
                                 json.dumps({'status': 'failed'})
                             )
                     case 'list':
+                        value = self.dump_buildings(True)
                         self.opus_interfaces['mqtt<local>'].publish(
                             payload['callback'],
-                            json.dumps(self.dump_buildings())
+                            json.dumps(value)
                         )
                         self.opus_interfaces['mqtt<maestro>'].publish(
                             payload['callback'],
-                            json.dumps(self.dump_buildings())
+                            json.dumps(value)
                         )
             case 'space':
                 match topic[2]:
@@ -413,13 +414,14 @@ class LocationManager:
                                 json.dumps({'status': 'failed'})
                             )
                     case 'list':
+                        value = self.dump_spaces(True)
                         self.opus_interfaces['mqtt<local>'].publish(
                             payload['callback'],
-                            json.dumps(self.dump_spaces())
+                            json.dumps(value)
                         )
                         self.opus_interfaces['mqtt<maestro>'].publish(
                             payload['callback'],
-                            json.dumps(self.dump_spaces())
+                            json.dumps(value)
                         )
             case 'room':
                 match topic[2]:
@@ -456,11 +458,12 @@ class LocationManager:
                                 json.dumps({'status': 'failed'})
                             )
                     case 'list':
+                        value = self.dump_rooms(True)
                         self.opus_interfaces['mqtt<local>'].publish(
                             payload['callback'],
-                            json.dumps(self.dump_rooms())
+                            json.dumps(value)
                         )
                         self.opus_interfaces['mqtt<maestro>'].publish(
                             payload['callback'],
-                            json.dumps(self.dump_rooms())
+                            json.dumps(value)
                         )
