@@ -1,0 +1,9 @@
+\subsection{Registro e Aquisição de Dispositivos}
+Visando ser modular, o \emph{Opus} implementa classes genéricas para representar tipos de dispositivos a ser herdadas pelas 
+classes dos \emph{Drivers}, essas classes são utilizadas na aquisição e registro de novos dispositivos.
+
+\paragraph{Registro de Dispositivos}
+Alguns dispositivos IoT podem ser descobertos automaticamente com algum sistema de anúncio, para suportar essa funcionalidade
+o \emph{Opus} separa dispositivos em dois estados: \emph{Dispositivos Disponíveis} e \emph{Dispositivos Registrados}.
+
+\emph{Dispositivos Disponíveis} são dispositivos descobertos pelos \emph{Drivers}, eles não possuem tipo definido e 
