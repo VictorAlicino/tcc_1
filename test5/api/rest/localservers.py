@@ -85,6 +85,9 @@ async def assign_users_to_server(server_id: str, server_user_list: list[UserRole
         entries.append((user, entry.role))
         report.append({entry.user_id: status.HTTP_201_CREATED})
     await MQTT_Users.register_new_user(local_server, entries)
+    # Register the users with their roles in the DB
+    for entry in entries:
+        print(opus_servers.assign_users_to_server(db_session, local_server.server_id, entries))
     if error_flag is True:
         return JSONResponse(
             content=report,

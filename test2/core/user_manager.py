@@ -73,6 +73,7 @@ class UserManager:
                 return None
             user.fk_role = role.role_pk
             crud.assign_new_user(db, user)
+            log.debug('User %s added to the database with role %s', user.given_name, role.role_name)
         finally:
             db.close()
 

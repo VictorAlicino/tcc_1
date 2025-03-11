@@ -1,0 +1,102 @@
+\subsection{\textbf{Gerenciadores}}
+
+No ``núcleo'' do \emph{Opus}, estão os \emph{Managers}, ou Gerenciadores, eles são responsáveis por coordenar o fluxo
+da aplicação \emph{Opus}, se comunicando utilizando a \emph{Interface} MQTT. Divididos em quatro módulos principais:
+\begin{itemize}
+    \item \lstinline{CloudManager}, que gerencia a comunicação com o \emph{Maestro};
+    \item \lstinline{UserManager}, que gerencia os usuários do \emph{Opus} em questão.
+    \item \lstinline{LocationManager}, que gerencia a estrutura do edifício no sistema;
+    \item \lstinline{DeviceManager}, que gerencia os dispositivos;
+\end{itemize}
+
+\subsubsection{CloudManager}
+\emph{CloudManager} é o módulo responsável pela comunicação entre o Servidor Local (\emph{Opus}) e Servidor Remoto (\emph{Maestro}), 
+garantindo a sincronização de informações e o controle remoto dos dispositivos cadastrados no sistema. 
+Essa comunicação é realizada principalmente via MQTT, permitindo que o \emph{Opus} envie e receba mensagens do Maestro de 
+maneira assíncrona e eficiente. 
+
+\paragraph{Funcionalidades Principais}
+\begin{itemize}
+    \item Login no Maestro: ao ser inicializado, o \emph{CloudManager} realiza um procedimento de login no Maestro, enviando informações como o 
+        identificador do Servidor Local, dado pelo nome do Servidor Local definido pelo usuário no arquivo de configuração; seu endereço IP público
+        e o tópico MQTT de \emph{callback}. Caso a autenticação falhe ou o Maestro não responda em um tempo limite, 
+        a aplicação se encerra para evitar estados inconsistentes.
+    \item Acesso das informações internas ao \emph{Opus}: o controle do que usuários podem ou não controlar é todo gerenciado por cada Servidor Local,
+        em casos do \emph{Maestro} requerer informações sobre algum usuário, como quais dispositivos ele está autorizado a controlar, o \emph{CloudManager}
+        irá fazer a integração com outros módulos do ``núcleo'' do \emph{Opus} para obter essas informações e enviar ao \emph{Maestro} via MQTT.
+\end{itemize}
+
+
+\subsubsection{UserManager}
+\emph{UserManager} é o módulo responsável pelo gerenciamento de usuários dentro do \emph{Opus}, garantindo que apenas os usuários registrados e com as devidas
+permissões possam acessar dispositivos cadastrados no sistema.
+
+\paragraph{Funcionalidades Principais}
+\begin{itemize}
+    \item Sincronização de Usuários do Maestro: o \emph{UserManager} recebe informações de usuários cadastrados no Maestro e os atribui 
+        localmente no \emph{Opus}. Esse processo inclui a atribuição daquele usuário a nível de acesso chamado de \emph{role} e a persistência dos dados
+        no banco de dados local.
+    \item Gerenciamento de Permissões: o módulo é responsável por checar níveis de permissão de usuários, entregando esse dados a outros módulos 
+        como o \emph{DeviceManager} que utiliza essas informações para permitir ou não o acesso a um dispositivo.
+    \item Comunicação via MQTT:\ o \emph{UserManager} também estabelece um canal de comunicação via MQTT com o Maestro, para troca de informações
+        sobre usuários, como por exemplo, a atribuição de um novo usuário ao \emph{Opus}.
+\end{itemize}
+
+
+
+\subsubsection{LocationManager}
+\emph{LocationManager} é o módulo responsável pela organização espacial dos dispositivos dentro do \emph{Opus},
+permitindo estruturar o ambiente em uma hierarquia composta por prédios, espaços e salas. Essa estrutura foi pensada
+para facilitar a implementação em vários tipos de edifícios, mantendo um balanço entre modularidade e simplicidade.
+
+\paragraph{Funcionalidades Principais}
+\begin{itemize}
+    \item Gerenciamento da Estrutura do Edifício: o \emph{LocationManager} organiza os dispositivos do \emph{Opus} 
+    em uma estrutura hierárquica composta por:
+    \begin{itemize}
+        \item Prédios (Buildings): representam grandes unidades físicas, como edifícios propriamente ditos, ou setores, como blocos de um campus;
+        \item Espaços (Spaces): são subdivisões dentro dos edifícios, como andares em um prédio, sendo um agrupamento de salas;
+        \item Salas (Rooms): representam ambientes específicos em um espaço, onde dispositivos podem ser instalados.
+    \end{itemize}
+    \item Criação e Registro de Estruturas: o módulo realiza toda a manutenção das estruturas no banco de dados local e também mantém as estruturas 
+        em memória durante a execução.
+    \item Carregamento de Estrutura Existentes: durante a inicialização, o \emph{LocationManager} consulta o banco de dados do
+        \emph{Opus} e carrega todas as estruturas previamente registradas em memória, onde ocorrem todas as operações de gerenciamento.
+    \item Configuração e Comunicação via MQTT: o módulo estabelece comunicação via MQTT, permitindo que o Maestro e
+        outros clientes solicitem informações ou realizem operações.
+        O \emph{LocationManager} processa mensagens em tópicos MQTT específicos para:
+    \begin{itemize}
+        \item Criar novos prédios, espaços e salas conforme solicitado.
+        \item Fornecer a lista atual de locais cadastrados no sistema.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{DeviceManager}
+\emph{DeviceManager} é o módulo responsável pelo gerenciamento de dispositivos dentro do \emph{Opus}.
+Ele controla a descoberta, registro, armazenamento e operação de dispositivos conectados, garantindo a integração entre diferentes drivers
+e a comunicação entre o \emph{Opus} e o \emph{Maestro}.
+
+\paragraph{Funcionalidades Principais}
+\begin{itemize}
+    \item Gerenciamento de Dispositivos: o \emph{DeviceManager} mantém um catálogo de dispositivos disponíveis e registrados em memória,
+        esse catálogo é divido nos tipos de dispositivos suportados pelo \emph{Opus};
+    \item Registro de Dispositivos: o módulo permite registrar dispositivos no sistema,
+        vinculando cada um a um driver específico e a uma sala dentro da abstração dos edifícios cadastrados no \emph{Opus}. Esse processo inclui:
+    \begin{itemize}
+        \item Verificação de Disponibilidade: o dispositivo precisa estar previamente detectado na lista de dispositivos disponíveis, encontrados
+            pelos \emph{Drivers};
+        \item Verificação do Local: o dispositivo apenas pode ser registrado em salas previamente cadastradas
+            no \emph{LocationManager};
+        \item Criação no Banco de Dados: após a validação, o dispositivo é adicionado a lista de dispositivos registrados e também é
+            adicionado ao banco de dados para persistência dos dados em caso de reinicialização do sistema.
+    \end{itemize}
+    \item Classificação por Tipo e Driver: o \emph{DeviceManager} categoriza os dispositivos de acordo com seu tipo e \emph{Driver}, para
+        os fins deste trabalho, estão suportados os seguintes tipos de dispositivos:
+    \begin{itemize}
+        \item LIGHT: Dispositivos de iluminação controláveis;
+        \item HVAC: Sistemas de Ar-Condicionado.
+    \end{itemize}
+        Outros dispositivos podem ser adicionados através da implementação de novos drivers.
+    \item Comunicação via MQTT: o módulo assim como os outros gerenciadores, também está integrado ao sistema de mensagens MQTT,
+        permitindo o controle remoto dos dispositivos via mensagens enviadas pelo \emph{Maestro}.
+\end{itemize}

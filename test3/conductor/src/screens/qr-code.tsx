@@ -1,5 +1,6 @@
 import { SafeAreaView } from "@/components/safe-area-view";
 import { Text } from "@/components/text";
+import { Alert } from "react-native";
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { View, useWindowDimensions, Linking } from "react-native";
 import { useCallback, useEffect, useState } from "react";
@@ -23,7 +24,7 @@ export function QRCode() {
     api.get<guestAPIResponse>(`opus_server/guest_access/${data}`).then((response) => {
       setGuestAccess(response.data);
       setAvailable(true);
-      console.log(response.data);
+      //console.log(response.data);
     }
     ).catch((error) => {
       console.log(error);
@@ -39,26 +40,41 @@ export function QRCode() {
   }, []);
 
   useEffect(() => {
-    //console.log("Oi");
-    if (available && guestAccess && guestAccess.grant_until < new Date()) {
-      console.log("oi2");
-      const device: opusDevices = guestAccess.device;
-      const building: opusBuilding = {
-        server_pk: guestAccess.server_id,
-        building_pk: "",
-        building_name: "",
-        security_level: "",
-        spaces: [],
-      };
-
-      if (guestAccess.device.device_type === "HVAC") {
-        navigation.navigate("HVACControl", { device, buildings: [building] });
+      console.log("useEffect disparado:", { available, guestAccess });
+  
+      if (!available || !guestAccess) return;
+  
+      console.log("guestAccess.grant_until:", guestAccess.grant_until);
+  
+      if (new Date(guestAccess.grant_until) > new Date()) {
+        const device: opusDevices = guestAccess.device;
+        const building: opusBuilding = {
+          server_pk: guestAccess.server_id,
+          building_pk: "",
+          building_name: "",
+          security_level: "",
+          spaces: [],
+        };
+  
+        if (guestAccess.device.device_type === "HVAC") {
+          console.log("Navegando para HVACControl...");
+          navigation.navigate("HVACControl", { device, buildings: [building] });
+        } else {
+          console.log("Tipo de dispositivo não suportado.");
+          setAvailable(false);
+        }
       } else {
-        // Se o tipo não for reconhecido, reseta o estado
-        setAvailable(false);
+        console.log("Acesso expirado!");
+  
+        Alert.alert(
+          "Acesso Expirado",
+          "O tempo de acesso a este dispositivo expirou. Por favor, solicite um novo QR Code.",
+          [{ text: "OK", onPress: () => setAvailable(false) }]
+        );
       }
-    }
-  }, [available, guestAccess]);
+    }, [available, guestAccess]);
+  
+
 
   return (
     <SafeAreaView className="flex-1 justify-center">

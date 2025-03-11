@@ -274,7 +274,7 @@ class LocationManager:
     def get_room(self,
                  room_id: UUID = None):
         """Return a room by id"""
-        log.debug('get_room is looking for room [%s]', room_id)
+        # log.debug('get_room is looking for room [%s]', room_id)
         if room_id:
             try:
                 return self.rooms[room_id]

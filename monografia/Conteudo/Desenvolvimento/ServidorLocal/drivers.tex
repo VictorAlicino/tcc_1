@@ -1,54 +1,60 @@
-\subsection{Drivers}
+\subsection{\textbf{Drivers}}
 
 Sem uma padronização da comunicação entre dispositivos IoT, cada fabricante pode adotar protocolos distintos e estruturas variadas de 
 mensagens. Diante deste cenário, foi adotado o conceito de \emph{Driver}s, criado para abstrair e padronizar a comunicação entre 
 dispositivos e o \emph{Opus}.
 
-\emph{Driver}s são pacotes escritos em Python e carregados no momento da inicialização do \emph{Opus},
-sua função é atuar como um tradutor para um tipo específico de dispositivo, garantindo que 
-comandos e dados sejam corretamente interpretados e processados. Além de, se suportado pelo método usado pelo driver, reportar
-novos dispositivos encontrados. Por conta disso, é necessário que \emph{Drivers} e o módulo de gerenciamento de dispositivos do 
-\emph{Opus} trabalhem em conjunto, garantindo a integração de uma ampla gama de dispositivos 
-sem a necessidade de modificar os módulos do sistema, como resultado o sistema se torna modular e escalável.
+\emph{Driver}s são pacotes escritos em Python e carregados no momento da inicialização do \emph{Opus}.
+Sua função é atuar como um tradutor para um tipo específico de dispositivo, garantindo que seus comandos e dados sejam corretamente 
+interpretados e processados. Além disso, caso o método utilizado pelo \emph{Driver} suporte descoberta automática, ele pode relatar novos 
+dispositivos encontrados. Por conta disso, é necessário que \emph{Driver}s e o módulo de gerenciamento de dispositivos do \emph{Opus} trabalhem 
+em conjunto, garantindo a integração de uma ampla gama de dispositivos sem a necessidade de modificar os módulos do sistema.
+Como resultado, o sistema se torna modular e escalável.
 
-Em casos onde o dispositivo se comunica via um protocolo não suportado nativamente pelo Python, como dispositivos que 
-requerem uma camada física diferente das utilizadas pelo protocolo TCP/IP, como Serial, ou até mesmo que utilizam TCP/IP, 
-porém não HTTP, como o MQTT, é possível que \emph{Driver}s acessem as \emph{Interfaces} para realizar a comunicação com o dispositivo.
+Quando um dispositivo utiliza um protocolo não suportado nativamente pelo Python, como aqueles que requerem uma camada física diferente do TCP/IP 
+(exemplo: comunicação Serial), ou que utilizam TCP/IP sem suporte HTTP (exemplo: MQTT), o \emph{Driver} pode acessar as 
+\emph{Interfaces} para realizar a comunicação.
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \conteudoFigura
     [Elaborado pelo Autor (2025)]
-    {0.2}
+    {0.19}
     {driver_example.png}
     {Exemplo de Driver}
     {fig:driver-example}
 \end{figure}
 
 Para ser considerado um \emph{Driver}, o pacote deve seguir um padrão de nomenclatura e implementar algumas funções esperadas.
-O pacote e o módulo principal devem ter o mesmo nome; o módulo principal deve ter implementado uma função ``\lstinline{start()}'' sem retornos,
-essa função será chamada no momento em que o \emph{Driver} for carregado; o módulo principal deve ter um dicionário global de 
-\emph{Interfaces} com a seguinte assinatura: \lstinline{interfaces: dict[str, Any]}, em caso do \emph{Driver} necessitar de uma \emph{Interface},
-o nome dela deve estar presente neste dicionário e o \emph{Opus} injetará o objeto da \emph{Interface} neste dicionário,
-permitindo que o \emph{Driver} a acesse.
+O pacote e o módulo principal devem ter o mesmo nome, pois o Opus busca pelo nome do \emph{Driver} dentro do diretório de \emph{Drivers}.
+Caso um \emph{Driver} chamado ``exemplo'' seja encontrado no diretório de \emph{Drivers}, o Opus carregará o módulo principal do pacote, localizado em 
+``drivers/exemplo/exemplo.py``. O módulo principal deve conter uma função ``\lstinline{start()}'' sem retornos, que será chamada no momento em que o 
+\emph{Driver} for carregado.Além disso, deve possuir um dicionário global de \emph{Interfaces} com a seguinte assinatura: 
+``\lstinline{interfaces: dict[str, Any]}''. Caso o \emph{Driver} necessite de uma \emph{Interface}, seu nome deve estar presente nesse dicionário,
+e o \emph{Opus} injetará o objeto correspondente, permitindo que o \emph{Driver} o acesse.
 
-Como \emph{Drivers} comandam toda a comunicação com os dispositivos, toda a estrutura de um dispositivo, assim como a lógica de controle
-ficam a cargo do \emph{Driver}. Eles são autônomos e podem funcionar como aplicações independentes, dando liberdade de implementar a lógicas
-singulares não importando sua complexidade, todavia, é importante que o \emph{Driver} siga o padrão esperado pelo \emph{Opus} em classes
+Como \emph{Driver}s comandam toda a comunicação com os dispositivos, toda a estrutura de um dispositivo, assim como a lógica de controle, 
+ficam a cargo do \emph{Driver}. Eles são autônomos e podem funcionar como aplicações independentes, permitindo a implementação de lógicas específicas,
+independentemente de sua complexidade. Todavia, é importante que o \emph{Driver} siga o padrão esperado pelo \emph{Opus} em classes
 voltadas para a comunicação com dispositivos.
 
 \subsubsection{A Classe de Dispositivos}
-A forma mais simples de abstrair um dispositivo é via uma classe.\ \emph{Drivers} tem liberdade total para implementar a classe dos dispositivos,
-sendo necessário apenas que essa classe seja herdeira da classe genérica de dispositivos do \emph{Opus}, que contém os métodos esperados para 
-o controle dos dispositivos através da aplicação.
+A forma mais simples de abstrair um dispositivo é via uma classe.\ \emph{Driver}s têm liberdade total para implementar a classe dos dispositivos,
+sendo necessário apenas que essa classe herde da classe genérica de dispositivos do \emph{Opus}, que contém os métodos esperados para 
+o controle dos dispositivos através da aplicação. 
 
+A classe genérica ``\lstinline{OpusDevice}'' é utilizada para representar dispositivos recém-descobertos, cujo tipo ainda não foi determinado. 
+Após a identificação, o dispositivo deve ser instanciado como um tipo mais específico, herdado de ``\lstinline{OpusDevice}''. 
 
+\subsubsection{O Registro de Dispositivos}
+Durante a etapa de registro de dispositivos descobertos, o \emph{Opus} irá buscar pela função que retorna uma instância daquele tipo de dispositivo para o
+\emph{Driver} em questão. O nome desta função deve ser ``\lstinline{new_}'' seguido do tipo do dispositivo. 
 
+Por exemplo, para um dispositivo do tipo ``\lstinline{light}'' no \emph{Driver} de exemplo, chamado Driver1, a assinatura da função seria:
 
-%o módulo deve ter implementado uma função ``\lstinline{start()}'' sem retornos, essa função será 
-%chamada no momento em que o \emph{Driver} for carregado, também deve ter um dicionário global de \emph{Interface}s com a seguinte assinatura
-%\lstinline{interfaces: dict[str, Any]}, em caso do \emph{Driver} necessitar de uma \emph{Interface}, o nome dela deve estar presente neste dicionário,
-%o \emph{Opus} irá injetar o objeto da \emph{Interface} neste dicionário, permitindo que o \emph{Driver} a acesse.
-%
-%A função ``\lstinline{start()}'' recebe os módulos do \emph{Opus} como argumentos, liberando acesso a todas as funcionalidades do sistema
-%para o \emph{Driver}, isto é necessário para acessar os métodos de criação e manipulação de dispositivos, presentes no 
-%módulo ``\lstinline{managers.devices}''.
+\begin{lstlisting}[language=Python]
+def new_light() -> Driver1Light:
+    return Driver1Light()
+\end{lstlisting}
+
+Um exemplo de um \emph{Driver} que implementa um dispositivo teórico do tipo ``\lstinline{light}'', com os requisitos mínimos é mostrado 
+na figura~\ref{fig:driver-example}.

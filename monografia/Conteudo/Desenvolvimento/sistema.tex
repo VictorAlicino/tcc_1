@@ -1,6 +1,48 @@
 \chapter{Sistema Opus}
 
-Buscando o objetivo do trabalho, foi proposto um sistema denominado de \emph{Opus}, dividido em três partes, 
-\textbf{Opus}, \textbf{Maestro} e \textbf{Conductor}, ele tem o objetivo principal de permitir que múltiplos usuários
-possam controlar dispositivos IoT.
+Buscando o objetivo do trabalho, foi proposto um sistema denominado de \textbf{Opus}, dividido em três partes, 
+\emph{Opus} (Servidor Local), \emph{Maestro} (Servidor Remoto) e \emph{Conductor} (Interface de Usuário), 
+ele tem o objetivo principal de permitir que múltiplos usuários possam controlar dispositivos IoT.
+
+O sistema \textbf{Opus} foi desenvolvido pensando em edifícios de uso coletivo, como escritórios, coworking e
+salas de aula, onde a automação pode ser utilizada para facilitar a vida dos usuários, como controlar a iluminação e
+climatização. 
+
+Inicialmente foi planejado um sistema apenas com Servidor e Interface de Usuário, porém, visando a autonomia de edifícios e
+privacidade dos dados, o Servidor foi divido em dois, Servidor Local (que manteve o nome \emph{Opus}) e Servidor Remoto (que recebeu o nome de 
+\emph{Maestro}), onde o Servidor Local é responsável por todo o gerenciamento de dispositivos e permissões de usuários, 
+enquanto o Servidor Remoto é responsável pela autenticação de usuários e sincronização de informações entre os Servidores Locais,
+assim como ser uma ponte entre a Interface de Usuário e os Servidores Locais através da internet, permitindo o controle remoto
+dos dispositivos em qualquer lugar do mundo.
+
+A arquitetura do sistema é exemplificada na figura~\ref{fig:overall}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.2}
+    {overall.png}
+    {Arquitetura do Sistema}
+    {fig:overall}
+\end{figure}
+
+A comunicação entre as partes do sistema é realizada através do protocolo MQTT. 
+Este protocolo foi escolhido por ser leve e fácil de implementar utilizando bibliotecas disponíveis para Python,
+a linguagem de programação escolhida para o desenvolvimento do sistema. Dada a natureza ``Publicar e Assinar'' do MQTT,
+ele não é ideal para aplicações do tipo ``Requisição e Resposta'', para contornar este detalhe, foi implementado um padrão na comunicação entre
+\emph{Opus} e \emph{Maestro}.
+
+Todas as mensagens devem ser do tipo JSON, contendo sempre um campo ``callback'' que indicará ao destinatário da mensagem o tópico MQTT
+onde a resposta deve ser enviada ao remetente. O remetente deve se inscrever no tópico ``callback'' para receber a resposta, como ilustrado
+na figura~\ref{fig:mqtt_comm_1}, onde ``\lstinline{data}'' é o dado que será mandado do \emph{Maestro} para o \emph{Opus}, note que, além do
+campo do conteúdo da mensagem (``\lstinline{device_id}''), também é enviado um campo ``\lstinline{callback}'' que indica o tópico MQTT onde a resposta
+deve ser enviada, esse campo possui um identificador aleatório, garantindo que várias respostas possam ser recebidas ao mesmo tempo sem conflitos.
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.3}
+    {mqtt_comm_example.png}
+    {Exemplo de Comunicação entre \emph{Opus} e \emph{Maestro}}
+    {fig:mqtt_comm_1}
+\end{figure}
 

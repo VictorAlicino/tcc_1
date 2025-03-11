@@ -35,38 +35,31 @@ def get_user_requesting(token: str, db_session):
     return None
 
 @router.get("/")
-async def get_all_users():
+async def get_all_users(db_session=Depends(db.get_db)):
     """Endpoint to get all users from the server."""
-    users = None
-    with db.get_db() as db_session:
-        users = maestro_users.get_all_users(db_session)
+    users = maestro_users.get_all_users(db_session)
     return users
 
 @router.get("/{user_id}")
-async def get_user(user_id: str):
+async def get_user(user_id: str, db_session=Depends(db.get_db)):
     """Endpoint to get a user from the server."""
-    user = None
-    with db.get_db() as db_session:
-        user = maestro_users.get_user_by_id(db_session, user_id)
+    user = maestro_users.get_user_by_id(db_session, user_id)
     return user
 
 @router.delete("/{user_id}/delete")
-async def delete_user(user_id: str):
+async def delete_user(user_id: str, db_session=Depends(db.get_db)):
     """Endpoint to delete a user from the server."""
     user: MaestroUser = None
-    with db.get_db() as db_session:
-        user = maestro_users.get_user_by_id(db_session, user_id)
+    user = maestro_users.get_user_by_id(db_session, user_id)
     if user:
-        with db.get_db() as db_session:
-            maestro_users.delete_user(db_session, user)
+        maestro_users.delete_user(next(db_session), user)
         return "User deleted", status.HTTP_200_OK
     return "User not found", status.HTTP_404_NOT_FOUND
 
 @router.get("/{user_id}/servers")
-async def get_user_servers(user_id: str):
+async def get_user_servers(user_id: str, db_session=Depends(db.get_db)):
     """Endpoint to get all servers of a user."""
-    with db.get_db() as db_session:
-        return maestro_users.get_servers_of_user(db_session, user_id)
+    return maestro_users.get_servers_of_user(db_session, user_id)
 
 @router.get("/opus_server/dump")
 async def dump_all_servers_info(validate: str = Depends(oauth2_scheme), db_session=Depends(db.get_db)):
@@ -76,6 +69,7 @@ async def dump_all_servers_info(validate: str = Depends(oauth2_scheme), db_sessi
     servers_dumped: list = []
 
     for server in user_servers[1]:
+        print(f"Dumping server: {server.server_id}")
         server_response: json = await dump_all_info_from_a_user(server, user_servers[0])
         if server_response:
             for building in server_response['buildings']:

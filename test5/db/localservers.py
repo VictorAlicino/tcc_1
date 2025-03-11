@@ -1,6 +1,8 @@
 """Local Servers handler for the database"""
 from sqlalchemy.orm import Session
 from db.models import OpusServer, roles
+from db.models import MaestroUser
+from sqlalchemy.dialects.postgresql import UUID
 
 def create_server(db: Session, server: OpusServer) -> OpusServer:
     """Create a server"""
@@ -44,18 +46,18 @@ def get_server_admins(db: Session, server_id: str):
     # Admins are role 0
     return db.query(roles).filter(roles.c.server_id == server_id, roles.c.role == 0).all()
 
-def assign_users_to_server(db: Session, server_id: str, users: list):
+def assign_users_to_server(db: Session, server_id: str, users: list[tuple[MaestroUser, int]],):
     """Assign users to a server"""
     for user in users:
         db.execute(
             roles.insert().values(
-                user_id=user,
-                server_id=server_id,
-                role=1
+                user_id=str(user[0].user_id),
+                server_id=str(server_id),
+                role=user[1]
             )
         )
     db.commit()
-    return f"Users {users} have been assigned to server {server_id}"
+    return f"Users have been assigned to server {server_id}"
 
 def get_server_users(db: Session, server_id: str):
     """Get all users in a server"""

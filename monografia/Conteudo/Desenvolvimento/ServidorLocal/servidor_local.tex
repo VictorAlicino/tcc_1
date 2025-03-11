@@ -18,11 +18,13 @@ A aplicação é organizada em quatro módulos principais, como ilustrado na fig
     {fig:opus1}
 \end{figure}
 
-\emph{Interfaces}, módulos que adicionam uma forma de comunicação ao \emph{Opus}, como, por exemplo, uma \emph{interface} para comunicação com 
-dispositivos ZigBee[\ref{sec:zigbee}], ou KNX[\ref{sec:knx}]; \emph{Drivers}, responsáveis por traduzir os comandos do \emph{Opus} para o 
-protocolo do dispositivo, podendo ou não utilizar alguma \emph{interface} própria para esta finalidade; \emph{Managers}, são módulos da aplicação 
+\textbf{Interfaces}, módulos que adicionam uma forma de comunicação ao \emph{Opus}, como, por exemplo, uma \emph{interface} para comunicação com 
+dispositivos ZigBee[\ref{sec:zigbee}], ou KNX[\ref{sec:knx}]; \textbf{Drivers}, responsáveis por traduzir os comandos do \emph{Opus} para o 
+protocolo do dispositivo, podendo ou não utilizar alguma \emph{interface} própria para esta finalidade; \textbf{Managers}, são módulos da aplicação 
 que gerenciam seu funcionamento, recebem, enviam e processam comandos vindos do Servidor Remoto e por fim, o banco de dados.
 
 \input{Conteudo/Desenvolvimento/ServidorLocal/interfaces.tex}
 
 \input{Conteudo/Desenvolvimento/ServidorLocal/drivers.tex}
+
+\input{Conteudo/Desenvolvimento/ServidorLocal/managers.tex}
