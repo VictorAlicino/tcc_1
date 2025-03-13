@@ -81,7 +81,14 @@ async def conductor_login(request: ConductorLogin, db_session=Depends(db.get_db)
     if user is None:
         log.warning(f"{request.email} tried to login but is not authorized")
         log.info(f"Registering {request.email} as a new user")
-        token = await oauth.google.authorize_access_token(request)
+        # setting up a new request
+        new_request = Request(
+            {
+                'google_sub': request.google_sub,
+                'email': request.email
+            }
+        )
+        token = await oauth.google.authorize_access_token(new_request)
         user = MaestroUser(
             google_sub = token['userinfo']['sub'],
             email = token['userinfo']['email'],
