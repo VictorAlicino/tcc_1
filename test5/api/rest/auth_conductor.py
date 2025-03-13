@@ -69,6 +69,7 @@ async def conductor_register(request: Request, db_session=Depends(db.get_db)):
         picture_url = token['photo']
     )
     maestro_users.create_user(db_session, user)
+    log.info(f"User {user.email} has been created")
     return JSONResponse(
         content={
             "message": f"Mr(s). {user.given_name} {user.family_name} has been created",

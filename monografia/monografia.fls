@@ -379,18 +379,6 @@ INPUT Conteudo\Comeco\RevisaoBibliografica\edificio-inteligente.aux
 INPUT .\Conteudo\Comeco\RevisaoBibliografica\internet-das-coisas.aux
 INPUT .\Conteudo\Comeco\RevisaoBibliografica\internet-das-coisas.aux
 INPUT Conteudo\Comeco\RevisaoBibliografica\internet-das-coisas.aux
-INPUT .\Conteudo\Comeco\RevisaoBibliografica\tecnologias.aux
-INPUT .\Conteudo\Comeco\RevisaoBibliografica\tecnologias.aux
-INPUT Conteudo\Comeco\RevisaoBibliografica\tecnologias.aux
-INPUT .\Conteudo\Desenvolvimento\sistema.aux
-INPUT .\Conteudo\Desenvolvimento\sistema.aux
-INPUT Conteudo\Desenvolvimento\sistema.aux
-INPUT .\Conteudo\Desenvolvimento\ServidorLocal\servidor_local.aux
-INPUT .\Conteudo\Desenvolvimento\ServidorLocal\servidor_local.aux
-INPUT Conteudo\Desenvolvimento\ServidorLocal\servidor_local.aux
-INPUT .\Conteudo\Desenvolvimento\ServidorRemoto\maestro.aux
-INPUT .\Conteudo\Desenvolvimento\ServidorRemoto\maestro.aux
-INPUT Conteudo\Desenvolvimento\ServidorRemoto\maestro.aux
 OUTPUT monografia.aux
 INPUT C:\Users\victo\AppData\Local\Programs\MiKTeX\tex\context\base\mkii\supp-pdf.mkii
 INPUT C:\Users\victo\AppData\Local\Programs\MiKTeX\tex\context\base\mkii\supp-pdf.mkii
@@ -482,6 +470,7 @@ INPUT .\Imagens\buckman2014.png
 INPUT .\Imagens\buckman2014.png
 INPUT .\Imagens\buckman2014.png
 INPUT .\Imagens\buckman2014.png
+INPUT C:\Users\victo\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\rm-lmbx10.tfm
 INPUT .\Imagens\appliedrisk2019.jpg
 INPUT .\Imagens\appliedrisk2019.jpg
 INPUT .\Imagens\appliedrisk2019.jpg
@@ -712,6 +701,8 @@ INPUT .\Conteudo\Desenvolvimento\ServidorRemoto\maestro.aux
 INPUT Conteudo\Desenvolvimento\ServidorRemoto\maestro.aux
 INPUT .\monografia.brf
 INPUT .\monografia.brf
+INPUT C:\Users\victo\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmbx10.pfb
+INPUT C:\Users\victo\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmbx10.pfb
 INPUT C:\Users\victo\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmbx12.pfb
 INPUT C:\Users\victo\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmbx12.pfb
 INPUT C:\Users\victo\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmcsc10.pfb

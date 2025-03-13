@@ -12,7 +12,7 @@ def create_user(db: Session, user: MaestroUser) -> MaestroUser | None:
     db.add(user)
     db.commit()
     db.refresh(user)
-    print(f'User created: {user.email}')
+    #print(f'User created: {user.email}')
     return user
 
 def get_user_by_id(db: Session, user_id: str) -> MaestroUser | None:
