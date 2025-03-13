@@ -74,10 +74,17 @@ async def device_set_state(
         )
     
     if server_id not in maestro_users.get_servers_of_user(db_session, user.user_id):
-        return JSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            content="User not authorized to access this server"
-        )
+        # Check if the user is authorized to be a guest
+        try:
+            curr_guest_user = guest_users_devices[server_id][device_id]['current_guest']
+            if curr_guest_user != user.user_id: 
+                raise KeyError
+        except KeyError:
+            log.warning(f"User Mr(s). {user.family_name} is not authorized to set state of device {device_id} on server {server_id}")
+            return JSONResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                content="User not authorized to set state of device"
+            )
     
     local_server: OpusServer | None = opus_servers.get_server_by_id(db_session, server_id)
     if not local_server:
@@ -153,6 +160,8 @@ async def get_guest_access(
             content="User not found"
         )
     
+    global guest_users_devices
+    
     guest_users_devices.setdefault(cypher_suite['server_id'], {})
     guest_users_devices[cypher_suite['server_id']].setdefault(cypher_suite['device_id'], {"current_guest": None, "granted_until": None})
 
@@ -160,7 +169,7 @@ async def get_guest_access(
 
     if current_guest != user.user_id:
         guest_users_devices[cypher_suite['server_id']][cypher_suite['device_id']]['current_guest'] = user.user_id
-        granted_until = (datetime.now() + timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
+        granted_until = (datetime.now() + timedelta(minutes=30)).strftime("%Y-%m-%d %H:%M:%S")
         guest_users_devices[cypher_suite['server_id']][cypher_suite['device_id']]['granted_until'] = granted_until
         log.debug(f"User {user.user_id} has been granted GUEST access to device {cypher_suite['device_id']} on server {cypher_suite['server_id']} until {granted_until}")
     else:

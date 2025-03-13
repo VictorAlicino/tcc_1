@@ -2,6 +2,7 @@
 
 import json
 import logging
+from typing import override
 from uuid import UUID
 from ipaddress import ip_address
 # Non-Standard Libraries
@@ -45,6 +46,7 @@ class SonoffLight(OpusLight):
         self.device_id = device_payload['data']['deviceid']
         self.bssid = device_payload['data']['bssid']
 
+    @override
     def on(self) -> None:
         requests.post(
             url=f'http://{self.ip_address}:{self.port}/zeroconf/switch',
@@ -56,6 +58,7 @@ class SonoffLight(OpusLight):
             timeout=5
         )
 
+    @override
     def off(self) -> None:
         requests.post(
             url=f'http://{self.ip_address}:{self.port}/zeroconf/switch',

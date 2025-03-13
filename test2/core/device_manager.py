@@ -2,9 +2,12 @@
 import os
 import logging
 import json
+import traceback
+from types import NoneType
 from uuid import UUID
 from sqlalchemy.orm import Session
 from db import models
+import db.crud as crud
 import core
 
 log = logging.getLogger(__name__)
@@ -428,10 +431,33 @@ class DeviceManager:
                     case 'set_state':
                         try:
                             temp = json.loads(msg.payload)
-                            user = self.users_managers.get_user(temp['user_id'])
+                            user: models.User = self.users_managers.get_user(temp['user_id'])
                             device = self.get_device(UUID(topic[3]))
-                            if not self.users_managers.check_user_access_to_device(user, device):
-                                raise ValueError('User does not have access to this device')
+                            if user is None:
+                                user = models.User()
+                                user.user_pk = None
+                                user.given_name = temp['user']['given_name']
+                                user.email = temp['user']['email']
+                            try:
+                                db_session = next(self.opus_db.get_db())
+                                role: models.Role = crud.get_role_uuid(db_session, user.fk_role)
+                                if role is None:
+                                    role = crud.get_role_by_name(db_session, 'Guest')
+                            except AttributeError as exc:
+                                role = crud.get_role_by_name(db_session, 'Guest')
+                            finally:
+                                db_session.close()                                
+                            if role.role_name == 'Guest':
+                                if not self.users_managers.check_if_device_accepts_guests(device):
+                                    log.warning(f'{user.given_name} is a guest and device {device.name} does not accept guests')
+                                    # raise ValueError('Device does not accept guests')
+                                    return
+                            else:
+                                if not self.users_managers.check_user_access_to_device(user, device):
+                                    log.warning(f'{user.given_name} does not have access to device {device.name}')
+                                    # raise ValueError(f'{user.given_name} does not have access to this device')
+                                    return
+                            log.info(f"User {user.given_name} [{role.role_name}] is accessing device {device.name}")
                             device.set_state(temp['state'])
                             self.opus_interfaces['mqtt<maestro>'].publish(
                                 payload['callback'],
@@ -443,7 +469,8 @@ class DeviceManager:
                             )
                             return
                         except Exception as exc: # pylint: disable=broad-except
-                            log.warning(msg.payload)
+                            log.error("Exception: %s", exc)
+                            log.error("Traceback:\n%s", traceback.format_exc())
                             self.opus_interfaces['mqtt<maestro>'].publish(
                                 payload['callback'],
                                 json.dumps({

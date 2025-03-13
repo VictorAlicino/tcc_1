@@ -53,6 +53,11 @@ async def device_set_state(local_server: OpusServer, user: MaestroUser, device_i
     request_id = str(uuid.uuid4())
     data: dict = {
         "device_id": device_id,
+        "user": {
+            "user_id": str(user.user_id),
+            "given_name": user.given_name,
+            "email": user.email
+        },
         "user_id": str(user.user_id),
         "state": state,
         "callback": env('CLOUD-MQTT') + "/devices/set_device_state/callback/" + request_id

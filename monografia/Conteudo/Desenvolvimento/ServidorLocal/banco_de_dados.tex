@@ -1,1 +1,90 @@
-\section{Banco de Dados}
+\subsection{\textbf{Banco de Dados}}
+A escolha do banco de dados para o Servidor Local \emph{Opus} foi tomada a partir dos seguintes critérios:
+\begin{itemize}
+    \item Banco autocontido: Não requer a instalação de um servidor de banco de dados separado, 
+        tornando a aplicação mais simples e portátil;
+    \item Desempenho eficiente: Para um ambiente local, SQLite oferece operações rápidas de leitura e escrita, 
+        atendendo bem às necessidades do sistema;
+    \item Segurança dos dados: Com um banco de dados local, as informações de dispositivos de um edifícios permanacem restritas para 
+        acesso externo.
+\end{itemize}
+
+Com base nesses critérios, foi escolhido o SQLite como banco de dados para o \emph{Opus}.
+O SQLite é um banco de dados relacional que não requer um servidor separado para funcionar, também tem uma boa 
+integração com Python através do ORM SQLAlchemy, o que facilita a modelagem e manipulação dos dados.
+
+\subsubsection{Estrutura do Banco de Dados}
+O banco de dados do \emph{Opus} segue um modelo relacional estruturado para representar a hierarquia de um edifício inteligente,
+usuários, dispositivos registrados e permissões de acesso. A estrutura inclui as seguintes tabelas principais:
+\begin{itemize}
+    \item Building: Representa os edifícios cadastrados no sistema;
+    \item BuildingSpace: Define espaços dentro dos edifícios, como andares em um prédio;
+    \item BuildingRoom: Representa salas dentro dos espaços;
+    \item Device: Contém os dispositivos IoT cadastrados, armazenando informações como tipo de dispositivo, 
+        nome e dados específicos de configuração que variam de acordo com o \emph{Driver} utilizado;
+    \item Role: Define os diferentes papéis dos usuários no sistema, com níveis de segurança específicos;
+    \item User: Armazena os usuários registrados;
+    \item \texttt{role\_device} (tabela associativa): Relaciona os dispositivos que cada papel pode acessar.
+\end{itemize}
+
+A modelagem utiliza UUIDs como chaves primárias para garantir identificadores únicos globalmente.
+
+O ERD (Diagrama de Relacionamento de Entidades) do banco de dados do \emph{Opus} é mostrado na figura~\ref{fig:opus-erd}.
+\begin{figure}[H]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.3}
+    {opus_erd.PNG}
+    {Diagrama de Relacionamento de Entidades do Banco de Dados do Opus}
+    {fig:opus-erd}
+\end{figure}
+O diagrama da figura~\ref{fig:opus-erd} ilustra muito bem como a hierarquia de um edifício é representada no banco de dados,
+dispositivos são contidos em salas que são contidas em espaços que são contidos em prédios.
+Um ponto importante a ser observado é a relação entre a tabela \texttt{role} e a tabela \texttt{device},
+que é feita através da tabela associativa \texttt{role\_device}. \texttt{role} define os níveis de acesso dos usuários,
+cada usuário tem uma \texttt{role} que é representada por um valor numérico onde quanto menor o valor, maior o nível de acesso,
+sendo 0 o nível de administrador. A tabela associativa \texttt{role\_device} relaciona os dispositivos que cada \texttt{role}
+pode acessar, isso garante que o acesso a cada dispositivo seja controlado de acordo com o nível de permissão do usuário.
+
+O banco de dados do \emph{Opus} tem as seguintes informações em cada tabela:
+\begin{itemize}
+    \item \textbf{Building}  
+      \begin{itemize}
+          \item \texttt{building\_pk: UUID} - Identificador único do edifício;
+          \item \texttt{building\_name: str} - Nome do edifício.
+      \end{itemize}
+    \item \textbf{BuildingSpace}  
+      \begin{itemize}
+          \item \texttt{building\_space\_pk: UUID} - Identificador único do espaço;
+          \item \texttt{building\_fk: UUID} - Chave estrangeira para o edifício;
+          \item \texttt{space\_name: str} - Nome do espaço.
+      \end{itemize}
+    \item \textbf{BuildingRoom}  
+      \begin{itemize}
+          \item \texttt{building\_room\_pk: UUID} - Identificador único da sala;
+          \item \texttt{building\_space\_fk: UUID} - Chave estrangeira para o espaço;
+          \item \texttt{room\_name: str} - Nome da sala.
+      \end{itemize}
+    \item \textbf{Device}  
+      \begin{itemize}
+          \item \texttt{device\_pk: UUID} - Identificador único do dispositivo;
+          \item \texttt{room\_fk: UUID} - Chave estrangeira para a sala;
+          \item \texttt{device\_name: str} - Nome do dispositivo;
+          \item \texttt{device\_type: str} - Tipo do dispositivo;
+          \item \texttt{driver\_name: str} - Nome do \emph{Driver} utilizado;
+          \item \texttt{driver\_data: JSON} - Dados específicos do \emph{Driver}.
+      \end{itemize}
+    \item \textbf{Role}  
+      \begin{itemize}
+          \item \texttt{role\_pk: UUID} - Identificador único do papel;
+          \item \texttt{role\_name: str} - Nome do papel;
+          \item \texttt{security\_level: int} - Nível de segurança do papel.
+      \end{itemize}
+    \item \textbf{User}  
+      \begin{itemize}
+          \item \texttt{user\_pk: UUID} - Identificador único do usuário;
+          \item \texttt{given\_name: str} - Nome do usuário;
+          \item \texttt{email: str} - E-mail do usuário;
+          \item \texttt{fk\_role: UUID} - Chave estrangeira para o papel.
+      \end{itemize}
+\end{itemize}

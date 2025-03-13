@@ -6,12 +6,12 @@ import { api } from "@/services/api";
 import { useAuthentication } from "@/contexts/authentication-context";
 
 export function Login() {
-  const { googleSignIn } = useAuthentication();
+  const { googleSignIn, registerWithGoogle } = useAuthentication();
 
   return (
     <SafeAreaView>
         <View className="flex-1 items-center justify-center bg-zinc-900">
-        <View style={{flex:4,flexDirection:"row",justifyContent:'space-between',padding:0}}>
+        <View style={{flex:5,flexDirection:"row",justifyContent:'space-between',padding:0}}>
             </View>
             <View className="items-center justify-center">
                 <Image 
@@ -21,7 +21,7 @@ export function Login() {
                     resizeMode="center"
                 />
             </View>
-            <View style={{flex:2,flexDirection:"row",justifyContent:'space-between',padding:0}}>
+            <View style={{flex:1,flexDirection:"row",justifyContent:'space-between',padding:0}}>
             </View>
             <View>
                 <TouchableOpacity
@@ -33,6 +33,13 @@ export function Login() {
                     <Text className="text-base font-500 px-4">Continuar com o Google</Text>
 
                 </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() => {registerWithGoogle()}}
+                >
+                    <Text className="text-base font-200 text-center mt-4 p-5">Ainda não tenho uma conta</Text>
+                </TouchableOpacity>
+
             </View>
             <View style={{flex:2,flexDirection:"row",justifyContent:'space-between',padding:0}}>
             </View>

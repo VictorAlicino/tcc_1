@@ -31,7 +31,7 @@ class TasmotaHVAC(OpusHVAC):
 
     def on(self) -> None:
         """Turn the HVAC on"""
-        log.info("Turning on HVAC %s @ %s", self.name, self.room_id)
+        #log.info("Turning on HVAC %s @ %s", self.name, self.room_id)
         self.mqtt_link.publish(
             topic=f"cmnd/{self.mqtt_name}/IRHVAC",
             payload=json.dumps({
@@ -43,11 +43,11 @@ class TasmotaHVAC(OpusHVAC):
             })
         )
         self.power_state = "On"
-
+        self.print_state()
 
     def off(self) -> None:
         """Turn the HVAC off"""
-        log.info("Turning off HVAC %s @ %s", self.name, self.room_id)
+        #log.info("Turning off HVAC %s @ %s", self.name, self.room_id)
         self.mqtt_link.publish(
             topic=f"cmnd/{self.mqtt_name}/IRHVAC",
             payload=json.dumps({
@@ -58,10 +58,11 @@ class TasmotaHVAC(OpusHVAC):
             })
         )
         self.power_state = "Off"
+        self.print_state()
 
     def set_temperature(self, temperature: float) -> None:
         """Set the Temperature"""
-        log.info("Setting temperature of %s to %s @ %s", self.name, temperature, self.room_id)
+        #log.info("Setting temperature of %s to %s @ %s", self.name, temperature, self.room_id)
         self.mqtt_link.publish(
             topic=f"cmnd/{self.mqtt_name}/IRHVAC",
             payload=json.dumps({
@@ -72,10 +73,11 @@ class TasmotaHVAC(OpusHVAC):
             })
         )
         self.temperature = temperature
+        self.print_state()
 
     def set_mode(self, mode: str) -> None:
         """Set the Mode"""
-        log.info("Setting mode of %s to %s @ %s", self.name, mode, self.room_id)
+        #log.info("Setting mode of %s to %s @ %s", self.name, mode, self.room_id)
         self.mqtt_link.publish(
             topic=f"cmnd/{self.mqtt_name}/IRHVAC",
             payload=json.dumps({
@@ -86,10 +88,11 @@ class TasmotaHVAC(OpusHVAC):
             })
         )
         self.mode = mode
+        self.print_state()
 
     def set_fan_speed(self, fan_speed: str) -> None:
         """Set the Fan Speed"""
-        log.info("Setting fan speed of %s to %s @ %s", self.name, fan_speed, self.room_id)
+        #log.info("Setting fan speed of %s to %s @ %s", self.name, fan_speed, self.room_id)
         self.mqtt_link.publish(
             topic=f"cmnd/{self.mqtt_name}/IRHVAC",
             payload=json.dumps({
@@ -101,10 +104,11 @@ class TasmotaHVAC(OpusHVAC):
             })
         )
         self.fan_speed = fan_speed
+        self.print_state()
 
     def set_state(self, state: dict) -> None:
         """Set the state of the HVAC"""
-        log.info("Setting state of %s to %s @ %s", self.name, state, self.room_id)
+        #log.info("Setting state of %s to %s @ %s", self.name, state, self.room_id)
         self.mqtt_link.publish(
             topic=f"cmnd/{self.mqtt_name}/IRHVAC",
             payload=json.dumps({
@@ -135,6 +139,7 @@ class TasmotaHVAC(OpusHVAC):
 
     def print_state(self) -> None:
         """Print the HVAC State"""
+        log.debug("State of %s", self.id)
         log.debug("Name: %s", self.name)
         log.debug("\t├── Power State: %s", self.power_state)
         log.debug("\t├── Mode: %s", self.mode)

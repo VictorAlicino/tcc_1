@@ -93,6 +93,16 @@ class UserManager:
             return False
         finally:
             db.close()
+
+    def check_if_device_accepts_guests(self, device: Device) -> bool:
+        """Check if a device accepts guests"""
+        db = next(self.opus_db.get_db())
+        try:
+            if device.id in [device.device_pk for device in crud.get_all_devices_authorized_to_a_role(db, crud.get_role_by_name(db, 'Guest'))]:
+                return True
+            return False
+        finally:
+            db.close()
     
     def get_user(self, user_pk: str) -> User:
         """Get a user by its PK"""

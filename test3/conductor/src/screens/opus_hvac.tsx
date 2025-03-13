@@ -1,4 +1,4 @@
-import { TouchableOpacity, View, StyleSheet } from "react-native";
+import { TouchableOpacity, View, StyleSheet, ToastAndroid } from "react-native";
 import React, { useState } from "react";
 import { Overlay } from "react-native-elements";
 import { Icon } from "@/components/icon";
@@ -115,7 +115,20 @@ export function OpusHVAC({ navigation, route } : StackItemProps<"HVACControl">) 
         route.params.device.device_pk +
         "/set_state",
         payload
-      );
+      ).catch((error) => {
+        // if error 400
+        switch (error.response.status) {
+          case 400:
+          case 401:
+          case 500:
+            ToastAndroid.show("Você não tem mais acesso a esse dispositivo", ToastAndroid.SHORT);
+            break;
+          default:
+            console.error("Error setting HVAC state:", error);
+            break;
+        }
+        handleGoBack();
+      });
     }
     catch (error) {
       console.error("Error setting HVAC state:", error);

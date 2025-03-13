@@ -11,5 +11,6 @@ export const loginToConductor = async (email: string | null, google_sub: string 
         email,
         google_sub
     });
+    if(response.status === 404) throw new Error('User not found');
     return response.data;
 }

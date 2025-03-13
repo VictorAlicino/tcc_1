@@ -1,9 +1,69 @@
 \subsection{Registro e Aquisição de Dispositivos}
-Visando ser modular, o \emph{Opus} implementa classes genéricas para representar tipos de dispositivos a ser herdadas pelas 
-classes dos \emph{Drivers}, essas classes são utilizadas na aquisição e registro de novos dispositivos.
+
+\begin{figure}[H]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.2}
+    {opus_device_generic.png}
+    {Classe Genérica de Dispositivo do Opus}
+    {fig:generic-device-opus}
+\end{figure}
+
+Para garantir modularidade e flexibilidade na integração de novos dispositivos, o \emph{Opus} adota um modelo baseado em classes genéricas,
+que servem como base para representar diferentes tipos de dispositivos e padronizar a interação com os \emph{Drivers}. Ao criar suas próprias
+classes genéricas de dispositivo. Na figura~\ref{fig:generic-device-opus} é possível visualizar a classe
+genérica de dispositivo do \emph{Opus}, já na figura \ref{fig:generic-device-tasmota} é possível ver uma implementação de uma classe
+genérica de dispositivo implementada pelo \emph{Driver} Tasmota.
+
+Observe que ambas as classes não possuem métodos de controle específicos, apenas métodos auxiliares, já que não é esperado que a instância dessa
+classe seja utilizada para controlar os dispositivos, apenas representá-los.
+
+\begin{figure}[H]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.2}
+    {tasmota_device_generic.png}
+    {Classe Genérica de Dispositivo do Driver Tasmota}
+    {fig:generic-device-tasmota}
+\end{figure}
+
+Uma vez que dispositivo é registrado, o \emph{Opus} busca pelo método ``\lstinline{new_?()}'' [\ref{sec:registrando-dispositivos-driver}]
+no \emph{Driver} correspondente, onde então, o \emph{Driver} deve retornar uma instância do dispositivo com seu tipo específico.
+
+A figura~\ref{fig:class-light-generic} mostra um exemplo de uma classe genérica de dispositivo do tipo luz, que herda da classe genérica de dispositivo
+do \emph{Opus}. Já a figura~\ref{fig:class-light-sonoff} mostra uma implementação de uma classe de dispositivo do tipo luz,
+específica para o \emph{Driver} Sonoff, que implementa os métodos abstratos para a comunicação com o dispositivo.
+
+\begin{figure}[H]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.15}
+    {opus_light_generic_device.png}
+    {Classe Genérica de Dispositivo do Tipo Luz}
+    {fig:class-light-generic}
+\end{figure}
+
+\begin{figure}[H]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.15}
+    {sonoff_light.png}
+    {Classe de Dispositivo do Tipo Luz do Driver Sonoff}
+    {fig:class-light-sonoff}
+\end{figure}
+
 
 \paragraph{Registro de Dispositivos}
-Alguns dispositivos IoT podem ser descobertos automaticamente com algum sistema de anúncio, para suportar essa funcionalidade
-o \emph{Opus} separa dispositivos em dois estados: \emph{Dispositivos Disponíveis} e \emph{Dispositivos Registrados}.
+A fim de oferecer suporte a dispositivos IoT que podem ser descobertos automaticamente por meio de sistemas de anúncio,
+o \emph{Opus} organiza os dispositivos em dois estados distintos: \emph{Dispositivos Disponíveis} e \emph{Dispositivos Registrados}.
 
-\emph{Dispositivos Disponíveis} são dispositivos descobertos pelos \emph{Drivers}, eles não possuem tipo definido e 
+\emph{Dispositivos Disponíveis} são dispositivos detectados pelos \emph{Drivers}, mas que ainda não possuem uma definição
+específica dentro do sistema. Eles herdam da classe base \texttt{OpusDevice} e representam unicamente a presença de um novo
+dispositivo compatível, sem que haja, nesse momento, qualquer categorização funcional (como luz, ar-condicionado ou fechadura),
+configuração ou armazenamento no banco de dados.
+
+Para que um \emph{Dispositivo Disponível} possa ser utilizado ativamente no sistema, ele deve passar pelo processo de \emph{Registro}.
+Esse processo consiste em atribuir ao dispositivo um tipo específico, vinculá-lo ao banco de dados do \emph{Opus} e habilitar seu controle
+dentro da plataforma. Uma vez registrado, o dispositivo torna-se um \emph{Dispositivo Registrado}, adquirindo uma identidade
+única dentro do \emph{Opus} e tornando-se acessível para controle e gerenciamento pelos usuários, e também gravando suas informações
+no banco de dados local.

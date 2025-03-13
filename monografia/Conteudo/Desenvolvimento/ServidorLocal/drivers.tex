@@ -45,7 +45,7 @@ o controle dos dispositivos através da aplicação.
 A classe genérica ``\lstinline{OpusDevice}'' é utilizada para representar dispositivos recém-descobertos, cujo tipo ainda não foi determinado. 
 Após a identificação, o dispositivo deve ser instanciado como um tipo mais específico, herdado de ``\lstinline{OpusDevice}''. 
 
-\subsubsection{O Registro de Dispositivos}
+\subsubsection{O Registrando de Dispositivos}\label{sec:registrando-dispositivos-driver}
 Durante a etapa de registro de dispositivos descobertos, o \emph{Opus} irá buscar pela função que retorna uma instância daquele tipo de dispositivo para o
 \emph{Driver} em questão. O nome desta função deve ser ``\lstinline{new_}'' seguido do tipo do dispositivo. 
 

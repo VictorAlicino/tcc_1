@@ -30,17 +30,12 @@ export function Settings() {
         </View>
 
         <TouchableOpacity
-          className="bg-red-800 flex-row space-x-1 p-3 rounded-t-xl"
+          className="bg-red-800 flex-row space-x-2 p-3 rounded-t-xl items-center"
+          onPress={signOut} // Mova onPress para esse TouchableOpacity
           activeOpacity={0.7}
         >
-          <View style={{flex:2,flexDirection:"row",justifyContent:'space-between',padding:0}}>
-          </View>
-            <TouchableOpacity style={{flex:1,flexDirection:'row',padding:0}} onPress={signOut} activeOpacity={0.7}>
-              <Icon name="logout" size={24} />
-              <Text className="text-xl font-400">Sair</Text>
-            </TouchableOpacity>
-          <View style={{flex:2,flexDirection:"row",justifyContent:'space-between',padding:0}}>
-          </View>
+          <Icon name="logout" size={24} />
+          <Text className="text-xl font-400">Sair</Text>
         </TouchableOpacity>
 
       </View>

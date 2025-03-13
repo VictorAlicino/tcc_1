@@ -5,10 +5,13 @@ import { GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-goo
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { conductorUser, conductorToken } from "@/models/conductor_models";
 import { loginToConductor } from "@/services/conductor-api";
+import { ToastAndroid } from "react-native";
+import { User } from "@react-native-google-signin/google-signin";
 
 interface AuthenticationContextData {
   isAuthenticated: boolean;
   googleSignIn: () => Promise<void>;
+  registerWithGoogle: () => Promise<void>;
   signOut: () => void;
   getCurrentUser: () => conductorUser | null;
 }
@@ -35,8 +38,12 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
   const [error, setError] = useState();
   const [conductorUser, setConductorUser] = useState<conductorUser | null>(null);
   useEffect(() => {
-    GoogleSignin.configure({
-    });
+    GoogleSignin.configure(
+      {
+        webClientId: '1039253210102-s60u88i78qf04113egr3hrlpecdujk1g.apps.googleusercontent.com',
+        offlineAccess: true
+      }
+    );
   }, []);
 
   const isAuthenticated = !!conductorUser?.conductorToken;
@@ -48,7 +55,13 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
   async function googleSignIn(): Promise<void> {
     try {
       await GoogleSignin.hasPlayServices();
-      let loginResponse: conductorUser = (await GoogleSignin.signIn()).user;
+      let Response = (
+        await GoogleSignin.signIn().then((response) => {
+          return response;
+        }).catch((error) => {
+          console.log(error);
+    }));
+      let loginResponse = Response.user;
       // Request login to the server
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1500);
@@ -60,11 +73,17 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
         api.defaults.headers.common["Authorization"] = `Bearer ${data.access_token}`; // Set the token in the header
         storeToken(data); // Store the token in the secure store
         //console.log(conductorUser);
+      }).catch(error => { 
+        if (error.name === 'AxiosError') { ToastAndroid.show('Usuário não encontrado', ToastAndroid.SHORT); }
       })
       .catch(error => {
           switch (error.name) {
             case 'AbortError':
               console.log("Server out of reach!")
+              break;
+
+            case 'User not found':
+              ToastAndroid.show('Usuário não encontrado', ToastAndroid.SHORT);
               break;
           
             default:
@@ -80,8 +99,42 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
     }
   }
 
+  async function registerWithGoogle(): Promise<void> {
+    try {
+      await GoogleSignin.hasPlayServices();
+      let response = (
+        await GoogleSignin.signIn().then((response) => {
+          return response;
+        }).catch((error) => {
+          console.log(error);
+      }));
+      const payload = response.user;
+      api.post('/auth/conductor/register', {
+        payload
+      }).then((response) => {
+        if (response.status === 200) {
+          ToastAndroid.show('Você já está cadastrado :)', ToastAndroid.SHORT);
+        } else if (response.status === 201) {
+          ToastAndroid.show('Usuário cadastrado com sucesso!', ToastAndroid.SHORT);
+        }
+      }, (error) => {
+        console.log(error);
+      }
+      );
+    }
+    catch (error: any) {
+      setError(error.message);
+      setConductorUser(null);
+    }
+  }
+
+  function getGoogleUser(): User | null{
+    const a = GoogleSignin.getCurrentUser();
+    return a;
+  }
+
   function signOut() {
-    console.log('signOut');
+    console.log('Signing out...');
     GoogleSignin.signOut();
     setConductorUser(null);
   }
@@ -91,6 +144,7 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
       value={{
         isAuthenticated,
         googleSignIn,
+        registerWithGoogle,
         signOut,
         getCurrentUser
       }}
