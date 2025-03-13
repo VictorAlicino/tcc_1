@@ -2,6 +2,7 @@
 import datetime
 import logging
 import json
+import httpx
 from fastapi import APIRouter, HTTPException, status, Response, Depends
 from fastapi.security import OAuth2AuthorizationCodeBearer, OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -40,29 +41,32 @@ oauth.register(
 # Internal OAuth2
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
+
+
 # Conductor Auth -----------------------------------------------------------------
 
 @router.post("/register")
 async def conductor_register(request: Request, db_session=Depends(db.get_db)):
     """Conductor register endpoint for the server"""
-    try:
-        token = await oauth.google.authorize_access_token(request)
-    except Exception as e: # pylint: disable=broad-except
-        print(e)
-        # Return 401
-        return "Unauthorized", status.HTTP_401_UNAUTHORIZED
-
     # Check if the user is authenticated
-    print(token)
-    if maestro_users.get_user_by_google_sub(db_session, token['userinfo']['sub']):
-        return "User already exists"
+    token = await request.json()
+    token = token['payload']
+    if maestro_users.get_user_by_google_sub(db_session, token['id']):
+        return JSONResponse(
+            content={
+                "message": f"Mr(s). {token['givenName']} {token['familyName']} is already registered",
+                "email": token['email']
+            },
+            status_code=200
+        )
     user = MaestroUser(
-        google_sub = token['userinfo']['sub'],
-        email = token['userinfo']['email'],
-        name = token['userinfo']['name'],
-        given_name = token['userinfo']['given_name'],
-        family_name = token['userinfo']['family_name'],
-        picture = token['userinfo']['picture']
+        google_sub = token['id'],
+        email = token['email'],
+        name = token['name'],
+        given_name = token['givenName'],
+        family_name = token['familyName'],
+        picture_url = token['photo']
     )
     maestro_users.create_user(db_session, user)
     return JSONResponse(
@@ -76,29 +80,13 @@ async def conductor_register(request: Request, db_session=Depends(db.get_db)):
 @router.post("/login")
 async def conductor_login(request: ConductorLogin, db_session=Depends(db.get_db)):
     """Conductor login endpoint for the server."""
-    print(request)
     user = maestro_users.get_user_by_google_sub(db_session, request.google_sub)
     if user is None:
         log.warning(f"{request.email} tried to login but is not authorized")
-        log.info(f"Registering {request.email} as a new user")
-        # setting up a new request
-        new_request = Request(
-            {
-                'google_sub': request.google_sub,
-                'email': request.email
-            }
+        return JSONResponse(
+            content="User not found",
+            status_code=404
         )
-        token = await oauth.google.authorize_access_token(new_request)
-        user = MaestroUser(
-            google_sub = token['userinfo']['sub'],
-            email = token['userinfo']['email'],
-            name = token['userinfo']['name'],
-            given_name = token['userinfo']['given_name'],
-            family_name = token['userinfo']['family_name'],
-            picture = token['userinfo']['picture']
-        )
-        maestro_users.create_user(db_session, user)
-        user = maestro_users.get_user_by_google_sub(db_session, request.google_sub)
         
     log.debug(f'{user.name} has logged in via Conductor')    
     exp = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)

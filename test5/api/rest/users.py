@@ -69,7 +69,6 @@ async def dump_all_servers_info(validate: str = Depends(oauth2_scheme), db_sessi
     servers_dumped: list = []
 
     for server in user_servers[1]:
-        print(f"Dumping server: {server.server_id}")
         server_response: json = await dump_all_info_from_a_user(server, user_servers[0])
         if server_response:
             for building in server_response['buildings']:
