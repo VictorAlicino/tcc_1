@@ -3,7 +3,7 @@ import datetime
 import logging
 import json
 from fastapi import APIRouter, HTTPException, status, Response, Depends
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2AuthorizationCodeBearer, OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse, RedirectResponse
 from starlette.requests import Request
 from authlib.integrations.starlette_client import OAuth
@@ -33,7 +33,7 @@ oauth.register(
     client_secret = CONFIG['google-api']['client_secret'],
     client_kwargs = {
         'scope': 'openid email profile',
-        'redirect_uri': 'http://localhost:8000/auth'
+        'redirect_uri': 'http://localhost:9530/register'
     }
 )
 
@@ -80,10 +80,19 @@ async def conductor_login(request: ConductorLogin, db_session=Depends(db.get_db)
     user = maestro_users.get_user_by_google_sub(db_session, request.google_sub)
     if user is None:
         log.warning(f"{request.email} tried to login but is not authorized")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found"
+        log.info(f"Registering {request.email} as a new user")
+        token = await oauth.google.authorize_access_token(request)
+        user = MaestroUser(
+            google_sub = token['userinfo']['sub'],
+            email = token['userinfo']['email'],
+            name = token['userinfo']['name'],
+            given_name = token['userinfo']['given_name'],
+            family_name = token['userinfo']['family_name'],
+            picture = token['userinfo']['picture']
         )
+        maestro_users.create_user(db_session, user)
+        user = maestro_users.get_user_by_google_sub(db_session, request.google_sub)
+        
     log.debug(f'{user.name} has logged in via Conductor')    
     exp = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
 
