@@ -76,6 +76,7 @@ async def conductor_register(request: Request, db_session=Depends(db.get_db)):
 @router.post("/login")
 async def conductor_login(request: ConductorLogin, db_session=Depends(db.get_db)):
     """Conductor login endpoint for the server."""
+    print(request)
     user = maestro_users.get_user_by_google_sub(db_session, request.google_sub)
     if user is None:
         log.warning(f"{request.email} tried to login but is not authorized")
