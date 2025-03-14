@@ -1,6 +1,6 @@
 \chapter{Servidor Remoto}
 \label{chap:maestro}
-Em um ambiente de edíficios inteligentes, a gestão dos usuários deve ser executada com cautela, pois certos dispositivos não podem
+Em um ambiente de edifícios inteligentes, a gestão dos usuários deve ser executada com cautela, pois certos dispositivos não podem
 ser acessados por qualquer usuário, assim como os usuários devem ser rastreáveis para evitar que as funcionalidades que o sistema adiciona
 possam se tornar prejudiciais para o edifício e sua gestão, como mal uso de dispositivos, ou até mesmo ações maliciosas. Com estas limitações
 em mente foi montada a dinâmica de usuários do sistema Opus, onde os servidores Opus [\ref{opus}] são responsáveis por gerenciar permissões
@@ -8,25 +8,9 @@ de acesso a dispositivos e uma entidade centralizada é responsável por autenti
 foi criado o Maestro, um servidor remoto responsável pela autenticação e gestão de usuários, bem como a intermediação entre o aplicativo móvel e 
 os servidores locais.
 
-%Em um ambiente de edifícios inteligentes, a gestão de usuários e permissões de acesso a dispositivos IoT apresenta desafios
-%significativos. Diferentes dispositivos, como termostatos, fechaduras eletrônicas e sistemas de iluminação,
-%precisam ser controlados por múltiplos usuários com diferentes níveis de permissão. No entanto, confiar essa responsabilidade exclusivamente
-%aos Servidores Locais comprometeria a segurança e a escalabilidade do sistema.
-%
-%Uma abordagem em que cada Servidor Local gerencia seus próprios usuários de forma independente resultaria em diversos problemas:
-%
-%Falta de autenticidade centralizada: Um Servidor Local não pode garantir que um usuário é legítimo, pois não possui um mecanismo
-%confiável de autenticação. Inconsistência de acessos: Com múltiplos servidores gerenciando usuários separadamente,
-%haveria risco de credenciais duplicadas, inconsistências ou dificuldades na revogação de acessos. Segurança comprometida:
-%Sem um serviço de autenticação externo, um ataque ou comprometimento de um único Servidor Local poderia expor credenciais armazenadas localmente.
-%Para resolver essas questões, foi criado o Maestro, um Servidor Remoto responsável pela autenticação e gestão centralizada de usuários.
-%Em vez de confiar nos Servidores Locais, que operam próximos aos dispositivos IoT, o Maestro assume a responsabilidade de
-%validar a identidade dos usuários por meio de autenticação via Google, garantindo maior segurança e confiabilidade. Além disso, ele permite:
-%
-%Registro e autenticação unificada: Os usuários são cadastrados e autenticados de forma centralizada, garantindo que suas
-%credenciais sejam verificadas antes de permitir qualquer interação com os dispositivos. Gerenciamento de acessos:
-%O Maestro controla quais usuários podem acessar quais dispositivos, além de permitir a criação de acessos temporários para visitantes (Guest Access).
-%Intermediação entre sistemas: Ele atua como um intermediário entre o aplicativo móvel Conductor e os Servidores Locais,
-%garantindo que os comandos enviados pelos usuários sejam validados antes de serem executados. Dessa forma, o Maestro é essencial
-%para garantir segurança, escalabilidade e confiabilidade no gerenciamento de usuários dentro do sistema de automação de edifícios inteligentes.
+Sendo assim, as duas principais funções do Maestro são:
+\begin{itemize}
+    \item Autenticação e gerenciamento de usuários;
+    \item Intermediação entre o aplicativo móvel e os servidores locais.
+\end{itemize}
 
