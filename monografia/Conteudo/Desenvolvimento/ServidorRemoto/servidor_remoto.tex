@@ -1,4 +1,4 @@
-\chapter{Servidor Remoto}
+\section{Servidor Remoto}
 \label{chap:maestro}
 Em um ambiente de edifícios inteligentes, a gestão dos usuários deve ser executada com cautela, pois certos dispositivos não podem
 ser acessados por qualquer usuário, assim como os usuários devem ser rastreáveis para evitar que as funcionalidades que o sistema adiciona
@@ -13,4 +13,16 @@ Sendo assim, as duas principais funções do Maestro são:
     \item Autenticação e gerenciamento de usuários;
     \item Intermediação entre o aplicativo móvel e os servidores locais.
 \end{itemize}
+Essas funções são realizadas através de 2 módulos principais que controlam duas API (Application Programming Interface) distintas, a API em 
+REST (Representational State Transfer), voltada a comunicação com o usuário e a API em MQTT voltada a comunicação com os servidores locais.
 
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.35}
+    {maestro.png}
+    {Módulos do Maestro}
+    {fig:maestro1}
+\end{figure}
+
+\input{Conteudo/Desenvolvimento/ServidorRemoto/api_rest}
