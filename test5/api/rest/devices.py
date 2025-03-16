@@ -122,7 +122,7 @@ async def get_guest_acess_qr_code(
     """Get the QR code for guest access."""
     base_url = str(request.base_url)
     user: MaestroUser | None = get_user_requesting(validate, db_session)
-    if not user:
+    if user is None:
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content="User not found or not authorized"
