@@ -44,7 +44,7 @@ def set_user_server_role(db: Session, user_id: str, server_id: str, role: int):
 def get_server_admins(db: Session, server_id: str):
     """Get all admins in a server"""
     # Admins are role 0
-    return db.query(roles).filter(roles.c.server_id == server_id, roles.c.role == 0).all()
+    return db.query(roles.c.user_id).filter(roles.c.server_id == server_id, roles.c.role == 0).all()
 
 def assign_users_to_server(db: Session, server_id: str, users: list[tuple[MaestroUser, int]],):
     """Assign users to a server"""

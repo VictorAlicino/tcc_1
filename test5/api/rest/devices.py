@@ -127,13 +127,14 @@ async def get_guest_acess_qr_code(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content="User not found or not authorized"
         )
-    if user.user_id not in opus_servers.get_server_admins(db_session, server_id):
+    server_admins = {admin[0] for admin in opus_servers.get_server_admins(db_session, server_id)}
+    if str(user.user_id) not in server_admins:
         log.warning(f"User ({user.email}) is not authorized request a QR code for guest access to device {device_id} on server {server_id}")
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content="User not authorized to get guest access to device"
         )
-    log.debug(f"User Mr(s). {user.given_name} ({user.email}) is requesting a QR code for guest access to device {device_id} on server {server_id}")
+    log.debug(f"User {user.given_name} ({user.email}) is requesting a QR code for guest access to device {device_id} on server {server_id}")
     if(os.path.exists(f"qr_codes/{server_id}/{device_id}.png")):
         path = f"qr_codes/{server_id}/{device_id}.png"
         return RedirectResponse(url=f"{base_url}/assetes/{path}", status_code=status.HTTP_201_CREATED)

@@ -43,7 +43,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 
-
 # Conductor Auth -----------------------------------------------------------------
 
 @router.post("/register")
