@@ -175,16 +175,21 @@ async def get_guest_access(
     guest_users_devices.setdefault(cypher_suite['server_id'], {})
     guest_users_devices[cypher_suite['server_id']].setdefault(cypher_suite['device_id'], {"current_guest": None, "granted_until": None})
 
-    current_guest: str = guest_users_devices[cypher_suite['server_id']][cypher_suite['device_id']]['current_guest']
+    # Get the current guest user, time expired or not
+    current_guest: str = guest_users_devices[cypher_suite['server_id']][cypher_suite['device_id']]['current_guest'] 
 
-    if current_guest != user.user_id:
+    if current_guest != user.user_id: # If it's a new guest user
         guest_users_devices[cypher_suite['server_id']][cypher_suite['device_id']]['current_guest'] = user.user_id
         granted_until = (datetime.now() + timedelta(minutes=30)).strftime("%Y-%m-%d %H:%M:%S")
         guest_users_devices[cypher_suite['server_id']][cypher_suite['device_id']]['granted_until'] = granted_until
         log.debug(f"User {user.user_id} has been granted GUEST access to device {cypher_suite['device_id']} on server {cypher_suite['server_id']} until {granted_until}")
-    else:
+    else: # If the guest user is the same as before, maybe to refresh the time
         granted_until = guest_users_devices[cypher_suite['server_id']][cypher_suite['device_id']]['granted_until']
         log.debug(f"User {user.user_id} already has GUEST access to device {cypher_suite['device_id']} on server {cypher_suite['server_id']} until {granted_until}")
+        if datetime(granted_until) < datetime.now():
+            granted_until = (datetime.now() + timedelta(minutes=30)).strftime("%Y-%m-%d %H:%M:%S")
+            guest_users_devices[cypher_suite['server_id']][cypher_suite['device_id']]['granted_until'] = granted_until
+            log.debug(f"User {user.user_id} has refreshed GUEST access to device {cypher_suite['device_id']} on server {cypher_suite['server_id']} until {granted_until}")
 
     device = await MQTT_Devices.get_device(local_server, cypher_suite['device_id'])
     device_state = await MQTT_Devices.get_device_state(local_server, cypher_suite['device_id'])
