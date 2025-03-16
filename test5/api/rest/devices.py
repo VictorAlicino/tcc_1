@@ -122,6 +122,11 @@ async def get_guest_acess_qr_code(
     """Get the QR code for guest access."""
     base_url = str(request.base_url)
     user: MaestroUser | None = get_user_requesting(validate, db_session)
+    if not user:
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content="User not found or not authorized"
+        )
     log.debug(f"User Mr(s). {user.given_name} ({user.email}) is requesting a QR code for guest access to device {device_id} on server {server_id}")
     if(os.path.exists(f"qr_codes/{server_id}/{device_id}.png")):
         path = f"qr_codes/{server_id}/{device_id}.png"
