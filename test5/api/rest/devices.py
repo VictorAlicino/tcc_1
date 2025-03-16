@@ -6,8 +6,8 @@ import os
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 from jose import JWTError, jwt
-from fastapi.responses import JSONResponse
-from fastapi import APIRouter, Depends, status
+from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi import APIRouter, Depends, Request, status
 from configurations.config import OpenConfig
 from api.rest.localservers import router
 from db.database import DB
@@ -114,23 +114,20 @@ async def device_set_state(
     
 @router.get("/qr_code/{server_id}/{device_id}")
 async def get_guest_acess_qr_code(
+    request: Request,
     server_id: str,
     device_id: str,
     validate: str = Depends(oauth2_scheme),
     db_session=Depends(db.get_db)):
     """Get the QR code for guest access."""
+    base_url = str(request.base_url)
     log.debug(f"User {validate} is requesting a QR code for guest access to device {device_id} on server {server_id}")
     if(os.path.exists(f"qr_codes/{server_id}/{device_id}.png")):
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content="qr_codes/{server_id}/{device_id}.png"
-        )
+        path = f"qr_codes/{server_id}/{device_id}.png"
+        return RedirectResponse(url=f"{base_url}/assetes/{path}", status_code=status.HTTP_201_CREATED)
     else:
         path = qr_code_generator.generate_guest_acess(server_id, device_id)
-        return JSONResponse(
-            status_code=status.HTTP_200_OK,
-            content=path
-        )
+        return RedirectResponse(url=f"{base_url}{path}", status_code=status.HTTP_302_FOUND)
     
 @router.get("/guest_access/{cypher_text}")
 async def get_guest_access(
