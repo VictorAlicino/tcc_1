@@ -186,7 +186,8 @@ async def get_guest_access(
     else: # If the guest user is the same as before, maybe to refresh the time
         granted_until = guest_users_devices[cypher_suite['server_id']][cypher_suite['device_id']]['granted_until']
         log.debug(f"User {user.user_id} already has GUEST access to device {cypher_suite['device_id']} on server {cypher_suite['server_id']} until {granted_until}")
-        if datetime(granted_until) < datetime.now():
+        granted_until = datetime.strptime(granted_until, "%Y-%m-%d %H:%M:%S")
+        if granted_until < datetime.now():
             granted_until = (datetime.now() + timedelta(minutes=30)).strftime("%Y-%m-%d %H:%M:%S")
             guest_users_devices[cypher_suite['server_id']][cypher_suite['device_id']]['granted_until'] = granted_until
             log.debug(f"User {user.user_id} has refreshed GUEST access to device {cypher_suite['device_id']} on server {cypher_suite['server_id']} until {granted_until}")

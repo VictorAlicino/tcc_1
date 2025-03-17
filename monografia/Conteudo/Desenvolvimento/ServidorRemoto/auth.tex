@@ -1,0 +1,42 @@
+\subsection{Autenticação e Cadastro de Usuários}
+\label{sec:maestro-auth}
+
+A autenticidade da identidade do usuário foi uma preocupação desde o início do desenvolvimento do sistema \emph{Opus}, tendo em vista que criar um mecanismo
+de autenticação próprio poderia ser uma tarefa muito complexa e o resultado poderia não garantir a autenticidade esperada, o próximo passo foi buscar
+algum serviço de autenticação que pudesse garantir a identidade dos usuários, e nisso foi escolhido o sistema de autenticação do Google, que já é amplamente
+utilizado e confiável. Além disso, o sistema de autenticação do Google permite que o aplicativo móvel do Opus possa ser utilizado por qualquer pessoa que
+possua uma conta Google, o que facilita a adoção do sistema.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.3}
+    {google-sign-payload.png}
+    {Informações do Google Auth}
+    {fig:google-auth}
+\end{figure}
+
+A autenticação do Google entrega seis informações sobre um usuário, como ilustrado na figura~\ref{fig:google-auth},
+sendo as três mais importantes o \emph{email}, o \emph{nome} e o \emph{ID} do usuário na Google, o \emph{Maestro} utiliza essas informações para
+criar um usuário no banco de dados, acrecidos de um novo \emph{user\_id} que segue o padrão utilizado em outras tabelas do sistema,
+a tabela de usuário do \emph{Maestro} é composta pelas seguintes informações:
+
+\begin{itemize}
+    \item \textbf{Maestro User}  
+      \begin{itemize}
+          \item \texttt{user\_id}: Identificador único do usuario;
+          \item \texttt{email}: E-mail do usuário;
+          \item \texttt{name}: Primeiro e último nome do usuário;
+          \item \texttt{given\_name}: Primeiro nome do usuário;
+          \item \texttt{family\_name}: Último nome do usuário;
+          \item \texttt{google\_sub}: Identificador único do usuário no Google.
+          \item \texttt{picture\_url}: URL da foto de perfil do usuário.
+          \item \texttt{picture}: Foto de perfil do usuário em bytea.
+      \end{itemize}
+\end{itemize}
+
+Transferindo a responsabilidade de garantir a autenticidade de um usuário com uma conta para o Google, o \emph{Maestro} pode garantir que os 
+utilizadores do sistema são de alguma forma rastreáveis caso seja necessário. 
+
+Quando é necessário associar um usuário do \emph{Maestro} a um servidor Opus, como o caso de marcar um usuário como administrador de um servidor, o \emph{Maestro} passará 
+os dados de nome, email e \emph{user\_id} para o servidor Opus, que irá sempre depender do \emph{Maestro} para garantir a autenticidade dos usuários.

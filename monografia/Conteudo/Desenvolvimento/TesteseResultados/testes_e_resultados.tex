@@ -1,0 +1,135 @@
+\chapter{Testes e Resultados}
+\label{testes_e_resultados}
+
+Para testar a viabilidade do sistema proposto, foi desenvolvido as três partes principais do sistema: o Servidor Local, 
+o Servidor Remoto e a Interface de Usuário, porém, interfaces para comandos de manipulações do banco de dados do Servidor Local não foram
+implementadas, como definir quais níveis de acesso podem controlar quais dispositivos, sendo necessária a manipulação direta do banco de dados.
+
+\section{Testes}
+
+O objetivo principal dos testes foi verificar se o sistema é capaz de aceitar comandos a um dispositivo, sem a necessidade de associar todos os 
+usuários ao Servidor Local onde o dispositivo se encontra.
+
+\subsection{Materiais}
+
+Para a realização dos testes, foram utilizados os seguintes materiais:
+
+\textbf{Servidor Local}: no Servidor Local, para executar o \emph{Opus} foi utilizado um computador com o sistema operacional Windows 10,
+um Raspberry Pi 3 na mesma rede do computador executando um broker MQTT Mosquitto e um dispositivo emissor de infravermelho inteligente,
+modificado para suportar o firmware Tasmota. O dispositivo emissor de infravermelho inteligente foi configurado para se comunicar com o broker
+MQTT do Raspberry Pi 3 e configurado no \emph{Opus} para controlar um ar-condicionado.
+
+\textbf{Servidor Remoto}: no Servidor Remoto, para executar o \emph{Maestro} foi utilizado uma instância na OCI (Oracle Cloud Infrastructure)
+com o sistema operacional Ubuntu 22.04.5 LTS, um broker MQTT Mosquitto também foi configurado na instância.
+
+\textbf{Interface de Usuário}: para a Interface de Usuário, foram utilizados três smartphones com o sistema operacional Android para executar
+o aplicativo \emph{Conductor}, um para cada usuário.
+
+\subsection{Testes}
+
+Tanto o \emph{Opus} quanto o \emph{Maestro} produzem logs de suas atividades, que foram utilizados para verificar se os comandos enviados
+pela Interface de Usuário foram recebidos e processados corretamente.
+
+\subsubsection{Teste 1}
+O primeiro teste consistiu em verificar se o \emph{Maestro} é capaz de suportar três usuários utilizando a autenticação do Google enviada pelo
+\emph{Conductor}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.6}
+    {teste1.png}
+    {LOGs do \emph{Maestro} após o login dos usuários}
+    {fig:test1}
+\end{figure}
+
+Como pode ser visto na Figura \ref{fig:test1}, o \emph{Maestro} foi capaz de autenticar os três usuários.
+
+\subsubsection{Teste 2}
+O segundo teste consistiu em verificar se o \emph{Maestro} é capaz de gerar um QR Code para um dispositivo. Como não há uma interface para 
+acessar essa rota no \emph{Maestro}, foi necessário acessar diretamente a rota por um software de requisições HTTP.
+
+Utilizando o software Insomnia, foi feita uma requisição GET para a rota:
+\begin{lstlisting}
+    /opus_server/qr_code/a05d2db1-d40b-4bdb-ab47-f243468f27b7/
+    e3e9906f-fcb0-11ef-8ded-001a7dda710a
+\end{lstlisting}
+onde ``a05d2db1-d40b-4bdb-ab47-f243468f27b7'' 
+é o ID do Servidor \emph{Opus} utilizado no teste e ``e3e9906f-fcb0-11ef-8ded-001a7dda710a'' é o ID do dispositivo com Tasmota no Servidor Local.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.5}
+    {teste2.png}
+    {QR Code gerado pelo \emph{Maestro}}
+    {fig:test2}
+\end{figure}
+
+Como mostrado na Figura \ref{fig:maestro-qr}, o \emph{Maestro} foi capaz de gerar o QR Code corretamente.
+
+\subsubsection{Teste 3}
+
+O último teste consistiu em verificar se o \emph{Maestro} é capaz de gerenciar o acesso de um dispositivo para usuários visitantes, seguindo os limites
+estabelecidos no capítulo~\ref{chap:multiusuarios} 
+
+O teste consistiu em primeiro o usuário ``Victor'' escanear o QR Code gerado no teste 2 e então tentar controlar o dispositivo, o que foi feito com sucesso
+como mostra os logs do \emph{Maestro} na Figura \ref{fig:test3-1} e do \emph{Opus} na Figura \ref{fig:test3-2}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.35}
+    {teste3_2.png}
+    {LOGs do \emph{Maestro} 1}
+    {fig:test3-1}
+\end{figure}
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.4}
+    {teste3_1.png}
+    {LOGs do \emph{Opus} 1}
+    {fig:test3-2}
+\end{figure}
+
+Em seguida, o usuário ``Sergio'' escaneou o QR Code e tentou controlar o dispositivo, o que também foi feito com sucesso como mostra os
+logs do \emph{Maestro} na Figura \ref{fig:test3-3} e do \emph{Opus} na Figura \ref{fig:test3-4}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.35}
+    {teste3_3.png}
+    {LOGs do \emph{Maestro} 2}
+    {fig:test3-3}
+\end{figure}
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.4}
+    {teste3_4.png}
+    {LOGs do \emph{Opus} 2}
+    {fig:test3-4}
+\end{figure}
+
+Logo em seguida, o usuário ``Meyre'' escaneou o QR Code e o usuário ``Sergio'' tentou controlar o dispositivo, o que não foi possível, como esperado.
+
+E por fim o usuário ``Meyre'' tentou controlar o dispositivo, o que foi feito com sucesso como mostra os logs do \emph{Opus} na Figura \ref{fig:test3-5}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.4}
+    {teste3_6.png}
+    {LOGs do \emph{Opus} 3}
+    {fig:test3-5}
+\end{figure}
+
+\section{Resultados}
+
+Os testes realizados mostraram que o sistema é capaz de aceitar comandos a um dispositivo, sem a necessidade de associar todos os usuários ao
+Servidor Local onde o dispositivo se encontra, ou seja, o sistema é capaz de gerenciar o controle de múltiplos usuários, mesmo sem um cadastro prévio,
+a um dispositivo de forma organizada.

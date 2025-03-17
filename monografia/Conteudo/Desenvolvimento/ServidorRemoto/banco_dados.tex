@@ -1,0 +1,18 @@
+\subsection{Banco de Dados}
+\label{sec:maestro-banco-dados}
+
+O banco de dados do \emph{Maestro} é composto por apenas 3 tabelas, sendo elas: \emph{Maestro User}, \emph{Opus Server} e \emph{Roles}.
+A tabela \emph{Maestro User} é responsável por armazenar os dados dos usuários autenticados, a tabela \emph{Opus Server} é responsável por armazenar
+os dados dos servidores locais e a tabela \emph{Roles} é responsável por armazenar os níveis de acesso dos usuários a cada servidor, sendo uma 
+tabela de relacionamento entre \emph{Maestro User} e \emph{Opus Server}.
+
+O diagrama do banco de dados é ilustrado na figura~\ref{fig:maestro-db}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.4}
+    {erd_maestro.png}
+    {Diagrama do Banco de Dados do Maestro}
+    {fig:maestro-db}
+\end{figure}

@@ -1,0 +1,35 @@
+\subsection{Intermediação entre a Interface de Usuário e os Servidores Locais}
+\label{sec:maestro-intermediacao}
+
+O Maestro atua como intermediário entre a interface de usuário e os servidores locais Opus,
+fornecendo dois meios de comunicação distintos para atender às diferentes necessidades do sistema:
+\begin{itemize}
+    \item API REST,
+    \item API MQTT;
+\end{itemize}
+
+\subsubsection{API REST para Interface de Usuário}
+A API REST do Maestro expõe os controles do Servidor Remoto e comunicação com os Servidores Locais, divididos em quatro categorias:
+\begin{itemize}
+    \item Autenticações, com o endpoint \lstinline{/auth}:
+    \item Usuários, com os endpoints \lstinline{/users};
+    \item Servidores Locais, com os endpoints \lstinline{/opus_server};
+    \item Dispositivos, com os endpoints \lstinline{/device};
+\end{itemize}
+
+\textbf{Autenticação}, são endpoints que lidam com a autenticação e cadastro de usuários, endpoints específicos para usuários
+só podem ser acessados por usuários autenticados.
+\textbf{Usuários}, são endpoints que lidam com a gestão de usuários, como listar todos, listar um usuário específico, listar os Servidores Locais
+que este usuário tem acesso e também listar todos os dispositivos que este usuário tem acesso.
+\textbf{Servidores Locais}, são endpoints que lidam com a gestão de Servidores Locais, como designar um usuário como administrador ou usuário de um Servidor Local.
+\textbf{Dispositivos}, por último, os endpoints de dispositivos permitem se comunicar diretamente com um dispositivo em um Servidor Local, 
+como ligar ou desligar um dispositivo.
+
+\subsubsection{API MQTT para Servidores Locais}
+A API MQTT do Maestro é responsável por intermediar a comunicação entre a Interface de Usuário e os Servidores Locais, divididos em apenas dois módulos de 
+comunicação: Dispositivos e Usuários.
+
+O módulo de \textbf{Dispositivos} acessa os tópicos MQTT de um Servidor Local para controlar e receber informações de dispositivos, ,
+omo ligar ou desligar, ou saber o atual estado de um dispositivo. 
+Já o módulo de \textbf{Usuários} é responsável por comandos como recuperar todos os dispositivos que um usuário tem acesso em um Servidor Local e 
+designar um usuário a um servidor, seja qual for seu nível de acesso.

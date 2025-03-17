@@ -1,0 +1,32 @@
+\section{\textbf{Interface de Usuário}}
+
+A Interface de Usuário do sistema \emph{Opus}, denominada de \emph{Conductor}, ela é responsável por acessar os endpoints 
+expostos pelo Servidor Remoto \emph{Maestro} e atua como um invólucro para o usuário final interagir com o sistema.
+
+O \emph{Conductor} é um aplicativo para dispositivos móveis, desenvolvido utilizando o \emph{framework} React,
+que possui as seguintes funções:
+\begin{itemize}
+    \item Capturar as informações do usuário para autenticação;
+    \item Exibir os dispositivos disponíveis para o usuário;
+    \item Permitir o controle dos dispositivos.
+\end{itemize}
+
+Em resumo, o \emph{Conductor} é um aplicativo simples, que permite ao usuário interagir com o sistema \emph{Opus}, se comunicando 
+com o Servidor Remoto \emph{Maestro} por requisições HTTP que se comunica com os Servidores Locais \emph{Opus} através do protocolo MQTT
+como ilustrado na figura~\ref{fig:conductor-overall}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.25}
+    {conductor_overall.png}
+    {Comunicação no \emph{Conductor}}
+    {fig:conductor-overall}
+\end{figure}
+
+\input{Conteudo/Desenvolvimento/InterfacedeUsuario/conductor_auth}
+
+\input{Conteudo/Desenvolvimento/InterfacedeUsuario/conductor_devices}
+
+\input{Conteudo/Desenvolvimento/InterfacedeUsuario/conductor_control}
+

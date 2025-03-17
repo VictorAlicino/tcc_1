@@ -109,6 +109,7 @@ export function AuthenticationProvider({ children }: AuthenticationProviderProps
           console.log(error);
       }));
       const payload = response.user;
+      console.log(payload);
       api.post('/auth/conductor/register', {
         payload
       }).then((response) => {

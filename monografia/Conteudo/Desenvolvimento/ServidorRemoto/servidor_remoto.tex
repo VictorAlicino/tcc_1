@@ -1,9 +1,9 @@
-\section{Servidor Remoto}
+\section{\textbf{Servidor Remoto}}
 \label{chap:maestro}
 Em um ambiente de edifícios inteligentes, a gestão dos usuários deve ser executada com cautela, pois certos dispositivos não podem
 ser acessados por qualquer usuário, assim como os usuários devem ser rastreáveis para evitar que as funcionalidades que o sistema adiciona
 possam se tornar prejudiciais para o edifício e sua gestão, como mal uso de dispositivos, ou até mesmo ações maliciosas. Com estas limitações
-em mente foi montada a dinâmica de usuários do sistema Opus, onde os servidores Opus [\ref{opus}] são responsáveis por gerenciar permissões
+em mente foi montada a dinâmica de usuários do sistema Opus, onde os servidores Opus são responsáveis por gerenciar permissões
 de acesso a dispositivos e uma entidade centralizada é responsável por autenticar e gerenciar usuários. Com a necessidade dessa entidade centralizada
 foi criado o Maestro, um servidor remoto responsável pela autenticação e gestão de usuários, bem como a intermediação entre o aplicativo móvel e 
 os servidores locais.
@@ -13,7 +13,7 @@ Sendo assim, as duas principais funções do Maestro são:
     \item Autenticação e gerenciamento de usuários;
     \item Intermediação entre o aplicativo móvel e os servidores locais.
 \end{itemize}
-Essas funções são realizadas através de 2 módulos principais que controlam duas API (Application Programming Interface) distintas, a API em 
+Essas funções são realizadas por 2 módulos principais que controlam duas API (Application Programming Interface) distintas, a API em 
 REST (Representational State Transfer), voltada a comunicação com o usuário e a API em MQTT voltada a comunicação com os servidores locais.
 
 \begin{figure}[h!]
@@ -25,4 +25,6 @@ REST (Representational State Transfer), voltada a comunicação com o usuário e
     {fig:maestro1}
 \end{figure}
 
-\input{Conteudo/Desenvolvimento/ServidorRemoto/api_rest}
+\input{Conteudo/Desenvolvimento/ServidorRemoto/auth}
+\input{Conteudo/Desenvolvimento/ServidorRemoto/opus_maestro}
+\input{Conteudo/Desenvolvimento/ServidorRemoto/banco_dados}

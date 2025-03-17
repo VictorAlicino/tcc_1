@@ -26,9 +26,14 @@ A arquitetura do sistema é exemplificada na figura~\ref{fig:overall}.
     {fig:overall}
 \end{figure}
 
-A comunicação entre as partes do sistema é realizada através do protocolo MQTT. 
+
+\subsection{Padrão de Comunicação}
+\label{sec:opus-comunicacao}
+A comunicação entre as partes do sistema é realizada através do protocolo MQTT.
 Este protocolo foi escolhido por ser leve e fácil de implementar utilizando bibliotecas disponíveis para Python,
-a linguagem de programação escolhida para o desenvolvimento do sistema. Dada a natureza ``Publicar e Assinar'' do MQTT,
+a linguagem de programação escolhida para o desenvolvimento do sistema. 
+
+Dada a natureza ``Publicar e Assinar'' do MQTT,
 ele não é ideal para aplicações do tipo ``Requisição e Resposta'', para contornar este detalhe, foi implementado um padrão na comunicação entre
 \emph{Opus} e \emph{Maestro}.
 
@@ -36,7 +41,7 @@ Todas as mensagens devem ser do tipo JSON, contendo sempre um campo ``callback''
 onde a resposta deve ser enviada ao remetente. O remetente deve se inscrever no tópico ``callback'' para receber a resposta, como ilustrado
 na figura~\ref{fig:mqtt_comm_1}, onde ``\lstinline{data}'' é o dado que será mandado do \emph{Maestro} para o \emph{Opus}, note que, além do
 campo do conteúdo da mensagem (``\lstinline{device_id}''), também é enviado um campo ``\lstinline{callback}'' que indica o tópico MQTT onde a resposta
-deve ser enviada, esse campo possui um identificador aleatório, garantindo que várias respostas possam ser recebidas ao mesmo tempo sem conflitos.
+deve ser enviada, esse campo possui um identificador aleatório, garantindo que várias respostas possam ser recebidas ao mesmo tempo, sem conflitos.
 \begin{figure}[h!]
     \conteudoFigura
     [Elaborado pelo Autor (2025)]

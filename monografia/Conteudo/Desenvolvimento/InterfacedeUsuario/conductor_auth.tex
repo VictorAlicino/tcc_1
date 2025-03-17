@@ -1,0 +1,31 @@
+\subsection{Autenticação}
+
+O \emph{Conductor} é uma parte fundamental da autenticação no sistema \emph{Opus}, uma vez que é muito mais fácil de implementar uma autenticação com Google
+em um aplicativo móvel e muito mais seguro para o usuário final.
+
+Foi usada uma biblioteca chamada \emph{react-native-google-signin} que facilita a autenticação com o Google, ela é uma \emph{wrapper} da biblioteca
+\emph{Google Sign-In} para Android e iOS, que permite ao usuário autenticar com o Google em ambos os sistemas operacionais. Quando o usuário
+clica no botão de ``Continuar com Google'', uma tela de seleção de contas do Google é aberta, onde o usuário pode escolher a conta que deseja,
+como ilustrado na figura~\ref{fig:conductor-auth}.
+
+\begin{figure}[ht]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.15}
+    {google-conductor-auth.png}
+    {Janela do Google de Autenticação}
+    {fig:conductor-auth}
+\end{figure}
+
+O fluxo de autenticação é simples, uma vez que o usuário escolhe a conta, o \emph{Conductor} recebe as informações da conta Google do usuário, enviadas 
+para o \emph{Maestro} por meio de uma requisição HTTP, que por sua vez, autentica o usuário e retorna um \emph{token} de autenticação JWT, 
+armazenado no \emph{Conductor} e utilizado em todas as requisições subsequentes ao \emph{Maestro}.
+
+\begin{figure}[ht]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.23}
+    {conductor_auth.png}
+    {Fluxo de Autenticação no \emph{Conductor}}
+    {fig:conductor-auth-flow}
+\end{figure}

@@ -1,0 +1,78 @@
+\chapter{Sistema Multiusuários}
+\label{chap:multiusuarios}
+
+Seguindo com o objetivo do trabalho, com o sistema montado foi pensado em uma forma de tornar ele acessível para vários usuários em um mesmo ambiente
+ao mesmo tempo. Para chegar a este objetivo foi desenvolvido o seguinte método:
+
+O administrador de um Servidor \emph{Opus} pode requisitar através do \emph{Maestro} a criação de um código de barras bidimensional (QR Code) que será associado 
+a um dispositivo. Outros usuários do \emph{Maestro} podem então escanear esse QR Code através de uma Interface de Usuário para o acesso ao dispositivo como 
+visitante, mesmo sem ser um usuário associado ao Servidor \emph{Opus} em questão.
+
+Com essa abordagem, são necessários limites bem definidos para não haver conflito, os limites definidos foram:
+\begin{itemize}
+    \item Escanear o QR Code concede ao visitante acesso ao dispositivo por tempo limitado, após o tempo expirar o visitante é desconectado automaticamente
+        e precisa escanear o QR Code novamente para continuar a interação.
+    \item Somente um visitante pode estar conectado a um dispositivo por vez, se um novo visitante escanear o QR Code o visitante anterior é desconectado.
+\end{itemize}
+
+\section{Requisitando um QR Code}
+\label{sec:requisitando_qr_code}
+
+Foi adicionado ao \emph{Maestro} uma nova funcionalidade que permite ao administrador de um Servidor \emph{Opus} requisitar um QR Code para um dispositivo.
+Exposto na rota \texttt{/qr\_code/\emph{\{server\_id\}}/\emph{\{device\_id\}}} o usuário pode requisitar um QR Code para um dispositivo específico de um Servidor \emph{Opus},
+o \emph{Maestro} então irá checar se o usuário está na lista de administradores do Servidor \emph{Opus}, ao confirmar, ele irá gerar um código de barras 
+bidimensional QR Code contendo um JWT (\emph{JSON Web Token}) com as informações do dispositivo e servidor, esse QR Code é então salvo na pasta ``assets/''
+do \emph{Maestro} e seu caminho é retornado ao usuário por um redirecionamento para a rota \texttt{/assets/\emph{\{qr\_code\_path\}}}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.2}
+    {qr_code_gen.png}
+    {Implementação da função que gera o QR Code}
+    {fig:qr_code_func}
+\end{figure}
+
+O trecho de código na figura~\ref{fig:qr_code_func} mostra a implementação da função que gera o QR Code.
+
+\section{Escaneando o QR Code}
+\label{sec:escaneando_qr_code}
+
+Para ler o QR Code é necessário que o usuário possua o aplicativo \emph{Conductor} instalado em seu telefone. No aplicativo, foi adicionada uma tela
+de leitura de QR Code que utiliza a biblioteca \emph{react-native-camera} para a leitura do QR Code, como mostrado na figura~\ref{fig:qr_code_scan}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.15}
+    {qr_code_scan.jpg}
+    {Tela de leitura de QR Code no aplicativo \emph{Conductor}}
+    {fig:qr_code_scan}
+\end{figure}
+
+Ao escanear o QR Code, o aplicativo irá extrair o JWT contido no QR Code e enviar para o \emph{Maestro} por uma requisição POST na rota
+\texttt{/guest\_acces/\emph{\{cypher\_text\}}}, como as chamadas de API são autenticadas, o Servidor pode extrair o usuário fazendo a requisição
+do acesso. O \emph{Maestro} então irá verificar se o JWT é válido, ou seja, checar se o Servidor \emph{Opus} presente no JWT existe.
+
+Se o JWT for válido, o \emph{Maestro} então irá verificar se o usuário que requisitou o acesso, é o último requisitante ou um novo visitante,
+isso é feito checando um dicionário de visitantes, contendo o ID do Servidor \emph{Opus}, o ID do dispositivo e o ID do atual usuário visitante,
+a representação em JSON do dicionário é mostrada na figura~\ref{fig:guest_dict}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.2}
+    {guest_users_dict.png}
+    {Representação em JSON do dicionário de visitantes}
+    {fig:guest_dict}
+\end{figure}
+
+Caso, o usuário seja um novo visitante, ou seja, não é o mesmo usuário que escaneou o QR Code anteriormente, o \emph{Maestro} atualizar o dicionário,
+com o ID do novo visitante e seu tempo de expiração, que é de trinta minutos, garantindo assim que os limites definidos sejam respeitados.
+
+Caso o usuário seja o mesmo que escaneou o QR Code anteriormente, o \emph{Maestro} irá atualizar o tempo de expiração do visitante, garantindo
+que o visitante possa continuar a interação com o dispositivo.
+
+Por fim, o \emph{Maestro} retornará ao aplicativo \emph{Conductor} um JSON contendo o tempo de expiração do acesso, os dados do dispositivo e seu 
+estado atual, o que é suficiente para o aplicativo \emph{Conductor} se conectar ao dispositivo.
+
