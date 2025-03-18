@@ -858,6 +858,11 @@ OUTPUT Conteudo\Desenvolvimento\TesteseResultados\testes_e_resultados.aux
 INPUT .\Conteudo\Desenvolvimento\TesteseResultados\testes_e_resultados.tex
 INPUT .\Conteudo\Desenvolvimento\TesteseResultados\testes_e_resultados.tex
 INPUT Conteudo\Desenvolvimento\TesteseResultados\testes_e_resultados.tex
+INPUT .\Conteudo\Desenvolvimento\TesteseResultados\testes.tex
+INPUT .\Conteudo\Desenvolvimento\TesteseResultados\testes.tex
+INPUT .\Conteudo\Desenvolvimento\TesteseResultados\testes.tex
+INPUT .\Conteudo\Desenvolvimento\TesteseResultados\testes.tex
+INPUT Conteudo\Desenvolvimento\TesteseResultados\testes.tex
 INPUT .\Imagens\teste1.png
 INPUT .\Imagens\teste1.png
 INPUT .\Imagens\teste1.png
@@ -907,6 +912,11 @@ INPUT .\Imagens\teste3_6.png
 INPUT .\Imagens\teste3_6.png
 INPUT .\Imagens\teste3_6.png
 INPUT .\Imagens\teste3_6.png
+INPUT .\Conteudo\Desenvolvimento\TesteseResultados\resultados.tex
+INPUT .\Conteudo\Desenvolvimento\TesteseResultados\resultados.tex
+INPUT .\Conteudo\Desenvolvimento\TesteseResultados\resultados.tex
+INPUT .\Conteudo\Desenvolvimento\TesteseResultados\resultados.tex
+INPUT Conteudo\Desenvolvimento\TesteseResultados\resultados.tex
 INPUT .\Conteudo\Fim\conclusao.tex
 INPUT .\Conteudo\Fim\conclusao.tex
 OUTPUT Conteudo\Fim\conclusao.aux

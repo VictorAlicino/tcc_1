@@ -188,9 +188,10 @@ async def get_guest_access(
         log.debug(f"User {user.user_id} already has GUEST access to device {cypher_suite['device_id']} on server {cypher_suite['server_id']} until {granted_until}")
         granted_until = datetime.strptime(granted_until, "%Y-%m-%d %H:%M:%S")
         if granted_until < datetime.now():
-            granted_until = (datetime.now() + timedelta(minutes=30)).strftime("%Y-%m-%d %H:%M:%S")
+            granted_until = (datetime.now() + timedelta(minutes=30))
             guest_users_devices[cypher_suite['server_id']][cypher_suite['device_id']]['granted_until'] = granted_until
             log.debug(f"User {user.user_id} has refreshed GUEST access to device {cypher_suite['device_id']} on server {cypher_suite['server_id']} until {granted_until}")
+        granted_until = granted_until.strftime("%Y-%m-%d %H:%M:%S")
 
     device = await MQTT_Devices.get_device(local_server, cypher_suite['device_id'])
     device_state = await MQTT_Devices.get_device_state(local_server, cypher_suite['device_id'])

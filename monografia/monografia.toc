@@ -64,6 +64,7 @@
 \contentsline {subsubsection}{\numberline {5.1.2.2}Teste 2}{44}{subsubsection.5.1.2.2}%
 \contentsline {subsubsection}{\numberline {5.1.2.3}Teste 3}{44}{subsubsection.5.1.2.3}%
 \contentsline {section}{\numberline {5.2}Resultados}{46}{section.5.2}%
+\contentsline {paragraph}{Definir requisitos para um sistema de gerenciamento de um edifício inteligente:}{46}{section*.48}%
 \contentsline {chapter}{\chapternumberline {6}Conclusão}{47}{chapter.6}%
 \contentsline {chapter}{\chapternumberline {7}Trabalhos Futuros}{48}{chapter.7}%
-\contentsline {chapter}{Refer\^encias}{49}{chapter*.48}%
+\contentsline {chapter}{Refer\^encias}{49}{chapter*.49}%
