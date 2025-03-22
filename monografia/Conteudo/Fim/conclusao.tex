@@ -1,9 +1,55 @@
 \chapter{Conclusão}
 \label{conclusao}
 
-O desenvolvimento de um sistema multiusuário para edifícios inteligentes se provou um desafio multidisciplinar,
-onde foi não somente necessário o conhecimento básico da linguagem de programação escolhida, mas também suas pequenas
-particularidades para executar os requisitos específicos do projeto, também se fez necessário o conhecimento em Redes de Computadores 
-para organizar as conexões entre os servidores e configurar as máquinas de testes para atuarem da forma que a arquitetura esperava.
-Dado todos os desafios, foi possível testar a arquitetura proposta e verificar que é possível o controle de múltiplos usuários
-a um mesmo dispositivo em um sistema de edifício inteligente.
+% \section{Objetivos}
+% \subsection{Objetivo Geral}
+% Este trabalho visa desenvolver um sistema básico que demonstre a viabilidade da operação simultânea de múltiplos usuários
+% em um edifício inteligente. A proposta é criar uma solução funcional que atenda a múltiplos usuários em um ambiente compartilhado. 
+% 
+% % Objetivos Específicos	
+% \subsection{Objetivos Específicos}
+% 
+% Para alcançar o objetivo do trabalho, é proposto uma aplicação simplificada que permita entender a viabilidade do uso de um 
+% sistema de edifício inteligente por diversos usuários, focando no controle das unidades de climatização.
+% 
+% Dentre os principais objetivos específicos destacam-se:
+% 
+% \begin{itemize}
+%     \item Realizar uma pesquisa bibliográfica sobre edifícios inteligentes e suas demandas;
+%     \item Definir requisitos para um sistema de gerenciamento de um edifício inteligente;
+%     \item Propor e implementar um sistema de gerenciamento para edifícios inteligentes;
+%     \item Tornar este sistema acessível a múltiplos usuários como visitantes;
+% \end{itemize}
+
+% Pequeno compilado dos resultados ------------------------------------------------------------------
+O objetivo geral do trabalho pôde ser alcançado através da conclusão dos objetivos específicos, onde ficou claro que é possível um sistema
+multiusuário voltado para edifícios inteligentes.
+% Servidor Local
+O conceito de servidor local obteve sucesso no controle de dispositivos dentro da mesma rede, concentrando toda a responsabilidade do mantimento
+dos dispositivos dentro da rede local, o que garante um controle maior dos dados para o usuário que implementar o sistema \textbf{Opus} no seu 
+edifício, o esquema interligado de \emph{Drivers} e \emph{Interfaces} permitiu a criação de um sistema modular, tornando o 
+sistema \textbf{Opus} flexível e adaptável a tecnologias presentes e futuras no mercado.
+% Servidor Remoto
+A entidade servidor remoto atuou muito bem como um intermediário entre o servidor local e o usuário, expondo rotas que possibilitaram o acesso da 
+interface de usuário aos servidores remotos concentrando o fluxo de mensagens em um só lugar, também mantendo o controle e responsabilidade 
+quanto a autenticação dos usuários, o que dá ao sistema todo uma maior garantia de integridade na autenticidade de quem seja um usuário.
+% Interface de Usuário
+A interface de usuário em forma de aplicativo móvel, como um envólucro das rotas do servidor remoto para o usuário final cumpriu seu papel
+expondo para os usuários a interação com o sistema de forma intuitiva e também sendo um link confiável para a autenticação através do Google,
+o que dá ao servidor remoto garantia da autenticidade do usuário.
+% Multiusuários
+Algumas adições ao sistema \textbf{Opus} foram necessárias para que o sistema atendesse o objetivo geral de permitir o controle de múltiplos usuários,
+mesmo aqueles não autorizados previamente por permissões de visitantes, das quais se destaca o uso de um código de barras bidimensional (QR Code) para 
+que o aplicativo móvel pudesse fazer o pedido de acesso de visitante ao servidor remoto, possibilitando que um usuário não autorizado
+previamente pudesse controlar um dispositivo por um tempo limitado, garantindo assim o título de sistema multiusuário.
+
+% Contribuições do seu estudo -----------------------------------------------------------------------
+O estudo de um sistema multiusuário para edifícios inteligentes, como o \textbf{Opus}, contribui para a área de automação de edifícios,
+mostrando que é possível a integração de dispositivos IoT acessíveis a edifícios que possuem áreas de uso coletivo e rotatividade de usuários,
+como escritórios e coworking.
+
+% Possibilidades de novos estudos -------------------------------------------------------------------
+\input{Conteudo/Fim/trabalhos_futuros}
+
+% Considerações Finais ------------------------------------------------------------------------------
+\input{Conteudo/Fim/consideracoes_finais}

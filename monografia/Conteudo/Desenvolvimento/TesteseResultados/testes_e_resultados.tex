@@ -1,30 +1,44 @@
 \chapter{Testes e Resultados}
 \label{testes_e_resultados}
 
-Para testar a viabilidade do sistema proposto, foi desenvolvido as três partes principais do sistema: o Servidor Local, 
-o Servidor Remoto e a Interface de Usuário, porém, interfaces para comandos de manipulações do banco de dados do Servidor Local não foram
-implementadas, como definir quais níveis de acesso podem controlar quais dispositivos, sendo necessária a manipulação direta do banco de dados.
+% % Objetivos Específicos	
+% \subsection{Objetivos Específicos}
+% 
+% Para alcançar o objetivo do trabalho, é proposto uma aplicação simplificada que permita entender a viabilidade do uso de um 
+% sistema de edifício inteligente por diversos usuários, focando no controle das unidades de climatização.
+% 
+% Dentre os principais objetivos específicos destacam-se:
+% 
+% \begin{itemize}
+%     \item Realizar uma pesquisa bibliográfica sobre edifícios inteligentes e suas demandas;
+%     \item Definir requisitos para um sistema de gerenciamento de um edifício inteligente;
+%     \item Propor e implementar um sistema de gerenciamento para edifícios inteligentes;
+%     \item Tornar este sistema acessível a múltiplos usuários sem necessidade de cadastro prévio;
+% \end{itemize}
 
-\section{Testes}
+Para atingir o objetivo geral deste trabalho, foi desenvolvido o sistema \textbf{Opus} com suas três partes principais:
+\emph{Opus} (Servidor Local), \emph{Maestro} (Servidor Remoto) e \emph{Conductor} (Interface de Usuário), o desenvolvimento do sistema se
+ateve ao foco nas unidades de climatização e não foram desenvolvidas funcionalidades além das mínimas necessárias para o controle destas unidades,
+desta forma, interfaces gráficas para comandos de manipulações do banco de dados do Servidor Local não foram implementadas, 
+como definir quais níveis de acesso podem controlar quais dispositivos, sendo necessária a manipulação direta do banco de dados nesses casos.
 
-O objetivo principal dos testes foi verificar se o sistema é capaz de aceitar comandos a um dispositivo, sem a necessidade de associar todos os 
-usuários ao Servidor Local onde o dispositivo se encontra.
+\section{Materiais}
 
-\subsection{Materiais}
+Para a realização dos testes, foram utilizados os seguintes materiais para cada parte do sistema \textbf{Opus}:
 
-Para a realização dos testes, foram utilizados os seguintes materiais:
+\textbf{Servidor Local}: para executar o \emph{Opus} foi utilizado um computador com o sistema operacional Windows 10; para o broker MQTT necessário
+para a comunicação MQTT local, foi utilizado um Raspberry Pi 3 na mesma rede, executando o broker MQTT Mosquitto; Para aceitar os comandos do 
+\emph{Opus} e convertê-los em sinais infravermelhos legíveis para um ar-condicionado, foi utilizado um dispositivo emissor de infravermelho inteligente,
+modificado para suportar o firmware Tasmota.
 
-\textbf{Servidor Local}: no Servidor Local, para executar o \emph{Opus} foi utilizado um computador com o sistema operacional Windows 10,
-um Raspberry Pi 3 na mesma rede do computador executando um broker MQTT Mosquitto e um dispositivo emissor de infravermelho inteligente,
-modificado para suportar o firmware Tasmota. O dispositivo emissor de infravermelho inteligente foi configurado para se comunicar com o broker
-MQTT do Raspberry Pi 3 e configurado no \emph{Opus} para controlar um ar-condicionado.
+\textbf{Servidor Remoto}: para executar o Servidor Remoto, foi necessário um servidor na nuvem, para isso foi utilizado uma instância na OCI
+(Oracle Cloud Infrastructure) com o sistema operacional Ubuntu 22.04.5 LTS, um broker MQTT Mosquitto também foi configurado na mesma instância para 
+a comunicação entre o \emph{Maestro} e o \emph{Conductor}.
 
-\textbf{Servidor Remoto}: no Servidor Remoto, para executar o \emph{Maestro} foi utilizado uma instância na OCI (Oracle Cloud Infrastructure)
-com o sistema operacional Ubuntu 22.04.5 LTS, um broker MQTT Mosquitto também foi configurado na instância.
-
-\textbf{Interface de Usuário}: para a Interface de Usuário, foram utilizados três smartphones com o sistema operacional Android para executar
-o aplicativo \emph{Conductor}, um para cada usuário.
+\textbf{Interface de Usuário}: para a Interface de Usuário, foram utilizados três
+smartphones que possuem cada um uma conta Google diferente para se autenticar no aplicativo \emph{Conductor}, um para cada usuário.
 
 \input{Conteudo/Desenvolvimento/TesteseResultados/testes}
 
 \input{Conteudo/Desenvolvimento/TesteseResultados/resultados}
+

@@ -19,7 +19,144 @@
 %     \item Tornar este sistema acessível a múltiplos usuários sem necessidade de cadastro prévio;
 % \end{itemize}
 
-Ao longo da realização deste trabalho, os seguintes objetivos específicos foram alcançados:
 
-\paragraph{Definir requisitos para um sistema de gerenciamento de um edifício inteligente:}
-Com base na revisão bibliográfica realizada, foram definidos os requisitos do sistema apresentado no capítulo~\ref{} 
+\subsection{Teste 1}
+O teste 1 foi realizado com sucesso, como pode ser visto na Figura \ref{fig:test1}, o \emph{Maestro} foi capaz de autenticar os três usuários:
+``Victor Alicino'', ``Sergio Dias Alicino'' e ``Meyre Alicino'' como observado nos logs.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.8}
+    {teste1.png}
+    {LOGs do \emph{Maestro} após o login dos usuários}
+    {fig:test1}
+\end{figure}
+
+
+\subsection{Teste 2}
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.5}
+    {teste2.png}
+    {QR Code gerado pelo \emph{Maestro}}
+    {fig:test2}
+\end{figure}
+
+Como mostrado na Figura~\ref{fig:maestro-qr}, na aba ``Preview'' do Insomnia, é possível visualizar o QR Code que foi gerado pelo \emph{Maestro} após a
+requisição. Lendo o código de barras, se obtém o seguinte JWT:\@
+\begin{lstlisting}
+    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXJ2ZXJfaWQiOiJhMDVk
+    MmRiMS1kNDBiLTRiZGItYWI0Ny1mMjQzNDY4ZjI3YjciLCJkZXZpY2VfaWQiO
+    iJlM2U5OTA2Zi1mY2IwLTExZWYtOGRlZC0wMDFhN2RkYTcxMGEifQ.TmXgA6H
+    7rrVV3PIim_FJezCzjtCF4jFpKa-b2uYBTpg
+\end{lstlisting}
+
+Que ao ser decodificado com a chave secreta do \emph{Maestro} é obtido o JSON mostrado na Figura~\ref{fig:test2-result}.
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.2}
+    {qr_code_result.png}
+    {JWT do QR Code decodificado}
+    {fig:test2-result}
+\end{figure}
+Onde ``server\_id'' é o id do servidor \emph{Opus} (o mesmo que foi utilizado na requisição), ``grant\_until'' é a data de expiração do acesso do 
+visitante, ``device'' e ``state'' são dados passados para o \emph{Conductor} para que ele saiba qual tela mostrar e em que estado o dispositivo
+se encontra.
+
+Como as informações estão corretas, o teste foi considerado um sucesso.
+
+\subsection{Teste 3}
+Seguindo o roteiro do teste 3, os usuários 1, 2 e 3 serão respectivamente ``Victor'', ``Sergio'' e ``Meyre''; o dispositivo a ser controlado
+será o ``Ar Condicionado Teste'' com id ``e3e9906f-fcb0-11ef-8ded-001a7dda710a''.
+
+Os \textbf{passos 1 e 2} do roteiro foram realizados com sucesso, como é possível ver na figura~\ref{fig:test3-1}, o log do \emph{Maestro}, na primeira linha,
+o usuário ``Victor'' escaneou com sucesso o QR Code recebendo o acesso de visitante ao dispositivo ``Ar Condicionado Teste'', e logo em seguida,
+nas próximas linhas é possível ver que o usuário tentou controlar o dispositivo.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.35}
+    {teste3_2.png}
+    {LOGs do \emph{Maestro} 1}
+    {fig:test3-1}
+\end{figure}
+
+Já na figura~\ref{fig:test3-2}, é possível ver que o \emph{Opus} recebeu a requisição de controle do dispositivo e a executou com sucesso.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.4}
+    {teste3_1.png}
+    {LOGs do \emph{Opus} 1}
+    {fig:test3-2}
+\end{figure}
+
+Prosseguindo para os \textbf{passos 3 e 4}, o usuário ``Sergio'' escaneou o QR Code e tentou controlar o dispositivo, 
+o que também foi feito com sucesso como mostra os logs do \emph{Maestro} na Figura~\ref{fig:test3-3} e do \emph{Opus} na Figura~\ref{fig:test3-4}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.35}
+    {teste3_3.png}
+    {LOGs do \emph{Maestro} 2}
+    {fig:test3-3}
+\end{figure}
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.4}
+    {teste3_4.png}
+    {LOGs do \emph{Opus} 2}
+    {fig:test3-4}
+\end{figure}
+
+O usuário ``Sergio'' é reconhecido como visitante, pois não tem permissões de administrador, mas está temporariamente autorizado a controlar o dispositivo.
+
+Seguindo para o \textbf{passo 5}, o usuário ``Meyre'' escaneou o QR Code também com sucesso.
+
+Logo em seguida no \textbf{passo 6}, o usuário ``Sergio'' tentou controlar o dispositivo, o que não foi possível, como esperado, recebendo do \emph{Conductor}
+a seguinte mensagem: ``Você não tem mais acesso a esse dispositivo'', como mostrado na figura \ref{fig:test3-5}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.15}
+    {conductor_device_guess_lost_access.png}
+    {Mensagem de aviso de perda de acesso no \emph{Conductor}}
+    {fig:test3-5}
+\end{figure}
+
+E por fim, no \textbf{passo 7} o usuário ``Meyre'' tentou controlar o dispositivo, o que foi feito com sucesso como mostra os logs do \emph{Opus}
+na Figura \ref{fig:test3-6}.
+
+\begin{figure}[h!]
+    \conteudoFigura
+    [Elaborado pelo Autor (2025)]
+    {0.4}
+    {teste3_6.png}
+    {LOGs do \emph{Opus} 3}
+    {fig:test3-6}
+\end{figure}
+
+\subsection{Conclusão Parcial}
+
+Os três testes realizados, mostram que o sistema \textbf{Opus} satisfaz os seguintes objetivos específicos:
+\begin{itemize}
+    \item Propor e implementar um sistema de gerenciamento para edifícios inteligentes:
+        provado pelos testes 1, 2 e 3, o sistema \textbf{Opus} foi capaz de permitir acesso a um
+        dispositivo que controla um Ar-Condicionado, permitindo aos usuários alterar o ambiente do 
+        edifício de acordo com suas necessidades e vontades.
+    \item Tornar este sistema acessível a múltiplos usuários como visitantes:
+        provado pelo teste 3, o sistema \textbf{Opus} foi capaz de permitir que múltiplos usuários
+        pudessem controlar um dispositivo, seguindo as regras de acesso definidas no capítulo~\ref{chap:multiusuarios}.
+\end{itemize}
+
+Sendo assim, o sistema \textbf{Opus} foi capaz de atingir os objetivos específicos propostos, 
+permitindo o controle de dispositivos IoT por múltiplos usuários.
