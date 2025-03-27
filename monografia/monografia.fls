@@ -491,6 +491,7 @@ INPUT .\Conteudo\Prologo\resumo.tex
 INPUT .\Conteudo\Prologo\resumo.tex
 INPUT Conteudo\Prologo\resumo.tex
 INPUT C:\Users\victo\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\rm-lmr10.tfm
+INPUT C:\Users\victo\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\rm-lmri10.tfm
 INPUT C:\Users\victo\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\rm-lmbx10.tfm
 INPUT .\Automatico\lista_figuras.tex
 INPUT .\Automatico\lista_figuras.tex

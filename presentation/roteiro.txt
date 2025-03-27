@@ -1,0 +1,57 @@
+1. Introdução ao Tema:
+    Identificação - 3 minutos
+    Problema - 3 minutos
+    Objetivo Geral - 1 minuto e 30 segundos
+    Objetivo Específicos - 4 minutos e 30 segundos
+2. Ideias Gerais:
+    Hipótese - 1 minuto e 30 segundos
+    Metodologoia - 1 minuto e 30 segundos
+3. Solução:
+    Resultados - 12 minutos
+4. Conclusão:
+    Conclusão - 3 minutos
+
+
+APRESENTAÇÃO DO TCC
+
+1. Introdução ao tema:
+    Cidades Inteligentes
+    Edifícios Inteligentes
+        (BMS e BACs)
+    Dispositivos IoT baratos
+    Problema (Como usar esses dispositivos IoT para Smart Homes em edifícios)
+    Objetivo Geral
+    Objetivos Específicos
+
+2. Ideias gerais:
+    Como esse sistema foi montado?
+        Sistema Opus
+            Para que serve e quem faz o que
+            Servidor Local
+                Cloud Manager
+                User Manager
+                Location Manager
+                Device Manager
+                Banco de Dados
+            Servidor Remoto
+                Autenticação e Cadastro de Usuários
+                Intermediar Servidor Local e Aplicação Mobile
+                Banco de Dados
+            Aplicação Mobile
+                Autenticação
+                Controle de Dispositivos
+                Banco de Dados
+        Um sistema multiusuários
+
+3. Solução (A promessa foi cumprida):
+    Testes e Resultados
+        Materiais
+        Teste 1
+        Teste 2
+        Teste 3
+
+4. Conclusão:
+    Conclusão
+    Trabalhos Futuros
+    Agradecimentos
+    Perguntas
