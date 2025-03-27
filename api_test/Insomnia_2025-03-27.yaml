@@ -1,0 +1,553 @@
+type: collection.insomnia.rest/5.0
+name: Maestro Server
+meta:
+  id: wrk_cb1bdd7dc7ce4b0b994ec0bfdccc15ed
+  created: 1717655553444
+  modified: 1717655553444
+collection:
+  - name: LocalServers
+    meta:
+      id: fld_a1d219d5180f4daf892baa63ceec8628
+      created: 1717729800264
+      modified: 1724098243304
+      sortKey: -1717729800264
+    children:
+      - url: "{{ _.url }}/opus_server"
+        name: Get all local servers
+        meta:
+          id: req_74090a6463c94fb68569a4e0b0c972ee
+          created: 1717656273365
+          modified: 1741837357616
+          isPrivate: false
+          sortKey: -1717729811047
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/9.2.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.url }}/servers/delete/{% response 'body',
+          'req_74090a6463c94fb68569a4e0b0c972ee',
+          'b64::JC5bMF0uc2VydmVyX2lk::46b', 'never', 60 %}"
+        name: Delete server by id
+        meta:
+          id: req_fffaf9c69b7744eba041c3debb5c26e7
+          created: 1717656956332
+          modified: 1727157544950
+          isPrivate: false
+          sortKey: -1717729810547
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/9.2.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.url }}/users/set_role"
+        name: Set users role
+        meta:
+          id: req_49bf300874c3430982032af1cc318f81
+          created: 1717661677871
+          modified: 1724098177995
+          isPrivate: false
+          sortKey: -1717729810847
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"user_id": "798d2ce9-092d-4d08-b0f8-cef315dbb90c",
+            	"server_id": "7bba2ea3-822e-459a-bae3-5644a27b853b",
+            	"role": 0
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/9.2.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.url }}/opus_server/a05d2db1-d40b-4bdb-ab47-f243468f27b7/admins"
+        name: Get server admins
+        meta:
+          id: req_f0c6c0eb6eab4dc9bf818228cdd00325
+          created: 1717662360058
+          modified: 1741683540787
+          isPrivate: false
+          sortKey: -1717729810647
+        method: GET
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"user_id": "798d2ce9-092d-4d08-b0f8-cef315dbb90c",
+            	"server_id": "7bba2ea3-822e-459a-bae3-5644a27b853b",
+            	"role": 0
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/9.2.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.url }}/opus_server/e66f50a4-e72f-4151-9228-a891ef0aaafd/assign_users"
+        name: Assign Users to a Server
+        meta:
+          id: req_a45c621b1ee44c9ba3495562fffaf2d6
+          created: 1717723331425
+          modified: 1743081858076
+          isPrivate: false
+          sortKey: -1717729811147
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            [
+            	{
+            		"user_id": "42afc86c-a126-4c7f-87b5-95875df7166d",
+            		"role": 0
+            	}
+            ]
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/9.2.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.url
+          }}/opus_server/a05d2db1-d40b-4bdb-ab47-f243468f27b7/devices/07e164d0-\
+          1b87-11ef-8a25-001a7dda710a"
+        name: Device State
+        meta:
+          id: req_ec0be08489914f70b829a36b70b8b40d
+          created: 1739737465004
+          modified: 1740362753121
+          isPrivate: false
+          sortKey: -1739737465004
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/10.3.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDk5NjUyNjQ0MzE3NjY2NDI1NzgiLCJleHAiOjE3NDAzNjQ1NDJ9.3goNv-uZEV-CtXY6gOGr1-amUu9E7TAwPRMxAApFGRI
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.url }}/users/opus_server/dump"
+        name: User Servers Dump
+        meta:
+          id: req_62c8984900bf4dd08187f68db13c970c
+          created: 1740019433832
+          modified: 1742095425263
+          isPrivate: false
+          sortKey: -1740019433832
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDk5NjUyNjQ0MzE3NjY2NDI1NzgiLCJleHAiOjE3NDIwOTcwMTV9.aSIoMu1pLbHUly_o2w_Jq6BsvXwH3o8GB_pRCVgTYO0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.url
+          }}/opus_server/a05d2db1-d40b-4bdb-ab47-f243468f27b7/devices/07e164d0-\
+          1b87-11ef-8a25-001a7dda710a/set_state"
+        name: Set Device State
+        meta:
+          id: req_a980c67085f54bd19449913c48b5a414
+          created: 1740140975717
+          modified: 1740886719658
+          isPrivate: false
+          sortKey: -1739103380569
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+                "power_state": "On",
+                "temperature": "20.0",
+                "mode": "Auto",
+                "fan_speed": "Auto"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/10.3.0
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDk5NjUyNjQ0MzE3NjY2NDI1NzgiLCJleHAiOjE3NDA4ODg1MDd9.8_nqgcwaiAhsXTqz0o3F_Czuc6Zf_i2gt4ZhpI468zQ
+          disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.url
+          }}/opus_server/qr_code/e66f50a4-e72f-4151-9228-a891ef0aaafd/9bfc149a-\
+          0b11-11f0-b904-b827ebb30777"
+        name: QR Code Path
+        meta:
+          id: req_6bb7e44ac28f4315bc3b6c6b5839ba26
+          created: 1740634044789
+          modified: 1743083280980
+          isPrivate: false
+          sortKey: -1740634044789
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDk5NjUyNjQ0MzE3NjY2NDI1NzgiLCJleHAiOjE3NDMwODUwODZ9.B44y5SDd6OtOuNW7eyFeb2b5AYzxX0Kq_TkpJAjf2p8
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.url
+          }}/opus_server/guest_access/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJz\
+          ZXJ2ZXJfaWQiOiJhMDVkMmRiMS1kNDBiLTRiZGItYWI0Ny1mMjQzNDY4ZjI3YjciLCJkZ\
+          XZpY2VfaWQiOiJlM2U5OTA2Zi1mY2IwLTExZWYtOGRlZC0wMDFhN2RkYTcxMGEifQ.TmX\
+          gA6H7rrVV3PIim_FJezCzjtCF4jFpKa-b2uYBTpg"
+        name: QR Code Guest Acess Request
+        meta:
+          id: req_f0a7284925d04d009c5e2d569f6ac4f4
+          created: 1740635095695
+          modified: 1742427435985
+          isPrivate: false
+          sortKey: -1740326739310.5
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/10.3.1
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDk5NjUyNjQ0MzE3NjY2NDI1NzgiLCJleHAiOjE3NDI0MjkyMzB9.PxgS7JnC-3tyUX6KkEmCxP2IfkBlBEp67dX6nTkz_cM
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Users
+    meta:
+      id: fld_1de091b6c3794c4cb4b9872b35d1ecb4
+      created: 1717729805386
+      modified: 1717729805386
+      sortKey: -1717729805386
+    children:
+      - name: 1 User
+        meta:
+          id: fld_fb30b49a36b342418ac5353af87b841b
+          created: 1717730075317
+          modified: 1717730078415
+          sortKey: -1717729832390
+        children:
+          - url: "{{ _.url }}/users/delete/4d867ba8-7e09-4ead-9863-ec61c378eae4"
+            name: Delete user by id
+            meta:
+              id: req_de55ba79031641adb04ef9427c93997e
+              created: 1717655563696
+              modified: 1717827350319
+              isPrivate: false
+              sortKey: -1717730104985
+            method: DELETE
+            headers:
+              - name: User-Agent
+                value: insomnia/9.2.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.url }}/users/server/42afc86c-a126-4c7f-87b5-95875df7166d"
+            name: Get all servers from a user
+            meta:
+              id: req_50886202740245ddbd04866b2e22aaca
+              created: 1717827233332
+              modified: 1724101480707
+              isPrivate: false
+              sortKey: -1717730105085
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/9.2.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: N Users
+        meta:
+          id: fld_453b8e21c0cc479e84c38c0ada35bb2b
+          created: 1717730085176
+          modified: 1717730089747
+          sortKey: -1717729832490
+        children:
+          - url: "{{ _.url }}/users"
+            name: Get all users
+            meta:
+              id: req_7bb94ae38a3f4c97a8effe2b368ce5b1
+              created: 1717655594117
+              modified: 1737654433077
+              isPrivate: false
+              sortKey: -1717730095072
+            method: GET
+            headers:
+              - name: User-Agent
+                value: insomnia/9.2.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.url }}/users/server/42afc86c-a126-4c7f-87b5-95875df7166d"
+            name: Get all Users of a Server
+            meta:
+              id: req_9ee36b8ef9e24c3f94491bb7281b96b7
+              created: 1717723627130
+              modified: 1737654493034
+              isPrivate: false
+              sortKey: -1717730095172
+            method: GET
+            body:
+              mimeType: application/json
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/9.2.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: Auth
+    meta:
+      id: fld_82ba4a18b32144ecb4861f07743d5601
+      created: 1719727443017
+      modified: 1727157275124
+      sortKey: -1719727443017
+  - name: Conductor
+    meta:
+      id: fld_b0436a9c19eb46efa8dbe525d0bc4943
+      created: 1737650944192
+      modified: 1737650947018
+      sortKey: -1737650944192
+    children:
+      - name: Auth
+        meta:
+          id: fld_57aba5e78a6540d3a83953aaa457f1d5
+          created: 1723142326004
+          modified: 1737650966612
+          sortKey: -1737650951839
+        children:
+          - url: "{{ _.url }}/auth/conductor/login"
+            name: Login
+            meta:
+              id: req_f5fadb03cdc649a9a9edcf1c46293041
+              created: 1719727456574
+              modified: 1741856324972
+              isPrivate: false
+              sortKey: -1723142331203
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"email":"victor.alicino@gmail.com",
+                	"google_sub":"109965264431766642578"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/9.2.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.url }}/auth/conductor/register"
+            name: Register
+            meta:
+              id: req_89c1ce12d90f486e8efb5dad7074efa2
+              created: 1723142146639
+              modified: 1741986770746
+              isPrivate: false
+              sortKey: -1723142331103
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"payload": {
+                		"id": "123456",
+                		
+                	}
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/9.2.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.url }}/auth/conductor/verify"
+            name: Verify Token Availability
+            meta:
+              id: req_cddd02d032204ae7a71e566c82c3ff59
+              created: 1738469296134
+              modified: 1738608404982
+              isPrivate: false
+              sortKey: -1738469296134
+            method: POST
+            body:
+              mimeType: application/json
+              text: >-
+                {
+                	"access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDk5NjUyNjQ0MzE3NjY2NDI1NzgiLCJleHAiOjE3Mzg0NzA3ODR9.FuIyhS5ayU-DaUc7w0jVJk0pH8qVUsCRWpveyp_cXgM"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/10.3.0
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: LocalServers
+        meta:
+          id: fld_8e96d14ade084615ab1f8ce36b6d4c6a
+          created: 1737650982486
+          modified: 1737650982486
+          sortKey: -1737650982486
+      - name: CloudServer
+        meta:
+          id: fld_69a9689fc75e4cca864ef9e5123110d6
+          created: 1737650994172
+          modified: 1737650994172
+          sortKey: -1737650994172
+        children:
+          - url: "{{ _.url }}/users/opus_server/dump_all_servers_info"
+            name: Dump user claims
+            meta:
+              id: req_fc91de2aaad84fabbae0d8daacf3465d
+              created: 1737651010489
+              modified: 1738797759790
+              isPrivate: false
+              sortKey: -1737651010489
+            method: GET
+            body:
+              mimeType: application/json
+            headers:
+              - name: Content-Type
+                value: application/json
+              - name: User-Agent
+                value: insomnia/10.3.0
+            authentication:
+              type: bearer
+              token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDk5NjUyNjQ0MzE3NjY2NDI1NzgiLCJleHAiOjE3Mzg3OTk1NTJ9.DuA2eyoRXN4hfZZJf71Y_UR3jS6M5a8H9b4tCSs_m6c
+              disabled: false
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_98eb5c3e62b6b4d7970df1d3693f50bbefd99317
+    created: 1717655553453
+    modified: 1717655553453
+environments:
+  name: Base Environment
+  meta:
+    id: env_98eb5c3e62b6b4d7970df1d3693f50bbefd99317
+    created: 1717655553449
+    modified: 1742087883949
+    isPrivate: false
+  data:
+    url: https://api.alicino.com.br
