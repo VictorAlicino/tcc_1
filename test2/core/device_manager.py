@@ -271,6 +271,20 @@ class DeviceManager:
         finally:
             db.close()
 
+    def link_device_to_roles(self, device: any, roles_names: list[str]) -> None:
+        """Link a device to roles"""
+        log.debug('Linking device to roles')
+        db = next(self.opus_db.get_db())
+        try:
+            for role_name in roles_names:
+                role = crud.get_role_by_name(db, role_name)
+                if not role:
+                    log.warning(f'Role {role_name} does not exists, ignoring')
+                    continue
+                crud.authorize_device_to_role(db, device, role)
+        finally:
+            db.close()
+
     def _configure_mqtt(self) -> None:
         """Configure MQTT"""
         log.debug('Configuring MQTT for DeviceManager.')
@@ -354,6 +368,14 @@ class DeviceManager:
                                 device_name=temp['name'],
                                 device_driver=temp['driver'],
                                 room_id=UUID(temp['room_id']))
+                            self.link_device_to_roles(
+                                self.get_device(UUID(temp['id'])),
+                                [
+                                    'Administator',
+                                    'User',
+                                    'Guest'
+                                ]
+                            )
                             self.opus_interfaces['mqtt<local>'].publish(
                                 payload['callback'],
                                 json.dumps({'status': 'success'})

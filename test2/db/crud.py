@@ -56,6 +56,14 @@ def assign_new_user(db: Session, user: models.User):
     db.refresh(user)
     log.debug('User %s added to the database', user.given_name)
 
+def authorize_device_to_role(db: Session, device: models.Device, role: models.Role):
+    """Authorize a device to a role"""
+    #db = next(db)
+    device.roles.append(role)
+    db.commit()
+    db.refresh(device)
+    log.debug('Device %s authorized to role %s', device.device_name, role.role_name)
+
 # READ
 
 def get_user_by_id(db: Session, id: str) -> models.User | None:
@@ -78,6 +86,11 @@ def get_role_by_name(db: Session, role_name: str) -> models.Role | None:
     """Get the role entity by name"""
     #db = next(db)
     return db.query(models.Role).filter(models.Role.role_name == role_name).first()
+
+def get_device_by_id(db: Session, device_pk: str) -> models.Device | None:
+    """Get the device entity by PK"""
+    #db = next(db)
+    return db.query(models.Device).filter(models.Device.device_pk == device_pk).first()
 
 def get_all_devices_authorized_to_a_role(db: Session, role: models.Role) -> list[models.Device]:
     """Get all devices authorized to a role"""
